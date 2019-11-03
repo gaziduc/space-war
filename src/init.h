@@ -7,6 +7,7 @@
 struct textures
 {
     SDL_Texture *ship;
+    SDL_Texture *shot;
     SDL_Texture *bg;
 };
 
@@ -14,6 +15,12 @@ struct input
 {
     char key[SDL_NUM_SCANCODES];
     char quit;
+};
+
+struct list
+{
+    SDL_Rect pos;
+    struct list *next;
 };
 
 struct window
@@ -25,6 +32,7 @@ struct window
     struct textures *img;
     struct input *in;
     FPSmanager *fps;
+    struct list *list;
 };
 
 struct window *init_all(int width, int height);

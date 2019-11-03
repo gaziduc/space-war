@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "init.h"
+#include "list.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -35,6 +36,7 @@ static void load_textures(struct window *window)
     window->img = xmalloc(sizeof(struct textures), window->window);
 
     window->img->ship = load_texture("data/ship.bmp", window);
+    window->img->shot = load_texture("data/shot.bmp", window);
     window->img->bg = load_texture("data/background.jpg", window);
 }
 
@@ -65,6 +67,9 @@ struct window *init_all(int width, int height)
     SDL_initFramerate(window->fps);
     if (SDL_setFramerate(window->fps, 60) == -1)
         error("Could not set framerate", "Could not set framerate to 60 Hz", window->window);
+
+    // Init linked list for shots
+    init_list(window);
 
     return window;
 }
