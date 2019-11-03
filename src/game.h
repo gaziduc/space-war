@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 
 #define SHIP_SPEED 8
-#define SHOT_SPEED 25
+#define SHOT_SPEED 20
 
 void play_game(struct window *window);
 

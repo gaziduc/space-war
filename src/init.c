@@ -9,7 +9,7 @@ static struct window *init_window(int width, int height)
 {
     struct window *window = xmalloc(sizeof(struct window), NULL);
 
-    window->window = SDL_CreateWindow("Space war",
+    window->window = SDL_CreateWindow("Space War",
                                       SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED,
                                       width,
@@ -35,7 +35,7 @@ static void load_textures(struct window *window)
 {
     window->img = xmalloc(sizeof(struct textures), window->window);
 
-    window->img->ship = load_texture("data/ship.bmp", window);
+    window->img->ship = load_texture("data/ship.png", window);
     window->img->shot = load_texture("data/shot.bmp", window);
     window->img->bg = load_texture("data/background.jpg", window);
 }
@@ -51,7 +51,7 @@ struct window *init_all(int width, int height)
     struct window *window = init_window(width, height);
 
     // Init SDL2_image
-    int flags = IMG_INIT_JPG;
+    int flags = IMG_INIT_JPG | IMG_INIT_PNG;
     int initted = IMG_Init(flags);
     if ((initted & flags) != flags)
         error("Could not load SDL2_image", IMG_GetError(), window->window);
