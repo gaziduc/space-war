@@ -3,6 +3,10 @@
 #include "utils.h"
 #include "game.h"
 #include "list.h"
+#include "shot.h"
+#include "enemy.h"
+#include "explosion.h"
+#include "collision.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -38,46 +42,7 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
     if (window->in->key[SDL_SCANCODE_SPACE])
     {
         window->in->key[SDL_SCANCODE_SPACE] = 0;
-        list_push_front(pos, window);
-    }
-}
-
-static void move_shots(struct window *window)
-{
-    struct list *temp = window->list->next;
-    struct list *prev = window->list;
-
-    while (temp)
-    {
-        // Move shot
-        temp->pos.x += SHOT_SPEED;
-
-        // Prevent out of bounds by deleting the shot if not on screen
-        if (temp->pos.x >= window->w)
-        {
-            struct list *to_delete = temp;
-            prev->next = temp->next;
-            free(to_delete);
-        }
-
-        // Go to next shot
-        prev = temp;
-        temp = temp->next;
-    }
-}
-
-
-static void render_shots(struct window *window)
-{
-    struct list *temp = window->list;
-
-    while (temp)
-    {
-        // Display shot
-        SDL_RenderCopy(window->renderer, window->img->shot, NULL, &temp->pos);
-
-        // Go to next shot
-        temp = temp->next;
+        list_push_front(pos, window, SHOTS_LIST);
     }
 }
 
@@ -97,13 +62,24 @@ void play_game(struct window *window)
         handle_arrow_event(window, &pos);
         handle_shot_event(window, &pos);
 
-        // Move shots
+        // Move elements
         move_shots(window);
+        move_enemies(window);
+        move_explosions(window);
+
+        // Check collisions
+        check_collisions(window);
+
+        // Craeting enemies
+        if (window->fps->framecount % FRAMES_BETWEEN_ENEMIES == 0)
+            list_push_front(NULL, window, ENEMY_LIST);
 
         // Display textures
         SDL_RenderClear(window->renderer);
         SDL_RenderCopy(window->renderer, window->img->bg, NULL, &pos_fs);
         render_shots(window);
+        render_enemies(window);
+        render_explosions(window);
         SDL_RenderCopy(window->renderer, window->img->ship, NULL, &pos);
         SDL_RenderPresent(window->renderer);
 

@@ -9,6 +9,8 @@ static void free_textures(struct window *window)
     SDL_DestroyTexture(window->img->ship);
     SDL_DestroyTexture(window->img->shot);
     SDL_DestroyTexture(window->img->bg);
+    SDL_DestroyTexture(window->img->enemy);
+    SDL_DestroyTexture(window->img->explosion);
     free(window->img);
 }
 
@@ -24,7 +26,10 @@ void free_all(struct window *window)
     free_textures(window);
     free(window->in);
     free(window->fps);
-    free_list(window->list);
+
+    for (enum list_type i = 0; i < NUM_LISTS; i++)
+        free_list(window->list[i]);
+
     free_window(window);
     IMG_Quit();
     SDL_Quit();

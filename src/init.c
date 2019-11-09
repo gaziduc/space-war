@@ -38,6 +38,8 @@ static void load_textures(struct window *window)
     window->img->ship = load_texture("data/ship.png", window);
     window->img->shot = load_texture("data/shot.bmp", window);
     window->img->bg = load_texture("data/background.jpg", window);
+    window->img->enemy = load_texture("data/enemy.png", window);
+    window->img->explosion = load_texture("data/explosion.png", window);
 }
 
 
@@ -68,8 +70,9 @@ struct window *init_all(int width, int height)
     if (SDL_setFramerate(window->fps, 60) == -1)
         error("Could not set framerate", "Could not set framerate to 60 Hz", window->window);
 
-    // Init linked list for shots
-    init_list(window);
+    // Init linked lists for shots, enemies, ...
+    for (enum list_type i = 0; i < NUM_LISTS; i++)
+        init_list(window, i);
 
     return window;
 }
