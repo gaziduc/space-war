@@ -9,16 +9,13 @@ sdl2
 sdl2_image
 sdl2_gfx
 ```
-## Build and play:
+## Download, build and play:
 ```
+git clone https://github.com/gaziduc/space-war.git
+cd space-war
 mkdir build
 cd build
 cmake ..
 make
 ./space-war
-```
-## Remove after playing:
-```
-cd ..
-rm -r build
 ```
