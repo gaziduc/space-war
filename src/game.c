@@ -46,10 +46,32 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
     }
 }
 
+
+static void render_trail(struct window *window, SDL_Rect *pos)
+{
+    SDL_Rect pos_dst_trail;
+    SDL_QueryTexture(window->img->trail, NULL, NULL, &pos_dst_trail.w, &pos_dst_trail.h);
+
+    int count = window->fps->framecount % 10;
+
+    if (count < 5)
+        pos_dst_trail.x = pos->x - pos_dst_trail.w / 2 + count * 2;
+    else
+    {
+        count -= 5;
+        pos_dst_trail.x = pos->x - pos_dst_trail.w / 2 + 10 - count * 2;
+    }
+
+    pos_dst_trail.y = pos->y + pos->h / 2 - pos_dst_trail.h / 2;
+
+    SDL_RenderCopy(window->renderer, window->img->trail, NULL, &pos_dst_trail);
+}
+
 void play_game(struct window *window)
 {
     SDL_Rect pos;
     init_position(120, POS_CENTERED, window, window->img->ship, &pos);
+    SDL_Rect pos_src_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
     SDL_Rect pos_fs = { .x = 0, .y = 0, .w = window->w, .h = window->h };
 
     int escape = 0;
@@ -62,21 +84,24 @@ void play_game(struct window *window)
         handle_arrow_event(window, &pos);
         handle_shot_event(window, &pos);
 
-        // Move elements
+        // Move elements and background
         move_shots(window);
         move_enemies(window);
         move_explosions(window);
+        if (window->fps->framecount % 2 == 0)
+            pos_src_bg.x++;
 
         // Check collisions
-        check_collisions(window);
+        check_collisions(window, &pos);
 
-        // Craeting enemies
+        // Create enemies
         if (window->fps->framecount % FRAMES_BETWEEN_ENEMIES == 0)
             list_push_front(NULL, window, ENEMY_LIST);
 
         // Display textures
         SDL_RenderClear(window->renderer);
-        SDL_RenderCopy(window->renderer, window->img->bg, NULL, &pos_fs);
+        SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg, &pos_fs);
+        render_trail(window, &pos);
         render_shots(window);
         render_enemies(window);
         render_explosions(window);

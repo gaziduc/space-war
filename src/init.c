@@ -40,6 +40,7 @@ static void load_textures(struct window *window)
     window->img->bg = load_texture("data/background.jpg", window);
     window->img->enemy = load_texture("data/enemy.png", window);
     window->img->explosion = load_texture("data/explosion.png", window);
+    window->img->trail = load_texture("data/trail.png", window);
 }
 
 

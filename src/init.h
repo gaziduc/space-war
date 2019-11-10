@@ -11,6 +11,7 @@ struct textures
     SDL_Texture *bg;
     SDL_Texture *enemy;
     SDL_Texture *explosion;
+    SDL_Texture *trail;
 };
 
 struct input

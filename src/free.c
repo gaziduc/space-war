@@ -11,6 +11,7 @@ static void free_textures(struct window *window)
     SDL_DestroyTexture(window->img->bg);
     SDL_DestroyTexture(window->img->enemy);
     SDL_DestroyTexture(window->img->explosion);
+    SDL_DestroyTexture(window->img->trail);
     free(window->img);
 }
 
