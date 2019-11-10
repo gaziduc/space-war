@@ -42,7 +42,7 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
     if (window->in->key[SDL_SCANCODE_SPACE])
     {
         window->in->key[SDL_SCANCODE_SPACE] = 0;
-        list_push_front(pos, window, SHOTS_LIST);
+        list_push_front(pos, window, MY_SHOTS_LIST);
     }
 }
 
@@ -88,6 +88,7 @@ void play_game(struct window *window)
         move_shots(window);
         move_enemies(window);
         move_explosions(window);
+        move_enemy_shots(window);
         if (window->fps->framecount % 2 == 0)
             pos_src_bg.x++;
 
@@ -103,6 +104,7 @@ void play_game(struct window *window)
         SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg, &pos_fs);
         render_trail(window, &pos);
         render_shots(window);
+        render_enemy_shots(window);
         render_enemies(window);
         render_explosions(window);
         SDL_RenderCopy(window->renderer, window->img->ship, NULL, &pos);

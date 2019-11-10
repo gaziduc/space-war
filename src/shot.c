@@ -19,8 +19,8 @@ void set_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *window)
 
 void move_shots(struct window *window)
 {
-    struct list *temp = window->list[SHOTS_LIST]->next;
-    struct list *prev = window->list[SHOTS_LIST];
+    struct list *temp = window->list[MY_SHOTS_LIST]->next;
+    struct list *prev = window->list[MY_SHOTS_LIST];
 
     while (temp)
     {
@@ -49,7 +49,7 @@ void move_shots(struct window *window)
 
 void render_shots(struct window *window)
 {
-    struct list *temp = window->list[SHOTS_LIST]->next;
+    struct list *temp = window->list[MY_SHOTS_LIST]->next;
 
     while (temp)
     {

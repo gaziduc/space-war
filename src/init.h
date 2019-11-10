@@ -24,14 +24,17 @@ struct list
 {
     SDL_Rect pos_src;
     SDL_Rect pos_dst;
+    SDL_Point dir;
+    unsigned long framecount;
     struct list *next;
 };
 
 enum list_type
 {
-    SHOTS_LIST = 0,
+    MY_SHOTS_LIST = 0,
     ENEMY_LIST,
     EXPLOSION_LIST,
+    ENEMY_SHOT_LIST,
     NUM_LISTS
 };
 

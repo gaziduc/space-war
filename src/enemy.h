@@ -4,11 +4,18 @@
 #include "init.h"
 
 #define ENEMY_SPEED 3
+#define FRAMES_BETWEEN_ENEMY_SHOTS 120
 
 void set_enemy_pos(struct list *new, struct window *window);
 
 void move_enemies(struct window *window);
 
 void render_enemies(struct window *window);
+
+void set_enemy_shot_pos(struct list *new, SDL_Rect *pos, struct window *window);
+
+void move_enemy_shots(struct window *window);
+
+void render_enemy_shots(struct window *window);
 
 #endif /* !ENEMY_H */

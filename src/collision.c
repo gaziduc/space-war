@@ -20,8 +20,8 @@ void check_collisions(struct window *window, SDL_Rect *pos)
 
     while (temp_enemy)
     {
-        struct list *temp_shot = window->list[SHOTS_LIST]->next;
-        struct list *prev_shot = window->list[SHOTS_LIST];
+        struct list *temp_shot = window->list[MY_SHOTS_LIST]->next;
+        struct list *prev_shot = window->list[MY_SHOTS_LIST];
 
         int deleted_enemy = 0;
 

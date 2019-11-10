@@ -22,7 +22,7 @@ void list_push_front(SDL_Rect *pos, struct window *window, enum list_type type)
     // Setting new->pos depending of arguments (type, ...)
     switch (type)
     {
-        case SHOTS_LIST: // Setting shot initial position
+        case MY_SHOTS_LIST: // Setting shot initial position
             set_shot_pos(new, pos, window);
             break;
         case ENEMY_LIST: // Setting enemy initial position
@@ -30,6 +30,9 @@ void list_push_front(SDL_Rect *pos, struct window *window, enum list_type type)
             break;
         case EXPLOSION_LIST:
             set_explosion_pos(new, pos, window);
+            break;
+        case ENEMY_SHOT_LIST:
+            set_enemy_shot_pos(new, pos, window);
             break;
 
         default:
