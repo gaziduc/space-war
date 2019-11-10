@@ -13,9 +13,6 @@ sdl2_gfx
 ```shell
 git clone https://github.com/gaziduc/space-war.git
 cd space-war
-mkdir build
-cd build
-cmake ..
 make
 ./space-war
 ```
