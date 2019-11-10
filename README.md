@@ -10,7 +10,7 @@ sdl2_image
 sdl2_gfx
 ```
 ## Download, build and play:
-```
+```shell
 git clone https://github.com/gaziduc/space-war.git
 cd space-war
 mkdir build
