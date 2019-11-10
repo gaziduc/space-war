@@ -24,7 +24,6 @@ struct list
 {
     SDL_Rect pos_src;
     SDL_Rect pos_dst;
-    SDL_Point dir;
     unsigned long framecount;
     struct list *next;
 };

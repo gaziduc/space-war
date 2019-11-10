@@ -47,7 +47,7 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
 }
 
 
-static void render_trail(struct window *window, SDL_Rect *pos)
+void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
 {
     SDL_Rect pos_dst_trail;
     SDL_QueryTexture(window->img->trail, NULL, NULL, &pos_dst_trail.w, &pos_dst_trail.h);
@@ -64,7 +64,16 @@ static void render_trail(struct window *window, SDL_Rect *pos)
 
     pos_dst_trail.y = pos->y + pos->h / 2 - pos_dst_trail.h / 2;
 
-    SDL_RenderCopy(window->renderer, window->img->trail, NULL, &pos_dst_trail);
+    SDL_RendererFlip flip = 0;
+
+    if (is_enemy)
+    {
+        pos_dst_trail.x += pos->w;
+        flip |= SDL_FLIP_HORIZONTAL;
+    }
+
+    SDL_RenderCopyEx(window->renderer, window->img->trail, NULL, &pos_dst_trail,
+                     0, NULL, flip);
 }
 
 void play_game(struct window *window)
@@ -75,6 +84,7 @@ void play_game(struct window *window)
     SDL_Rect pos_fs = { .x = 0, .y = 0, .w = window->w, .h = window->h };
 
     int escape = 0;
+    unsigned long framecount = 0;
 
     while (!escape)
     {
@@ -96,13 +106,13 @@ void play_game(struct window *window)
         check_collisions(window, &pos);
 
         // Create enemies
-        if (window->fps->framecount % FRAMES_BETWEEN_ENEMIES == 0)
+        if (framecount % FRAMES_BETWEEN_ENEMIES == 0)
             list_push_front(NULL, window, ENEMY_LIST);
 
         // Display textures
         SDL_RenderClear(window->renderer);
         SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg, &pos_fs);
-        render_trail(window, &pos);
+        render_trail(window, &pos, 0);
         render_shots(window);
         render_enemy_shots(window);
         render_enemies(window);
@@ -112,5 +122,6 @@ void play_game(struct window *window)
 
         // Wait a frame
         SDL_framerateDelay(window->fps);
+        framecount++;
     }
 }

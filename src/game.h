@@ -8,6 +8,8 @@
 #define SHOT_SPEED 20
 #define FRAMES_BETWEEN_ENEMIES 300
 
+void render_trail(struct window *window, SDL_Rect *pos, int is_enemy);
+
 void play_game(struct window *window);
 
 #endif /* !GAME_H */

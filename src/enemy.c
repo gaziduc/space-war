@@ -51,10 +51,13 @@ void render_enemies(struct window *window)
 
     while (temp)
     {
-        // Display shot
+        // Display enemy trail
+        render_trail(window, &temp->pos_dst, 1);
+
+        // Display enemy
         SDL_RenderCopy(window->renderer, window->img->enemy, NULL, &temp->pos_dst);
 
-        // Go to next shot
+        // Go to next enemy
         temp = temp->next;
     }
 }
@@ -116,4 +119,3 @@ void render_enemy_shots(struct window *window)
         temp = temp->next;
     }
 }
-
