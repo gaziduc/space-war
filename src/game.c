@@ -76,12 +76,52 @@ void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
                      0, NULL, flip);
 }
 
+
+static void move_background(unsigned long framecount, struct window *window, SDL_Rect *pos_src_bg)
+{
+    if (framecount % 2 == 0)
+    {
+        pos_src_bg->x++;
+
+        int w = 0;
+        SDL_QueryTexture(window->img->bg, NULL, NULL, &w, NULL);
+
+        if (pos_src_bg->x >= w)
+            pos_src_bg->x = 0;
+
+    }
+}
+
+
+static void render_background(struct window *window, SDL_Rect *pos_src_bg)
+{
+    int w = 0;
+    SDL_QueryTexture(window->img->bg, NULL, NULL, &w, NULL);
+
+    if (pos_src_bg->x + window->w <= w)
+    {
+        // pos_dst_bg is here to avoid a glitch when passing NULL
+        // on fourth parameter of SDL_RenderCopy on some Linux congigurations
+        SDL_Rect pos_dst_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
+        SDL_RenderCopy(window->renderer, window->img->bg, pos_src_bg, &pos_dst_bg);
+    }
+    else
+    {
+        SDL_Rect pos_dst_bg = { .x = 0, .y = 0, .w = w - pos_src_bg->x, .h = window->h };
+        SDL_RenderCopy(window->renderer, window->img->bg, pos_src_bg, &pos_dst_bg);
+
+        SDL_Rect pos_src_bg2 = { .x = 0, .y = 0, .w = window->w - pos_dst_bg.w, .h = window->h };
+        SDL_Rect pos_dst_bg2 = { .x = pos_dst_bg.w , .y = 0, window->w - pos_dst_bg.w, .h = window->h };
+        SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg2, &pos_dst_bg2);
+    }
+}
+
+
 void play_game(struct window *window)
 {
     SDL_Rect pos;
     init_position(120, POS_CENTERED, window, window->img->ship, &pos);
     SDL_Rect pos_src_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
-    SDL_Rect pos_fs = { .x = 0, .y = 0, .w = window->w, .h = window->h };
 
     int escape = 0;
     unsigned long framecount = 0;
@@ -99,8 +139,7 @@ void play_game(struct window *window)
         move_enemies(window);
         move_explosions(window);
         move_enemy_shots(window);
-        if (window->fps->framecount % 2 == 0)
-            pos_src_bg.x++;
+        move_background(framecount, window, &pos_src_bg);
 
         // Check collisions
         check_collisions(window, &pos);
@@ -111,7 +150,7 @@ void play_game(struct window *window)
 
         // Display textures
         SDL_RenderClear(window->renderer);
-        SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg, &pos_fs);
+        render_background(window, &pos_src_bg);
         render_trail(window, &pos, 0);
         render_shots(window);
         render_enemy_shots(window);
