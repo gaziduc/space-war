@@ -41,8 +41,15 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
 {
     if (window->in->key[SDL_SCANCODE_SPACE])
     {
-        window->in->key[SDL_SCANCODE_SPACE] = 0;
-        list_push_front(pos, window, MY_SHOTS_LIST);
+        Uint32 current_time = SDL_GetTicks();
+
+        // If enough time between now and the last shot
+        if (current_time - window->last_shot_time >= DELAY_BETWEEN_SHOTS)
+        {
+            // Shot
+            list_push_front(pos, window, MY_SHOTS_LIST);
+            window->last_shot_time = current_time;
+        }
     }
 }
 

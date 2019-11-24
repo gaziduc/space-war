@@ -47,6 +47,7 @@ struct window
     struct input *in;
     FPSmanager *fps;
     struct list *list[NUM_LISTS];
+    int last_shot_time;
 };
 
 struct window *init_all(int width, int height);

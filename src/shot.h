@@ -4,6 +4,8 @@
 #include "init.h"
 #include <SDL2/SDL.h>
 
+#define DELAY_BETWEEN_SHOTS 333
+
 void set_shot_pos(struct list *new, SDL_Rect *pos, struct window *window);
 
 void move_shots(struct window *window);

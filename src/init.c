@@ -75,5 +75,8 @@ struct window *init_all(int width, int height)
     for (enum list_type i = 0; i < NUM_LISTS; i++)
         init_list(window, i);
 
+    // We can now shot
+    window->last_shot_time = 0;
+
     return window;
 }
