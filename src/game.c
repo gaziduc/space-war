@@ -47,7 +47,7 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
         if (current_time - window->last_shot_time >= DELAY_BETWEEN_SHOTS)
         {
             // Shot
-            list_push_front(pos, window, MY_SHOTS_LIST);
+            list_push_front(pos, window, MY_SHOTS_LIST, NULL);
             window->last_shot_time = current_time;
         }
     }
@@ -153,7 +153,7 @@ void play_game(struct window *window)
 
         // Create enemies
         if (framecount % FRAMES_BETWEEN_ENEMIES == 0)
-            list_push_front(NULL, window, ENEMY_LIST);
+            list_push_front(NULL, window, ENEMY_LIST, NULL);
 
         // Display textures
         SDL_RenderClear(window->renderer);
@@ -162,8 +162,8 @@ void play_game(struct window *window)
         render_shots(window);
         render_enemy_shots(window);
         render_enemies(window);
-        render_explosions(window);
         SDL_RenderCopy(window->renderer, window->img->ship, NULL, &pos);
+        render_explosions(window);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

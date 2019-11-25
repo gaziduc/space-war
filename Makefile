@@ -9,7 +9,7 @@ OBJS=$(SRC:src/%.c=obj/%.o)
 all: objs space-war
 
 objs:
-	mkdir -p obj
+	@mkdir -p obj
 
 space-war: $(OBJS)
 	$(CC) -o $@ $(OBJS) $(LDFLAGS)

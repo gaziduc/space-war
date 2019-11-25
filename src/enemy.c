@@ -23,7 +23,7 @@ void move_enemies(struct window *window)
         temp->framecount++;
 
         if (temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)

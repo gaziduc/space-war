@@ -3,7 +3,7 @@
 
 #define EXPLOSION_SIZE 256
 
-void set_explosion_pos(struct list *new, SDL_Rect *pos_dst, struct window *window);
+void set_explosion_pos(struct list *new, SDL_Rect *pos_dst, SDL_Texture *texture);
 
 void move_explosions(struct window *window);
 
