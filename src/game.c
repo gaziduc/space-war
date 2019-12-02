@@ -119,7 +119,7 @@ static void render_background(struct window *window, SDL_Rect *pos_src_bg)
 
         SDL_Rect pos_src_bg2 = { .x = 0, .y = 0, .w = window->w - pos_dst_bg.w, .h = window->h };
         SDL_Rect pos_dst_bg2 = { .x = pos_dst_bg.w , .y = 0, window->w - pos_dst_bg.w, .h = window->h };
-        SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg2, &pos_dst_bg2);
+        SDL_RenderCopy(window->renderer, window->img->bg2, &pos_src_bg2, &pos_dst_bg2);
     }
 }
 
@@ -151,9 +151,8 @@ void play_game(struct window *window)
         // Check collisions
         check_collisions(window, &pos);
 
-        // Create enemies
-        if (framecount % FRAMES_BETWEEN_ENEMIES == 0)
-            list_push_front(NULL, window, ENEMY_LIST, NULL);
+        // Create enemies using data/paths.txt file
+        create_enemies(window);
 
         // Display textures
         SDL_RenderClear(window->renderer);

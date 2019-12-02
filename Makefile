@@ -18,5 +18,5 @@ obj/%.o: src/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -r obj
-	rm space-war
+	rm -rf obj
+	rm -f space-war

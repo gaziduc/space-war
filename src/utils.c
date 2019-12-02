@@ -67,3 +67,14 @@ void *xcalloc(size_t nmenb, size_t size, SDL_Window *window)
 
     return ptr;
 }
+
+
+void *xrealloc(void *ptr, size_t size, SDL_Window *window)
+{
+    void *p = realloc(ptr, size);
+
+    if (!p)
+        error("realloc failed", "Memory allocation failed.", window);
+
+    return p;
+}

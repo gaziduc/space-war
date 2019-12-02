@@ -1,6 +1,7 @@
 #include "utils.h"
 #include "init.h"
 #include "list.h"
+#include "path.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -38,9 +39,11 @@ static void load_textures(struct window *window)
     window->img->ship = load_texture("data/ship.png", window);
     window->img->shot = load_texture("data/shot.bmp", window);
     window->img->bg = load_texture("data/background.jpg", window);
+    window->img->bg2 = load_texture("data/background2.jpg", window);
     window->img->enemy = load_texture("data/enemy.png", window);
     window->img->explosion = load_texture("data/explosion.png", window);
     window->img->trail = load_texture("data/trail.png", window);
+    window->img->enemy_shot = load_texture("data/enemy_shot.bmp", window);
 }
 
 
@@ -77,6 +80,9 @@ struct window *init_all(int width, int height)
 
     // We can now shot
     window->last_shot_time = 0;
+
+    // Load enemy paths
+    window->paths = load_paths(window, "data/paths.txt");
 
     return window;
 }

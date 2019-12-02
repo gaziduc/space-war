@@ -17,4 +17,6 @@ void *xmalloc(size_t size, SDL_Window *window);
 
 void *xcalloc(size_t nmenb, size_t size, SDL_Window *window);
 
+void *xrealloc(void *ptr, size_t size, SDL_Window *window);
+
 #endif /* !UTILS_H */

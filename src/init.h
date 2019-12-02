@@ -9,9 +9,11 @@ struct textures
     SDL_Texture *ship;
     SDL_Texture *shot;
     SDL_Texture *bg;
+    SDL_Texture *bg2;
     SDL_Texture *enemy;
     SDL_Texture *explosion;
     SDL_Texture *trail;
+    SDL_Texture *enemy_shot;
 };
 
 struct input
@@ -25,6 +27,7 @@ struct list
     SDL_Rect pos_src;
     SDL_Rect pos_dst;
     unsigned long framecount;
+    int speed_x;
     struct list *next;
 };
 
@@ -37,6 +40,14 @@ enum list_type
     NUM_LISTS
 };
 
+struct vector
+{
+    struct path *data;
+    size_t size;
+    size_t capacity;
+    size_t index;
+};
+
 struct window
 {
     SDL_Window *window;
@@ -47,7 +58,9 @@ struct window
     struct input *in;
     FPSmanager *fps;
     struct list *list[NUM_LISTS];
-    int last_shot_time;
+    Uint32 last_shot_time;
+    struct vector *paths;
+    Uint32 last_enemy_time;
 };
 
 struct window *init_all(int width, int height);

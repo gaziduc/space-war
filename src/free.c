@@ -1,6 +1,7 @@
 #include "init.h"
 #include "free.h"
 #include "list.h"
+#include "vector.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
@@ -31,6 +32,7 @@ void free_all(struct window *window)
     for (enum list_type i = 0; i < NUM_LISTS; i++)
         free_list(window->list[i]);
 
+    free_vector(window->paths);
     free_window(window);
     IMG_Quit();
     SDL_Quit();
