@@ -7,6 +7,7 @@
 #include "enemy.h"
 #include "explosion.h"
 #include "collision.h"
+#include "hud.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -163,6 +164,7 @@ void play_game(struct window *window)
         render_enemies(window);
         SDL_RenderCopy(window->renderer, window->img->ship, NULL, &pos);
         render_explosions(window);
+        render_hud(window);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

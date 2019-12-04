@@ -1,5 +1,6 @@
 #include "init.h"
 #include "list.h"
+#include "collision.h"
 
 static int collision(SDL_Rect *pos1, SDL_Rect *pos2)
 {
@@ -45,6 +46,9 @@ void check_collisions(struct window *window, SDL_Rect *pos)
                 temp_enemy = temp_enemy->next;
                 free(enemy_to_delete);
 
+                // Increase score
+                window->score += SCORE_TO_INCREASE;
+
                 // Exit shot loop
                 deleted_enemy = 1;
                 break;
@@ -70,6 +74,12 @@ void check_collisions(struct window *window, SDL_Rect *pos)
             free(enemy_to_delete);
 
             deleted_enemy = 1;
+
+            // Increase score
+            window->score += SCORE_TO_INCREASE;
+
+            // Decrease health
+            window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
         }
 
 
@@ -97,6 +107,8 @@ void check_collisions(struct window *window, SDL_Rect *pos)
             prev_enemy_shot->next = temp_enemy_shot->next;
             temp_enemy_shot = temp_enemy_shot->next;
             free(enemy_shot_to_delete);
+
+            window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
         }
         else
         {

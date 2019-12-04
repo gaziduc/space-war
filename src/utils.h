@@ -3,6 +3,7 @@
 
 #include "init.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #define POS_CENTERED -1
 
@@ -18,5 +19,11 @@ void *xmalloc(size_t size, SDL_Window *window);
 void *xcalloc(size_t nmenb, size_t size, SDL_Window *window);
 
 void *xrealloc(void *ptr, size_t size, SDL_Window *window);
+
+SDL_Texture *get_text_texture(struct window *window, TTF_Font *font,
+                              const char *text, SDL_Color fg);
+
+TTF_Font *load_font(struct window *window, const char *filename,
+                    int pt_size);
 
 #endif /* !UTILS_H */

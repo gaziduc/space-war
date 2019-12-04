@@ -47,6 +47,13 @@ static void load_textures(struct window *window)
 }
 
 
+static void load_fonts(struct window *window)
+{
+    window->fonts = xmalloc(sizeof(struct fonts), window->window);
+
+    window->fonts->pixel = load_font(window, "data/pixel.ttf", 26);
+}
+
 struct window *init_all(int width, int height)
 {
     // Init SDL2
@@ -81,8 +88,19 @@ struct window *init_all(int width, int height)
     // We can now shot
     window->last_shot_time = 0;
 
-    // Load enemy paths
+    // Load enemy paths and set enemy timer
     window->paths = load_paths(window, "data/paths.txt");
+    window->last_enemy_time = 0;
+
+    // Set hud attributes
+    window->health = 200;
+    window->score = 0;
+
+    // Init SDL2_tff and load fonts
+    if (TTF_Init() == -1)
+        error("Could not load SDL2_ttf", TTF_GetError(), window->window);
+
+    load_fonts(window);
 
     return window;
 }

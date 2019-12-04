@@ -3,6 +3,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
+#include <SDL2/SDL_ttf.h>
 
 struct textures
 {
@@ -48,6 +49,11 @@ struct vector
     size_t index;
 };
 
+struct fonts
+{
+    TTF_Font *pixel;
+};
+
 struct window
 {
     SDL_Window *window;
@@ -61,6 +67,9 @@ struct window
     Uint32 last_shot_time;
     struct vector *paths;
     Uint32 last_enemy_time;
+    int health;
+    struct fonts *fonts;
+    int score;
 };
 
 struct window *init_all(int width, int height);
