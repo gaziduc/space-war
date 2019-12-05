@@ -5,6 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
+#include <SDL2/SDL_mixer.h>
 
 static struct window *init_window(int width, int height)
 {
@@ -54,6 +55,13 @@ static void load_fonts(struct window *window)
     window->fonts->pixel = load_font(window, "data/pixel.ttf", 26);
 }
 
+static void load_music(struct window *window, const char *filename)
+{
+    window->music = Mix_LoadMUS(filename);
+    if (!window->music)
+        error("Could not load music", Mix_GetError(), window->window);
+}
+
 struct window *init_all(int width, int height)
 {
     // Init SDL2
@@ -64,9 +72,9 @@ struct window *init_all(int width, int height)
     struct window *window = init_window(width, height);
 
     // Init SDL2_image
-    int flags = IMG_INIT_JPG | IMG_INIT_PNG;
-    int initted = IMG_Init(flags);
-    if ((initted & flags) != flags)
+    int img_flags = IMG_INIT_JPG | IMG_INIT_PNG;
+    int img_initted = IMG_Init(img_flags);
+    if ((img_initted & img_flags) != img_flags)
         error("Could not load SDL2_image", IMG_GetError(), window->window);
 
     // Load textures
@@ -101,6 +109,19 @@ struct window *init_all(int width, int height)
         error("Could not load SDL2_ttf", TTF_GetError(), window->window);
 
     load_fonts(window);
+
+    // Init SDL2_mixer and load music
+    int mix_flags = MIX_INIT_OGG;
+    int mix_initted = Mix_Init(mix_flags);
+    if ((mix_initted & mix_flags) != mix_flags)
+        error("Could not load SDL2_mixer", Mix_GetError(), window->window);
+
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
+        error("Could not initialize SDL2_mixer", Mix_GetError(), window->window);
+
+    load_music(window, "data/hybris.ogg");
+    if (Mix_PlayMusic(window->music, -1) == -1)
+        error("Could not play music", Mix_GetError(), window->window);
 
     return window;
 }

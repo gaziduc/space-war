@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_mixer.h>
 
 struct textures
 {
@@ -70,6 +71,7 @@ struct window
     int health;
     struct fonts *fonts;
     int score;
+    Mix_Music *music;
 };
 
 struct window *init_all(int width, int height);

@@ -4,6 +4,7 @@
 #include "vector.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_mixer.h>
 
 
 static void free_textures(struct window *window)
@@ -46,7 +47,10 @@ void free_all(struct window *window)
 
     free_vector(window->paths);
     free_fonts(window);
+    Mix_CloseAudio();
+    Mix_FreeMusic(window->music);
     free_window(window);
+    Mix_Quit();
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
