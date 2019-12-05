@@ -8,6 +8,8 @@ The following libraries must be installed:
 sdl2
 sdl2_image
 sdl2_gfx
+sdl2_ttf
+sdl2_mixer
 ```
 ## Download, build and play:
 ```shell
