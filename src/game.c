@@ -128,7 +128,7 @@ static void render_background(struct window *window, SDL_Rect *pos_src_bg)
 void play_game(struct window *window)
 {
     SDL_Rect pos;
-    init_position(120, POS_CENTERED, window, window->img->ship, &pos);
+    init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
     SDL_Rect pos_src_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
 
     int escape = 0;
@@ -162,7 +162,7 @@ void play_game(struct window *window)
         render_shots(window);
         render_enemy_shots(window);
         render_enemies(window);
-        SDL_RenderCopy(window->renderer, window->img->ship, NULL, &pos);
+        SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
         render_explosions(window);
         render_hud(window);
         SDL_RenderPresent(window->renderer);

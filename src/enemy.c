@@ -8,7 +8,7 @@
 
 void set_enemy_pos(struct list *new, SDL_Rect *pos, struct window *window)
 {
-    init_position(window->w, pos->y, window, window->img->enemy, &new->pos_dst);
+    init_position(window->w, pos->y, window, window->img->enemy->texture, &new->pos_dst);
 }
 
 
@@ -27,7 +27,7 @@ void create_enemies(struct window *window)
         && ticks - window->last_enemy_time >= window->paths->data[window->paths->index].time_to_wait)
     {
         int h = 0;
-        SDL_QueryTexture(window->img->enemy, NULL, NULL, NULL, &h);
+        SDL_QueryTexture(window->img->enemy->texture, NULL, NULL, NULL, &h);
 
         SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].pos_y - h / 2, .w = 0, .h = 0 };
 
@@ -83,7 +83,7 @@ void render_enemies(struct window *window)
         render_trail(window, &temp->pos_dst, 1);
 
         // Display enemy
-        SDL_RenderCopy(window->renderer, window->img->enemy, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->enemy->texture, NULL, &temp->pos_dst);
 
         // Go to next enemy
         temp = temp->next;
@@ -96,11 +96,11 @@ void set_enemy_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *wind
     // Setting shot initial position
     int w = 0;
     int h = 0;
-    SDL_QueryTexture(window->img->enemy, NULL, NULL, &w, &h);
+    SDL_QueryTexture(window->img->enemy->texture, NULL, NULL, &w, &h);
     new->pos_dst.x = pos_dst->x;
     new->pos_dst.y = pos_dst->y + h / 2;
 
-    SDL_QueryTexture(window->img->enemy_shot, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
+    SDL_QueryTexture(window->img->enemy_shot->texture, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
     new->pos_dst.y -= new->pos_dst.h / 2;
     new->pos_dst.x += new->pos_dst.w;
 }
@@ -142,7 +142,7 @@ void render_enemy_shots(struct window *window)
     while (temp)
     {
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->enemy_shot, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->enemy_shot->texture, NULL, &temp->pos_dst);
 
         // Go to next shot
         temp = temp->next;

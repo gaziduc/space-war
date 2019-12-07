@@ -1,8 +1,9 @@
 #include "init.h"
 #include "list.h"
 #include "collision.h"
+#include "utils.h"
 
-static int collision(SDL_Rect *pos1, SDL_Rect *pos2)
+static int collision_aabb(SDL_Rect *pos1, SDL_Rect *pos2)
 {
     if (pos1->x > pos2->x + pos2->w
     || pos1->x + pos1->w < pos2->x
@@ -11,6 +12,30 @@ static int collision(SDL_Rect *pos1, SDL_Rect *pos2)
         return 0;
 
     return 1;
+}
+
+
+static int collision(SDL_Rect *pos1, struct collision_texture *t1, SDL_Rect *pos2, struct collision_texture *t2)
+{
+    if (!collision_aabb(pos1, pos2))
+        return 0;
+
+    for (int i = pos1->x; i < pos1->x + pos1->w; i++)
+    {
+        if (i < pos2->x || i >= pos2->x + pos2->w)
+            continue;
+
+        for (int j = pos1->y; j < pos1->y + pos1->h; j++)
+        {
+            if (j < pos2->y || j >= pos2->y + pos2->h)
+                continue;
+
+            if (t1->collision[(j - pos1->y) * pos1->w + i - pos1->x] && t2->collision[(j - pos2->y) * pos2->w + i - pos2->x])
+                return 1;
+        }
+    }
+
+    return 0;
 }
 
 
@@ -29,10 +54,10 @@ void check_collisions(struct window *window, SDL_Rect *pos)
         while (temp_shot)
         {
             // If collision shot <-> enemy, delete both elements
-            if (collision(&temp_shot->pos_dst, &temp_enemy->pos_dst))
+            if (collision(&temp_enemy->pos_dst, window->img->enemy, &temp_shot->pos_dst, window->img->shot))
             {
                 // Add an explosion
-                list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST, window->img->enemy);
+                list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST, window->img->enemy->texture);
 
                 // Delete shot
                 struct list *shot_to_delete = temp_shot;
@@ -62,10 +87,10 @@ void check_collisions(struct window *window, SDL_Rect *pos)
         }
 
         // If collision ship <-> enemy, delete enemy
-        if (!deleted_enemy && collision(&temp_enemy->pos_dst, pos))
+        if (!deleted_enemy && collision(&temp_enemy->pos_dst, window->img->enemy, pos, window->img->ship))
         {
             // Add an explosion
-            list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST, window->img->enemy);
+            list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST, window->img->enemy->texture);
 
             // Delete enemy
             struct list *enemy_to_delete = temp_enemy;
@@ -97,10 +122,10 @@ void check_collisions(struct window *window, SDL_Rect *pos)
     while (temp_enemy_shot)
     {
         // If collision ship <-> enemy shot
-        if (collision(&temp_enemy_shot->pos_dst, pos))
+        if (collision(pos, window->img->ship, &temp_enemy_shot->pos_dst, window->img->enemy_shot))
         {
             // Add an explosion
-            list_push_front(pos, window, EXPLOSION_LIST, window->img->ship);
+            list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture);
 
             // Delete enemy shot
             struct list *enemy_shot_to_delete = temp_enemy_shot;

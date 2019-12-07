@@ -7,14 +7,21 @@
 #include <SDL2/SDL_mixer.h>
 
 
+static void free_collision_texture(struct collision_texture *t)
+{
+    SDL_DestroyTexture(t->texture);
+    free(t->collision);
+    free(t);
+}
+
 static void free_textures(struct window *window)
 {
-    SDL_DestroyTexture(window->img->ship);
-    SDL_DestroyTexture(window->img->shot);
+    free_collision_texture(window->img->ship);
+    free_collision_texture(window->img->shot);
     SDL_DestroyTexture(window->img->bg);
     SDL_DestroyTexture(window->img->bg2);
-    SDL_DestroyTexture(window->img->enemy);
-    SDL_DestroyTexture(window->img->enemy_shot);
+    free_collision_texture(window->img->enemy);
+    free_collision_texture(window->img->enemy_shot);
     SDL_DestroyTexture(window->img->explosion);
     SDL_DestroyTexture(window->img->trail);
     free(window->img);

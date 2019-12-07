@@ -6,16 +6,24 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+struct collision_texture
+{
+    SDL_Texture *texture;
+    int w;
+    int h;
+    short *collision;
+};
+
 struct textures
 {
-    SDL_Texture *ship;
-    SDL_Texture *shot;
+    struct collision_texture *ship;
+    struct collision_texture *shot;
     SDL_Texture *bg;
     SDL_Texture *bg2;
-    SDL_Texture *enemy;
+    struct collision_texture *enemy;
     SDL_Texture *explosion;
     SDL_Texture *trail;
-    SDL_Texture *enemy_shot;
+    struct collision_texture *enemy_shot;
 };
 
 struct input

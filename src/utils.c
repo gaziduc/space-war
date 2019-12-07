@@ -1,5 +1,6 @@
 #include "utils.h"
 #include "init.h"
+#include "pixel.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -18,7 +19,51 @@ SDL_Texture *load_texture(const char *path, struct window *window)
         error("Could not load images", SDL_GetError(), window->window);
 
     SDL_FreeSurface(surface);
+
     return texture;
+}
+
+
+struct collision_texture *load_texture_collision(const char *path, struct window *window)
+{
+    SDL_Surface *surface = IMG_Load(path);
+
+    if (!surface)
+        error("Could not load images", IMG_GetError(), window->window);
+
+    struct collision_texture *collision = xmalloc(sizeof(struct collision_texture), window->window);
+
+    collision->w = surface->w;
+    collision->h = surface->h;
+    collision->collision = xmalloc(surface->w * surface->h * sizeof(short), window->window);
+
+    SDL_LockSurface(surface);
+
+    for (int i = 0; i < surface->w; i++)
+    {
+        for (int j = 0; j < surface->h; j++)
+        {
+            Uint32 pixel = get_pixel(surface, i, j);
+            Uint8 r = 0;
+            Uint8 g = 0;
+            Uint8 b = 0;
+            Uint8 a = 0;
+            SDL_GetRGBA(pixel, surface->format, &r, &g, &b, &a);
+
+            collision->collision[j * surface->w + i] = a >= 128;
+        }
+    }
+
+    SDL_UnlockSurface(surface);
+
+    collision->texture = SDL_CreateTextureFromSurface(window->renderer, surface);
+
+    if (!collision->texture)
+        error("Could not load images", SDL_GetError(), window->window);
+
+    SDL_FreeSurface(surface);
+
+    return collision;
 }
 
 

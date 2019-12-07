@@ -7,11 +7,11 @@ void set_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *window)
     // Setting shot initial position
     int w = 0;
     int h = 0;
-    SDL_QueryTexture(window->img->ship, NULL, NULL, &w, &h);
+    SDL_QueryTexture(window->img->ship->texture, NULL, NULL, &w, &h);
     new->pos_dst.x = pos_dst->x + w;
     new->pos_dst.y = pos_dst->y + h / 2;
 
-    SDL_QueryTexture(window->img->shot, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
+    SDL_QueryTexture(window->img->shot->texture, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
     new->pos_dst.x -= new->pos_dst.w;
     new->pos_dst.y -= new->pos_dst.h / 2;
 }
@@ -54,7 +54,7 @@ void render_shots(struct window *window)
     while (temp)
     {
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->shot, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->shot->texture, NULL, &temp->pos_dst);
 
         // Go to next shot
         temp = temp->next;
