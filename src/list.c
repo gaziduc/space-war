@@ -27,8 +27,7 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             set_shot_pos(new, pos, window);
             break;
         case ENEMY_LIST: // Setting enemy initial position and speed
-            set_enemy_pos(new, pos, window);
-            set_enemy_speed(new, window);
+            set_enemy_attributes(new, pos, window);
             break;
         case EXPLOSION_LIST:
             set_explosion_pos(new, pos, texture);

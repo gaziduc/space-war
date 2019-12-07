@@ -33,6 +33,7 @@ void vector_add_path(struct vector *vector, const struct path *p, struct window 
     vector->data[vector->size].time_to_wait = p->time_to_wait;
     vector->data[vector->size].pos_y = p->pos_y;
     vector->data[vector->size].speed_x = p->speed_x;
+    vector->data[vector->size].health = p->health;
 
     vector->size++;
 }

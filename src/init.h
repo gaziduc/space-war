@@ -38,6 +38,8 @@ struct list
     SDL_Rect pos_dst;
     unsigned long framecount;
     int speed_x;
+    int health;
+    int last_time_hurt;
     struct list *next;
 };
 

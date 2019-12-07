@@ -159,6 +159,7 @@ void play_game(struct window *window)
         SDL_RenderClear(window->renderer);
         render_background(window, &pos_src_bg);
         render_trail(window, &pos, 0);
+        render_enemies_health(window);
         render_shots(window);
         render_enemy_shots(window);
         render_enemies(window);
