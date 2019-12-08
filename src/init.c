@@ -62,6 +62,13 @@ static void load_music(struct window *window, const char *filename)
         error("Could not load music", Mix_GetError(), window->window);
 }
 
+static void load_sounds(struct window *window)
+{
+    window->sounds = xmalloc(sizeof(struct sounds), window->window);
+
+    window->sounds->shot = load_sound(window, "data/shot.wav");
+}
+
 struct window *init_all(int width, int height)
 {
     // Init SDL2
@@ -122,6 +129,8 @@ struct window *init_all(int width, int height)
     load_music(window, "data/hybris.ogg");
     if (Mix_PlayMusic(window->music, -1) == -1)
         error("Could not play music", Mix_GetError(), window->window);
+
+    load_sounds(window);
 
     return window;
 }

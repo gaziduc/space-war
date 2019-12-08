@@ -154,3 +154,14 @@ TTF_Font *load_font(struct window *window, const char *filename,
 
     return font;
 }
+
+
+Mix_Chunk *load_sound(struct window *window, const char *filename)
+{
+    Mix_Chunk *sound = Mix_LoadWAV(filename);
+
+    if (!sound)
+        error("Could not load sound", Mix_GetError(), window->window);
+
+    return sound;
+}

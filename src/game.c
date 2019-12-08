@@ -50,6 +50,7 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
             // Shot
             list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL);
             window->last_shot_time = current_time;
+            Mix_PlayChannel(-1, window->sounds->shot, 0);
         }
     }
 }

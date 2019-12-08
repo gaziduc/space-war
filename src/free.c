@@ -43,6 +43,13 @@ static void free_fonts(struct window *window)
 }
 
 
+static void free_sounds(struct window *window)
+{
+    Mix_FreeChunk(window->sounds->shot);
+    free(window->sounds);
+}
+
+
 void free_all(struct window *window)
 {
     free_textures(window);
@@ -55,8 +62,10 @@ void free_all(struct window *window)
     free_vector(window->paths);
     free_fonts(window);
     Mix_CloseAudio();
+    free_sounds(window);
     Mix_FreeMusic(window->music);
     free_window(window);
+
     Mix_Quit();
     IMG_Quit();
     TTF_Quit();

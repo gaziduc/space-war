@@ -66,6 +66,11 @@ struct fonts
     TTF_Font *pixel;
 };
 
+struct sounds
+{
+    Mix_Chunk *shot;
+};
+
 struct window
 {
     SDL_Window *window;
@@ -83,6 +88,7 @@ struct window
     struct fonts *fonts;
     int score;
     Mix_Music *music;
+    struct sounds *sounds;
 };
 
 struct window *init_all(int width, int height);
