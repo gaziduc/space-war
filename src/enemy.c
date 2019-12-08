@@ -4,6 +4,8 @@
 #include "list.h"
 #include "game.h"
 #include "path.h"
+#include <stdlib.h>
+#include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
@@ -11,7 +13,7 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos, struct window *window
 {
     init_position(window->w, pos->y, window, window->img->enemy->texture, &new->pos_dst);
 
-    new->speed_x = window->paths->data[window->paths->index].speed_x;
+    new->speed.x = window->paths->data[window->paths->index].speed_x;
     new->health = window->paths->data[window->paths->index].health;
     new->max_health = new->health;
     new->last_time_hurt = 0;
@@ -31,7 +33,7 @@ void create_enemies(struct window *window)
 
         SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].pos_y - h / 2, .w = 0, .h = 0 };
 
-        list_push_front(&pos, window, ENEMY_LIST, NULL);
+        list_push_front(&pos, window, ENEMY_LIST, NULL, NULL);
 
         window->last_enemy_time = ticks;
         window->paths->index++;
@@ -39,7 +41,7 @@ void create_enemies(struct window *window)
 }
 
 
-void move_enemies(struct window *window)
+void move_enemies(struct window *window, SDL_Rect *ship_pos)
 {
     struct list *temp = window->list[ENEMY_LIST]->next;
     struct list *prev = window->list[ENEMY_LIST];
@@ -47,11 +49,11 @@ void move_enemies(struct window *window)
     while (temp)
     {
         // Move enemy
-        temp->pos_dst.x -= temp->speed_x;
+        temp->pos_dst.x -= temp->speed.x;
         temp->framecount++;
 
         if (temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)
@@ -117,7 +119,8 @@ void render_enemies_health(struct window *window)
     }
 }
 
-void set_enemy_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *window)
+void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst, struct window *window,
+                               SDL_Rect *ship_pos)
 {
     // Setting shot initial position
     int w = 0;
@@ -129,6 +132,14 @@ void set_enemy_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *wind
     SDL_QueryTexture(window->img->enemy_shot->texture, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
     new->pos_dst.y -= new->pos_dst.h / 2;
     new->pos_dst.x += new->pos_dst.w;
+
+    // Setting shot speed (horizontal and vertical)
+    int gap_x = new->pos_dst.x + new->pos_dst.w / 2 - (ship_pos->x + ship_pos->w / 2);
+    int gap_y = ship_pos->y + ship_pos->h / 2 - (new->pos_dst.y + new->pos_dst.h / 2);
+    float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
+
+    new->speed.x = (gap_x * ENEMY_SHOT_SPEED) / gap;
+    new->speed.y = (gap_y * ENEMY_SHOT_SPEED) / gap;
 }
 
 
@@ -140,10 +151,13 @@ void move_enemy_shots(struct window *window)
     while (temp)
     {
         // Move shot
-        temp->pos_dst.x -= ENEMY_SHOT_SPEED;
+        temp->pos_dst.x -= temp->speed.x;
+        temp->pos_dst.y += temp->speed.y;
 
         // Prevent out of bounds by deleting the shot if not on screen
-        if (temp->pos_dst.x + temp->pos_dst.w <= 0)
+        if (temp->pos_dst.x + temp->pos_dst.w <= 0
+            || temp->pos_dst.y + temp->pos_dst.h <= 0
+            || temp->pos_dst.y >= window->h)
         {
             struct list *to_delete = temp;
             prev->next = temp->next;

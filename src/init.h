@@ -37,7 +37,7 @@ struct list
     SDL_Rect pos_src;
     SDL_Rect pos_dst;
     unsigned long framecount;
-    int speed_x;
+    SDL_Point speed;
     int health;
     int max_health;
     int last_time_hurt;

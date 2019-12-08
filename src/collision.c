@@ -65,7 +65,7 @@ void check_collisions(struct window *window, SDL_Rect *pos)
 
                 // Add an explosion
                 list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                                window->img->enemy->texture);
+                                window->img->enemy->texture, NULL);
 
                 // Delete shot
                 struct list *shot_to_delete = temp_shot;
@@ -103,7 +103,7 @@ void check_collisions(struct window *window, SDL_Rect *pos)
         {
             // Add an explosion
             list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                            window->img->enemy->texture);
+                            window->img->enemy->texture, NULL);
 
             // Delete enemy
             struct list *enemy_to_delete = temp_enemy;
@@ -139,7 +139,7 @@ void check_collisions(struct window *window, SDL_Rect *pos)
                       &temp_enemy_shot->pos_dst, window->img->enemy_shot))
         {
             // Add an explosion
-            list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture);
+            list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture, NULL);
 
             // Delete enemy shot
             struct list *enemy_shot_to_delete = temp_enemy_shot;

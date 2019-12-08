@@ -15,7 +15,8 @@ void init_list(struct window *window, enum list_type type)
 }
 
 void list_push_front(SDL_Rect *pos, struct window *window,
-                     enum list_type type, SDL_Texture *texture)
+                     enum list_type type, SDL_Texture *texture,
+                     SDL_Rect *ship_pos)
 {
     // Allocating memory for new shot
     struct list *new = xmalloc(sizeof(struct list), window->window);
@@ -33,7 +34,7 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             set_explosion_pos(new, pos, texture);
             break;
         case ENEMY_SHOT_LIST:
-            set_enemy_shot_pos(new, pos, window);
+            set_enemy_shot_attributes(new, pos, window, ship_pos);
             break;
 
         default:

@@ -48,7 +48,7 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
         if (current_time - window->last_shot_time >= DELAY_BETWEEN_SHOTS)
         {
             // Shot
-            list_push_front(pos, window, MY_SHOTS_LIST, NULL);
+            list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL);
             window->last_shot_time = current_time;
         }
     }
@@ -144,7 +144,7 @@ void play_game(struct window *window)
 
         // Move elements and background
         move_shots(window);
-        move_enemies(window);
+        move_enemies(window, &pos);
         move_explosions(window);
         move_enemy_shots(window);
         move_background(framecount, window, &pos_src_bg);

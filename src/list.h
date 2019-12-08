@@ -7,7 +7,8 @@
 void init_list(struct window *window, enum list_type type);
 
 void list_push_front(SDL_Rect *pos, struct window *window,
-                     enum list_type type, SDL_Texture *texture);
+                     enum list_type type, SDL_Texture *texture,
+                     SDL_Rect *ship_pos);
 
 void free_list(struct list *list);
 

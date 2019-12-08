@@ -7,7 +7,7 @@ Uint32 get_pixel(SDL_Surface *surface, int x, int y)
     // Here p is the address to the pixel we want to retrieve
     Uint8 *p = (Uint8 *) surface->pixels + y * surface->pitch + x * bpp;
 
-    switch(bpp)
+    switch (bpp)
     {
     case 1:
         return *p;

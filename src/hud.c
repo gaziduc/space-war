@@ -5,7 +5,8 @@
 
 static void render_life(struct window *window)
 {
-    roundedBoxRGBA(window->renderer, 10, 10, window->health, 40, 3, 0, 255, 0, 192);
+    boxRGBA(window->renderer, 10, 10, 10 + window->health, 40, 0, 255, 0, 192);
+    boxRGBA(window->renderer, 10 + window->health, 10, 10 + 200, 40, 255, 0, 0, 192);
 }
 
 static void render_score(struct window *window)
