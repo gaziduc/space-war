@@ -13,6 +13,7 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos, struct window *window
 
     new->speed_x = window->paths->data[window->paths->index].speed_x;
     new->health = window->paths->data[window->paths->index].health;
+    new->max_health = new->health;
     new->last_time_hurt = 0;
 }
 
@@ -92,9 +93,13 @@ void render_enemies(struct window *window)
 
 static void render_enemy_health(struct window *window, struct list *enemy)
 {
-    boxRGBA(window->renderer, enemy->pos_dst.x + enemy->pos_dst.w / 2 - enemy->health * 20, enemy->pos_dst.y - 25,
-                              enemy->pos_dst.x + enemy->pos_dst.w / 2 + enemy->health * 20, enemy->pos_dst.y - 20,
+    boxRGBA(window->renderer, enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50, enemy->pos_dst.y - 25,
+                              enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health, enemy->pos_dst.y - 20,
                               0, 255, 0, 192);
+
+    boxRGBA(window->renderer, enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health, enemy->pos_dst.y - 25,
+                              enemy->pos_dst.x + enemy->pos_dst.w / 2 + 50, enemy->pos_dst.y - 20,
+                              255, 0, 0, 192);
 }
 
 

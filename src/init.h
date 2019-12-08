@@ -39,6 +39,7 @@ struct list
     unsigned long framecount;
     int speed_x;
     int health;
+    int max_health;
     int last_time_hurt;
     struct list *next;
 };
