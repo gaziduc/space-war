@@ -6,6 +6,7 @@
 
 #define SHIP_SPEED 8
 #define SHOT_SPEED 20
+#define MAX_HEALTH 200
 
 void render_trail(struct window *window, SDL_Rect *pos, int is_enemy);
 

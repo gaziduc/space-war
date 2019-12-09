@@ -5,10 +5,14 @@
 
 static void render_life(struct window *window)
 {
-    boxRGBA(window->renderer, 10, 10, 10 + window->health, 40, 0, 255, 0, 192);
+    int health = window->health;
+    if (health < 0)
+        health = 0;
 
-    if (window->health < 200)
-        boxRGBA(window->renderer, 10 + window->health, 10, 10 + 200, 40, 255, 0, 0, 192);
+    boxRGBA(window->renderer, 10, 10, 10 + health, 40, 0, 255, 0, 192);
+
+    if (health < 200)
+        boxRGBA(window->renderer, 10 + health, 10, 10 + 200, 40, 255, 0, 0, 192);
 }
 
 static void render_score(struct window *window)

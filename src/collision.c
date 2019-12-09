@@ -98,8 +98,9 @@ void check_collisions(struct window *window, SDL_Rect *pos)
         }
 
         // If collision ship <-> enemy
-        if (!deleted_enemy && collision(&temp_enemy->pos_dst, window->img->enemy,
-                                        pos, window->img->ship))
+        if (window->health > 0 && !deleted_enemy
+            && collision(&temp_enemy->pos_dst, window->img->enemy,
+                         pos, window->img->ship))
         {
             // Add an explosion
             list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
@@ -117,7 +118,7 @@ void check_collisions(struct window *window, SDL_Rect *pos)
             window->score += SCORE_TO_INCREASE;
 
             // Decrease health
-            window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+            window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
         }
 
 
@@ -135,7 +136,8 @@ void check_collisions(struct window *window, SDL_Rect *pos)
     while (temp_enemy_shot)
     {
         // If collision ship <-> enemy shot
-        if (collision(pos, window->img->ship,
+        if (window->health > 0 &&
+            collision(pos, window->img->ship,
                       &temp_enemy_shot->pos_dst, window->img->enemy_shot))
         {
             // Add an explosion

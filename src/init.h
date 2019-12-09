@@ -89,6 +89,7 @@ struct window
     int score;
     Mix_Music *music;
     struct sounds *sounds;
+    int respawn_frame;
 };
 
 struct window *init_all(int width, int height);

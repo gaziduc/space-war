@@ -2,6 +2,7 @@
 #include "init.h"
 #include "list.h"
 #include "path.h"
+#include "game.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -108,8 +109,9 @@ struct window *init_all(int width, int height)
     window->last_enemy_time = 0;
 
     // Set hud attributes
-    window->health = 200;
+    window->health = MAX_HEALTH;
     window->score = 0;
+    window->respawn_frame = 0;
 
     // Init SDL2_tff and load fonts
     if (TTF_Init() == -1)

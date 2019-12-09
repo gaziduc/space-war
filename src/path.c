@@ -17,17 +17,22 @@ struct vector *load_paths(struct window *window, char *filename)
     {
         struct path p = { .time_to_wait = 0, .pos_y = -1, .speed_x = 1, .health = 2 };
 
-        // While line[0] == '#', go to next line
-        while (fgetc(f) == '#')
-        {
-            int end_of_line = 0;
+        int c = fgetc(f);
 
-            while (!end_of_line)
+        // While line[0] == '#' or '\n', go to next line
+        while (c == '#' || c == '\n')
+        {
+            int end_of_line = c == '\n';
+            int end_of_file = 0;
+
+            while (!end_of_line && !end_of_file)
             {
-                int c = fgetc(f);
-                if (c == '\n' || c == EOF)
-                    end_of_line = 1;
+                c = fgetc(f);
+                end_of_line = c == '\n';
+                end_of_file = c == EOF;
             }
+
+            c = fgetc(f);
         }
 
         // If line[0] wasn't a '#', re-read it as part of first number

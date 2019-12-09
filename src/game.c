@@ -58,6 +58,10 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
 
 void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
 {
+    // If ship is dead, don't display trail
+    if (!is_enemy && window->health <= 0)
+        return;
+
     SDL_Rect pos_dst_trail;
     SDL_QueryTexture(window->img->trail, NULL, NULL, &pos_dst_trail.w, &pos_dst_trail.h);
 
@@ -126,6 +130,21 @@ static void render_background(struct window *window, SDL_Rect *pos_src_bg)
 }
 
 
+static void respawn(struct window *window, SDL_Rect *pos)
+{
+    if (window->health <= 0)
+    {
+        window->respawn_frame++;
+
+        if (window->respawn_frame >= 120)
+        {
+            window->health = MAX_HEALTH;
+            window->respawn_frame = 0;
+            init_position(120, POS_CENTERED, window, window->img->ship->texture, pos);
+        }
+    }
+}
+
 void play_game(struct window *window)
 {
     SDL_Rect pos;
@@ -156,6 +175,9 @@ void play_game(struct window *window)
         // Create enemies using data/paths.txt file
         create_enemies(window);
 
+        // If dead, wait some frames and respawn
+        respawn(window, &pos);
+
         // Display textures
         SDL_RenderClear(window->renderer);
         render_background(window, &pos_src_bg);
@@ -164,7 +186,8 @@ void play_game(struct window *window)
         render_shots(window);
         render_enemy_shots(window);
         render_enemies(window);
-        SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
+        if (window->health > 0)
+            SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
         render_explosions(window);
         render_hud(window);
         SDL_RenderPresent(window->renderer);

@@ -1,5 +1,6 @@
 # Usage:
 # num_ms_to_appear pos_y speed health
+
 # First Wave
 1000 540 1 3
 5000 140 1 3
@@ -11,6 +12,7 @@
 4000 140 2 3
 0 540 2 3
 0 940 2 3
+
 # Second Wave
 5000 540 1 5
 5000 140 1 5
@@ -22,5 +24,6 @@
 4000 140 2 5
 0 540 2 5
 0 940 2 5
+
 # Third Wave
 8000 540 3 6
