@@ -1,7 +1,25 @@
 #include <stdio.h>
+#include <stddef.h>
 #include "path.h"
 #include "utils.h"
 #include "vector.h"
+#include "enemy.h"
+#include "wave.h"
+
+
+static void replace_underscores(char *s)
+{
+    for (size_t i = 0; s[i]; i++)
+        if (s[i] == '_')
+            s[i] = ' ';
+}
+
+static int set_path_title(FILE *f, struct path *p)
+{
+    p->type = TITLE;
+    int scan = fscanf(f, " %s\n", p->line.title);
+    return scan;
+}
 
 struct vector *load_paths(struct window *window, char *filename)
 {
@@ -11,45 +29,76 @@ struct vector *load_paths(struct window *window, char *filename)
         error(filename, "Could not load file.", window->window);
 
     struct vector *vector = vector_create(window);
-    int scan = NUM_FIELDS;
+    int c = 0;
 
-    while (scan == NUM_FIELDS)
+    while ((c = fgetc(f)) != EOF)
     {
-        struct path p = { .time_to_wait = 0, .pos_y = -1, .speed_x = 1, .health = 2 };
-
-        int c = fgetc(f);
-
-        // While line[0] == '#' or '\n', go to next line
-        while (c == '#' || c == '\n')
+        // If line[0] == '#' or '\n', go to next line
+        if (c == '#' || c == '\n')
         {
-            int end_of_line = c == '\n';
-            int end_of_file = 0;
-
-            while (!end_of_line && !end_of_file)
-            {
+            while (c != EOF && c != '\n')
                 c = fgetc(f);
-                end_of_line = c == '\n';
-                end_of_file = c == EOF;
-            }
 
-            c = fgetc(f);
+            if (c == EOF)
+                break;
+
+            continue;
         }
 
-        // If line[0] wasn't a '#', re-read it as part of first number
-        fseek(f, -1, SEEK_CUR);
+        struct path p;
 
-        scan = fscanf(f, "%u %d %d %d\n", &p.time_to_wait, &p.pos_y, &p.speed_x, &p.health);
-        if (scan != NUM_FIELDS)
-            break;
+        if (c == '$')
+        {
+            int scan = set_path_title(f, &p);
+
+            if (scan != NUM_FIELDS_TITLE)
+            {
+                fclose(f);
+                error(filename, "Could not load file because it is corrupted.", window->window);
+            }
+            else
+                replace_underscores(p.line.title);
+        }
+        else
+        {
+            // If line[0] wasn't a '#', '\n' or a '$', re-read it as part of a number
+            fseek(f, -1, SEEK_CUR);
+
+            p.type = ENEMY;
+
+            int scan = fscanf(f, "%u %d %d %d\n", &p.line.enemy_path.time_to_wait,
+                                              &p.line.enemy_path.pos_y,
+                                              &p.line.enemy_path.speed_x,
+                                              &p.line.enemy_path.health);
+
+            if (scan != NUM_FIELDS_ENEMY)
+            {
+                fclose(f);
+                error(filename, "Could not load file because it is corrupted.", window->window);
+            }
+        }
 
         vector_add_path(vector, &p, window);
     }
-
-    if (scan != EOF)
-        error(filename, "Could not load file because it is corrupted.", window->window);
 
     // Close file
     fclose(f);
 
     return vector;
+}
+
+
+void execute_path_action(struct window *window)
+{
+    // If not EOF
+    if (window->paths->index < window->paths->size)
+    {
+        enum path_line_type type = window->paths->data[window->paths->index].type;
+
+        if (type == ENEMY && SDL_GetTicks() - window->last_enemy_time
+            >= window->paths->data[window->paths->index].line.enemy_path.time_to_wait)
+            create_enemies(window);
+        else if (type == TITLE)
+            render_wave_title(window);
+    }
 }

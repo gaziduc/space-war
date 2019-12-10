@@ -13,8 +13,8 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos, struct window *window
 {
     init_position(window->w, pos->y, window, window->img->enemy->texture, &new->pos_dst);
 
-    new->speed.x = window->paths->data[window->paths->index].speed_x;
-    new->health = window->paths->data[window->paths->index].health;
+    new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
+    new->health = window->paths->data[window->paths->index].line.enemy_path.health;
     new->max_health = new->health;
     new->last_time_hurt = 0;
 }
@@ -25,13 +25,13 @@ void create_enemies(struct window *window)
     Uint32 ticks = SDL_GetTicks();
 
     // If there is at least one more enemy to create and if it is time to create it
-    if (window->paths->index < window->paths->size
-        && ticks - window->last_enemy_time >= window->paths->data[window->paths->index].time_to_wait)
+    if (ticks - window->last_enemy_time
+        >= window->paths->data[window->paths->index].line.enemy_path.time_to_wait)
     {
         int h = 0;
         SDL_QueryTexture(window->img->enemy->texture, NULL, NULL, NULL, &h);
 
-        SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].pos_y - h / 2, .w = 0, .h = 0 };
+        SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].line.enemy_path.pos_y - h / 2, .w = 0, .h = 0 };
 
         list_push_front(&pos, window, ENEMY_LIST, NULL, NULL);
 

@@ -64,6 +64,7 @@ struct vector
 struct fonts
 {
     TTF_Font *pixel;
+    TTF_Font *zero4b_30;
 };
 
 struct sounds
@@ -90,6 +91,8 @@ struct window
     Mix_Music *music;
     struct sounds *sounds;
     int respawn_frame;
+    int is_wave_title;
+    Uint32 wave_title_time;
 };
 
 struct window *init_all(int width, int height);

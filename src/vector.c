@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "init.h"
 #include <stdlib.h>
+#include <string.h>
 
 
 struct vector *vector_create(struct window *window)
@@ -30,10 +31,19 @@ void vector_add_path(struct vector *vector, const struct path *p, struct window 
     while (vector->size >= vector->capacity)
         vector->data = vector_double_capacity(vector, window);
 
-    vector->data[vector->size].time_to_wait = p->time_to_wait;
-    vector->data[vector->size].pos_y = p->pos_y;
-    vector->data[vector->size].speed_x = p->speed_x;
-    vector->data[vector->size].health = p->health;
+    if (p->type == TITLE)
+    {
+        vector->data[vector->size].type = TITLE;
+        strcpy(vector->data[vector->size].line.title, p->line.title);
+    }
+    else if (p->type == ENEMY)
+    {
+        vector->data[vector->size].type = ENEMY;
+        vector->data[vector->size].line.enemy_path.time_to_wait = p->line.enemy_path.time_to_wait;
+        vector->data[vector->size].line.enemy_path.pos_y = p->line.enemy_path.pos_y;
+        vector->data[vector->size].line.enemy_path.speed_x = p->line.enemy_path.speed_x;
+        vector->data[vector->size].line.enemy_path.health = p->line.enemy_path.health;
+    }
 
     vector->size++;
 }

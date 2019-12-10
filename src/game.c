@@ -8,6 +8,7 @@
 #include "explosion.h"
 #include "collision.h"
 #include "hud.h"
+#include "path.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -172,9 +173,6 @@ void play_game(struct window *window)
         // Check collisions
         check_collisions(window, &pos);
 
-        // Create enemies using data/paths.txt file
-        create_enemies(window);
-
         // If dead, wait some frames and respawn
         respawn(window, &pos);
 
@@ -190,6 +188,7 @@ void play_game(struct window *window)
             SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
         render_explosions(window);
         render_hud(window);
+        execute_path_action(window); // Create enemies using data/paths.txt file, display wave titles...
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
