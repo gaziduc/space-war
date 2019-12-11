@@ -47,6 +47,7 @@ static void free_fonts(struct window *window)
 static void free_sounds(struct window *window)
 {
     Mix_FreeChunk(window->sounds->shot);
+    Mix_FreeChunk(window->sounds->explosion);
     free(window->sounds);
 }
 

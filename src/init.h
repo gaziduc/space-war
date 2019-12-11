@@ -70,6 +70,7 @@ struct fonts
 struct sounds
 {
     Mix_Chunk *shot;
+    Mix_Chunk *explosion;
 };
 
 struct window

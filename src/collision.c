@@ -67,6 +67,8 @@ void check_collisions(struct window *window, SDL_Rect *pos)
                 list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
                                 window->img->enemy->texture, NULL);
 
+                Mix_PlayChannel(-1, window->sounds->explosion, 0);
+
                 // Delete shot
                 struct list *shot_to_delete = temp_shot;
                 prev_shot->next = temp_shot->next;
@@ -106,6 +108,8 @@ void check_collisions(struct window *window, SDL_Rect *pos)
             list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
                             window->img->enemy->texture, NULL);
 
+            Mix_PlayChannel(-1, window->sounds->explosion, 0);
+
             // Delete enemy
             struct list *enemy_to_delete = temp_enemy;
             prev_enemy->next = temp_enemy->next;
@@ -142,6 +146,8 @@ void check_collisions(struct window *window, SDL_Rect *pos)
         {
             // Add an explosion
             list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture, NULL);
+
+            Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
             // Delete enemy shot
             struct list *enemy_shot_to_delete = temp_enemy_shot;

@@ -69,6 +69,7 @@ static void load_sounds(struct window *window)
     window->sounds = xmalloc(sizeof(struct sounds), window->window);
 
     window->sounds->shot = load_sound(window, "data/shot.wav");
+    window->sounds->explosion = load_sound(window, "data/explosion.wav");
 }
 
 struct window *init_all(int width, int height)
