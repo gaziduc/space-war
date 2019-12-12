@@ -19,7 +19,6 @@ struct textures
     struct collision_texture *ship;
     struct collision_texture *shot;
     SDL_Texture *bg;
-    SDL_Texture *bg2;
     struct collision_texture *enemy;
     SDL_Texture *explosion;
     SDL_Texture *trail;
@@ -94,6 +93,7 @@ struct window
     int respawn_frame;
     int is_wave_title;
     Uint32 wave_title_time;
+    int num_bombs;
 };
 
 struct window *init_all(int width, int height);

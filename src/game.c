@@ -9,8 +9,10 @@
 #include "collision.h"
 #include "hud.h"
 #include "path.h"
+#include "weapon.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
+
 
 static void handle_arrow_event(struct window *window, SDL_Rect *pos)
 {
@@ -39,9 +41,10 @@ static void handle_arrow_event(struct window *window, SDL_Rect *pos)
         pos->x = window->w - pos->w;
 }
 
+
 static void handle_shot_event(struct window *window, SDL_Rect *pos)
 {
-    if (window->in->key[SDL_SCANCODE_SPACE])
+    if (window->in->key[SDL_SCANCODE_SPACE] && window->health > 0)
     {
         Uint32 current_time = SDL_GetTicks();
 
@@ -49,9 +52,24 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
         if (current_time - window->last_shot_time >= DELAY_BETWEEN_SHOTS)
         {
             // Shot
-            list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL);
+            shoot(window, pos);
             window->last_shot_time = current_time;
-            Mix_PlayChannel(-1, window->sounds->shot, 0);
+        }
+    }
+}
+
+
+static void handle_bomb_event(struct window *window)
+{
+    if (window->in->key[SDL_SCANCODE_C])
+    {
+        window->in->key[SDL_SCANCODE_C] = 0;
+
+        if (window->health > 0 && window->num_bombs > 0)
+        {
+            // Bomb: erase all visible enemies
+            bomb(window);
+            window->num_bombs--;
         }
     }
 }
@@ -126,7 +144,7 @@ static void render_background(struct window *window, SDL_Rect *pos_src_bg)
 
         SDL_Rect pos_src_bg2 = { .x = 0, .y = 0, .w = window->w - pos_dst_bg.w, .h = window->h };
         SDL_Rect pos_dst_bg2 = { .x = pos_dst_bg.w , .y = 0, window->w - pos_dst_bg.w, .h = window->h };
-        SDL_RenderCopy(window->renderer, window->img->bg2, &pos_src_bg2, &pos_dst_bg2);
+        SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg2, &pos_dst_bg2);
     }
 }
 
@@ -162,6 +180,7 @@ void play_game(struct window *window)
         handle_quit_event(window);
         handle_arrow_event(window, &pos);
         handle_shot_event(window, &pos);
+        handle_bomb_event(window);
 
         // Move elements and background
         move_shots(window);

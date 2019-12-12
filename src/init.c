@@ -41,7 +41,6 @@ static void load_textures(struct window *window)
     window->img->ship = load_texture_collision("data/ship.png", window);
     window->img->shot = load_texture_collision("data/shot.bmp", window);
     window->img->bg = load_texture("data/background.jpg", window);
-    window->img->bg2 = load_texture("data/background2.jpg", window);
     window->img->enemy = load_texture_collision("data/enemy.png", window);
     window->img->explosion = load_texture("data/explosion.png", window);
     window->img->trail = load_texture("data/trail.png", window);
@@ -116,6 +115,7 @@ struct window *init_all(int width, int height)
     window->respawn_frame = 0;
     window->is_wave_title = 0;
     window->wave_title_time = 0;
+    window->num_bombs = 3;
 
     // Init SDL2_tff and load fonts
     if (TTF_Init() == -1)
