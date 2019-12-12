@@ -103,6 +103,8 @@ void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
         pos_dst_trail.x += pos->w;
         flip |= SDL_FLIP_HORIZONTAL;
     }
+    else
+        pos_dst_trail.x -= 5;
 
     SDL_RenderCopyEx(window->renderer, window->img->trail, NULL, &pos_dst_trail,
                      0, NULL, flip);
