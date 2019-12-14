@@ -43,6 +43,7 @@ void vector_add_path(struct vector *vector, const struct path *p, struct window 
         vector->data[vector->size].line.enemy_path.pos_y = p->line.enemy_path.pos_y;
         vector->data[vector->size].line.enemy_path.speed_x = p->line.enemy_path.speed_x;
         vector->data[vector->size].line.enemy_path.health = p->line.enemy_path.health;
+        vector->data[vector->size].line.enemy_path.enemy_type = p->line.enemy_path.enemy_type;
     }
 
     vector->size++;

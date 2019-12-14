@@ -14,6 +14,8 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos);
 
 void render_enemies(struct window *window);
 
+void render_enemy_health(struct window *window, struct list *enemy);
+
 void render_enemies_health(struct window *window);
 
 void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos, struct window *window,

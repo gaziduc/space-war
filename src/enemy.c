@@ -4,6 +4,7 @@
 #include "list.h"
 #include "game.h"
 #include "path.h"
+#include "boss.h"
 #include <stdlib.h>
 #include <math.h>
 #include <SDL2/SDL.h>
@@ -24,16 +25,35 @@ void create_enemies(struct window *window)
 {
     Uint32 ticks = SDL_GetTicks();
 
-    // If there is at least one more enemy to create and if it is time to create it
+    // If it is time to create enemy
     if (ticks - window->last_enemy_time
         >= window->paths->data[window->paths->index].line.enemy_path.time_to_wait)
     {
         int h = 0;
-        SDL_QueryTexture(window->img->enemy->texture, NULL, NULL, NULL, &h);
+
+        switch (window->paths->data[window->paths->index].line.enemy_path.enemy_type)
+        {
+            case 'A':
+                SDL_QueryTexture(window->img->enemy->texture, NULL, NULL, NULL, &h);
+                break;
+
+            case '0':
+                SDL_QueryTexture(window->img->boss->texture, NULL, NULL, NULL, &h);
+                break;
+
+            default:
+                error("Error in paths file", "Unknown enemy type", window->window);
+                break;
+        }
 
         SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].line.enemy_path.pos_y - h / 2, .w = 0, .h = 0 };
 
-        list_push_front(&pos, window, ENEMY_LIST, NULL, NULL);
+        if (window->paths->data[window->paths->index].line.enemy_path.enemy_type >= 'A'
+            && window->paths->data[window->paths->index].line.enemy_path.enemy_type <= 'Z')
+            list_push_front(&pos, window, ENEMY_LIST, NULL, NULL);
+        else if (window->paths->data[window->paths->index].line.enemy_path.enemy_type >= '0'
+            && window->paths->data[window->paths->index].line.enemy_path.enemy_type <= '9')
+            list_push_front(&pos, window, BOSS_LIST, NULL, NULL);
 
         window->last_enemy_time = ticks;
         window->paths->index++;
@@ -72,6 +92,8 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
             temp = temp->next;
         }
     }
+
+    move_boss(window, ship_pos);
 }
 
 
@@ -90,10 +112,13 @@ void render_enemies(struct window *window)
         // Go to next enemy
         temp = temp->next;
     }
+
+    // Display boss if any
+    render_boss(window);
 }
 
 
-static void render_enemy_health(struct window *window, struct list *enemy)
+void render_enemy_health(struct window *window, struct list *enemy)
 {
     boxRGBA(window->renderer, enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50, enemy->pos_dst.y - 25,
                               enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health, enemy->pos_dst.y - 20,
@@ -117,6 +142,8 @@ void render_enemies_health(struct window *window)
         // Go to next enemy
         temp = temp->next;
     }
+
+    render_boss_health(window);
 }
 
 void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst, struct window *window,

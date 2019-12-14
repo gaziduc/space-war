@@ -41,10 +41,11 @@ static int collision(SDL_Rect *pos1, struct collision_texture *t1,
 }
 
 
-void check_collisions(struct window *window, SDL_Rect *pos)
+static void check_collisions_list(struct window *window, SDL_Rect *pos,
+                                  enum list_type type)
 {
-    struct list *temp_enemy = window->list[ENEMY_LIST]->next;
-    struct list *prev_enemy = window->list[ENEMY_LIST];
+    struct list *temp_enemy = window->list[type]->next;
+    struct list *prev_enemy = window->list[type];
 
     while (temp_enemy)
     {
@@ -163,4 +164,11 @@ void check_collisions(struct window *window, SDL_Rect *pos)
             temp_enemy_shot = temp_enemy_shot->next;
         }
     }
+}
+
+
+void check_collisions(struct window *window, SDL_Rect *pos)
+{
+    check_collisions_list(window, pos, ENEMY_LIST);
+    check_collisions_list(window, pos, BOSS_LIST);
 }

@@ -66,10 +66,11 @@ struct vector *load_paths(struct window *window, char *filename)
 
             p.type = ENEMY;
 
-            int scan = fscanf(f, "%u %d %d %d\n", &p.line.enemy_path.time_to_wait,
+            int scan = fscanf(f, "%u %d %d %d %c\n", &p.line.enemy_path.time_to_wait,
                                               &p.line.enemy_path.pos_y,
                                               &p.line.enemy_path.speed_x,
-                                              &p.line.enemy_path.health);
+                                              &p.line.enemy_path.health,
+                                              &p.line.enemy_path.enemy_type);
 
             if (scan != NUM_FIELDS_ENEMY)
             {

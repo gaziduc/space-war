@@ -23,6 +23,7 @@ struct textures
     SDL_Texture *explosion;
     SDL_Texture *trail;
     struct collision_texture *enemy_shot;
+    struct collision_texture *boss;
 };
 
 struct input
@@ -49,6 +50,7 @@ enum list_type
     ENEMY_LIST,
     EXPLOSION_LIST,
     ENEMY_SHOT_LIST,
+    BOSS_LIST,
     NUM_LISTS
 };
 

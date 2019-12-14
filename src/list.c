@@ -3,6 +3,7 @@
 #include "shot.h"
 #include "enemy.h"
 #include "explosion.h"
+#include "boss.h"
 
 void init_list(struct window *window, enum list_type type)
 {
@@ -35,6 +36,9 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             break;
         case ENEMY_SHOT_LIST:
             set_enemy_shot_attributes(new, pos, window, ship_pos);
+            break;
+        case BOSS_LIST:
+            set_boss_attributes(new, pos, window);
             break;
 
         default:

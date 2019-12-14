@@ -4,7 +4,7 @@
 #include "init.h"
 
 #define NUM_FIELDS_TITLE 1
-#define NUM_FIELDS_ENEMY 4
+#define NUM_FIELDS_ENEMY 5
 
 enum path_line_type
 {
@@ -18,6 +18,7 @@ struct enemy_path
     int speed_x;
     int health;
     Uint32 time_to_wait;
+    char enemy_type;
 };
 
 union path_line
