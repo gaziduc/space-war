@@ -166,6 +166,23 @@ static void respawn(struct window *window, SDL_Rect *pos)
     }
 }
 
+
+void reset_game_attributes(struct window *window)
+{
+    for (enum list_type i = 0; i < NUM_LISTS; i++)
+        clear_list(window->list[i]);
+
+    window->last_enemy_time = 0;
+    window->health = MAX_HEALTH;
+    window->score = 0;
+    window->respawn_frame = 0;
+    window->is_wave_title = 0;
+    window->wave_title_time = 0;
+    window->num_bombs = 3;
+    window->paths->index = 0;
+}
+
+
 void play_game(struct window *window)
 {
     SDL_Rect pos;
@@ -180,6 +197,7 @@ void play_game(struct window *window)
         // Get and handle events
         update_events(window->in);
         handle_quit_event(window);
+        escape = handle_escape_event(window);
         handle_arrow_event(window, &pos);
         handle_shot_event(window, &pos);
         handle_bomb_event(window);
@@ -209,11 +227,13 @@ void play_game(struct window *window)
             SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
         render_explosions(window);
         render_hud(window);
-        execute_path_action(window); // Create enemies using data/paths.txt file, display wave titles...
+        execute_path_action(window); // Create enemies, display wave titles...
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
         SDL_framerateDelay(window->fps);
         framecount++;
     }
+
+    reset_game_attributes(window);
 }

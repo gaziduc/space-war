@@ -144,6 +144,8 @@ SDL_Texture *get_text_texture(struct window *window, TTF_Font *font,
 }
 
 
+
+
 TTF_Font *load_font(struct window *window, const char *filename,
                     int pt_size)
 {

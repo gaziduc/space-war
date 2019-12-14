@@ -2,7 +2,6 @@
 #include "init.h"
 #include "free.h"
 #include <SDL2/SDL.h>
-#include <SDL2/SDL2_framerate.h>
 
 void update_events(struct input *in)
 {
@@ -30,9 +29,20 @@ void update_events(struct input *in)
 
 void handle_quit_event(struct window *window)
 {
-    if (window->in->quit || window->in->key[SDL_SCANCODE_ESCAPE])
+    if (window->in->quit)
     {
         free_all(window);
         exit(EXIT_SUCCESS);
     }
+}
+
+int handle_escape_event(struct window *window)
+{
+    if (window->in->key[SDL_SCANCODE_ESCAPE])
+    {
+        window->in->key[SDL_SCANCODE_ESCAPE] = 0;
+        return 1;
+    }
+
+    return 0;
 }

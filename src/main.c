@@ -1,7 +1,7 @@
 #include "utils.h"
 #include "init.h"
 #include "free.h"
-#include "game.h"
+#include "menu.h"
 #include <stdlib.h>
 
 int main(int argc, char *argv[])
@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
     // Init SDL2, window, renderer and load textures, events, ...
     struct window *window = init_all(1920, 1080);
 
-    // Game loop
-    play_game(window);
+    // Menu loop
+    menu(window);
 
     // Free all memory and exit
     free_all(window);

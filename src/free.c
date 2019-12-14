@@ -40,6 +40,7 @@ static void free_fonts(struct window *window)
 {
     TTF_CloseFont(window->fonts->pixel);
     TTF_CloseFont(window->fonts->zero4b_30);
+    TTF_CloseFont(window->fonts->zero4b_30_small);
     free(window->fonts);
 }
 

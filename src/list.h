@@ -12,4 +12,6 @@ void list_push_front(SDL_Rect *pos, struct window *window,
 
 void free_list(struct list *list);
 
+void clear_list(struct list *list);
+
 #endif /* !LIST_H */

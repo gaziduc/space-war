@@ -58,3 +58,12 @@ void free_list(struct list *list)
 
     free(list);
 }
+
+void clear_list(struct list *list)
+{
+    if (list->next)
+    {
+        free_list(list->next);
+        list->next = NULL;
+    }
+}

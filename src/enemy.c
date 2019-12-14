@@ -48,11 +48,11 @@ void create_enemies(struct window *window)
 
         SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].line.enemy_path.pos_y - h / 2, .w = 0, .h = 0 };
 
-        if (window->paths->data[window->paths->index].line.enemy_path.enemy_type >= 'A'
-            && window->paths->data[window->paths->index].line.enemy_path.enemy_type <= 'Z')
+        char type = window->paths->data[window->paths->index].line.enemy_path.enemy_type;
+
+        if (type >= 'A' && type <= 'Z')
             list_push_front(&pos, window, ENEMY_LIST, NULL, NULL);
-        else if (window->paths->data[window->paths->index].line.enemy_path.enemy_type >= '0'
-            && window->paths->data[window->paths->index].line.enemy_path.enemy_type <= '9')
+        else if (type >= '0' && type <= '9')
             list_push_front(&pos, window, BOSS_LIST, NULL, NULL);
 
         window->last_enemy_time = ticks;
@@ -150,11 +150,8 @@ void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst, struct windo
                                SDL_Rect *ship_pos)
 {
     // Setting shot initial position
-    int w = 0;
-    int h = 0;
-    SDL_QueryTexture(window->img->enemy->texture, NULL, NULL, &w, &h);
     new->pos_dst.x = pos_dst->x;
-    new->pos_dst.y = pos_dst->y + h / 2;
+    new->pos_dst.y = pos_dst->y + pos_dst->h / 2;
 
     SDL_QueryTexture(window->img->enemy_shot->texture, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
     new->pos_dst.y -= new->pos_dst.h / 2;

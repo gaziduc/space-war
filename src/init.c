@@ -55,6 +55,7 @@ static void load_fonts(struct window *window)
 
     window->fonts->pixel = load_font(window, "data/pixel.ttf", 26);
     window->fonts->zero4b_30 = load_font(window, "data/04b_30.ttf", 120);
+    window->fonts->zero4b_30_small = load_font(window, "data/04b_30.ttf", 60);
 }
 
 static void load_music(struct window *window, const char *filename)
@@ -108,15 +109,9 @@ struct window *init_all(int width, int height)
 
     // Load enemy paths and set enemy timer
     window->paths = load_paths(window, "data/paths.txt");
-    window->last_enemy_time = 0;
 
-    // Set hud attributes
-    window->health = MAX_HEALTH;
-    window->score = 0;
-    window->respawn_frame = 0;
-    window->is_wave_title = 0;
-    window->wave_title_time = 0;
-    window->num_bombs = 3;
+    // Set player health, bombs number, window->path->index...
+    reset_game_attributes(window);
 
     // Init SDL2_tff and load fonts
     if (TTF_Init() == -1)
