@@ -34,8 +34,6 @@ void new_point(struct universe *u, struct window *window)
 
     p_ptr->next = u->points;
     u->points = p_ptr;
-
-    return;
 }
 
 static void kill_point(struct universe *universe, struct points* to_kill)
