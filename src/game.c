@@ -151,7 +151,7 @@ static void render_background(struct window *window, SDL_Rect *pos_src_bg)
 }
 
 
-static void respawn(struct window *window, SDL_Rect *pos)
+static int respawn(struct window *window, SDL_Rect *pos)
 {
     if (window->health <= 0)
     {
@@ -159,11 +159,20 @@ static void respawn(struct window *window, SDL_Rect *pos)
 
         if (window->respawn_frame >= 120)
         {
-            window->health = MAX_HEALTH;
-            window->respawn_frame = 0;
-            init_position(120, POS_CENTERED, window, window->img->ship->texture, pos);
+            if (window->lives > 1)
+            {
+                window->health = MAX_HEALTH;
+                window->respawn_frame = 0;
+                init_position(120, POS_CENTERED, window, window->img->ship->texture, pos);
+
+                window->lives--;
+            }
+            else
+                return 1;
         }
     }
+
+    return 0;
 }
 
 
@@ -180,19 +189,23 @@ void reset_game_attributes(struct window *window)
     window->wave_title_time = 0;
     window->num_bombs = 3;
     window->paths->index = 0;
+    window->lives = 1;
 }
 
 
 void play_game(struct window *window)
 {
+    load_music(window, "data/spy.ogg", 1);
+
     SDL_Rect pos;
     init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
     SDL_Rect pos_src_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
 
     int escape = 0;
+    int dead = 0;
     unsigned long framecount = 0;
 
-    while (!escape)
+    while (!escape && !dead)
     {
         // Get and handle events
         update_events(window->in);
@@ -213,7 +226,7 @@ void play_game(struct window *window)
         check_collisions(window, &pos);
 
         // If dead, wait some frames and respawn
-        respawn(window, &pos);
+        dead = respawn(window, &pos);
 
         // Display textures
         SDL_RenderClear(window->renderer);
@@ -236,4 +249,5 @@ void play_game(struct window *window)
     }
 
     reset_game_attributes(window);
+    load_music(window, "data/hybris.ogg", 1);
 }

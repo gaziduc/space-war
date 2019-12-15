@@ -58,11 +58,17 @@ static void load_fonts(struct window *window)
     window->fonts->zero4b_30_small = load_font(window, "data/04b_30.ttf", 60);
 }
 
-static void load_music(struct window *window, const char *filename)
+void load_music(struct window *window, const char *filename, int must_free)
 {
+    if (must_free)
+        Mix_FreeMusic(window->music);
+
     window->music = Mix_LoadMUS(filename);
     if (!window->music)
         error("Could not load music", Mix_GetError(), window->window);
+
+    if (Mix_PlayMusic(window->music, -1) == -1)
+        error("Could not play music", Mix_GetError(), window->window);
 }
 
 static void load_sounds(struct window *window)
@@ -128,10 +134,7 @@ struct window *init_all(int width, int height)
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
         error("Could not initialize SDL2_mixer", Mix_GetError(), window->window);
 
-    load_music(window, "data/hybris.ogg");
-    if (Mix_PlayMusic(window->music, -1) == -1)
-        error("Could not play music", Mix_GetError(), window->window);
-
+    load_music(window, "data/hybris.ogg", 0);
     load_sounds(window);
 
     return window;

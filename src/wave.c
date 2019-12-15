@@ -1,8 +1,10 @@
-#include <SDL2/SDL.h>
 #include "utils.h"
 #include "path.h"
 #include "init.h"
 #include "wave.h"
+#include "menu.h"
+#include <SDL2/SDL.h>
+
 
 static void render_title(struct window *window, Uint8 alpha)
 {
@@ -20,6 +22,7 @@ static void render_title(struct window *window, Uint8 alpha)
 
     SDL_DestroyTexture(texture);
 }
+
 
 void render_wave_title(struct window *window)
 {

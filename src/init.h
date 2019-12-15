@@ -89,6 +89,7 @@ struct window
     struct vector *paths;
     Uint32 last_enemy_time;
     int health;
+    int lives;
     struct fonts *fonts;
     int score;
     Mix_Music *music;
@@ -98,6 +99,8 @@ struct window
     Uint32 wave_title_time;
     int num_bombs;
 };
+
+void load_music(struct window *window, const char *filename, int must_free);
 
 struct window *init_all(int width, int height);
 
