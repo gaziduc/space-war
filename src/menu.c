@@ -55,12 +55,38 @@ static void render_menu_texts(struct window *window, Uint32 begin)
 }
 
 
+void render_stars(struct window *window)
+{
+    for (;;)
+    {
+        struct return_point rp;
+        int return_code = process_point(window->universe, &rp);
+
+        if (return_code == 0)
+            break;
+
+        if (return_code == 1)
+        {
+            SDL_SetRenderDrawColor(window->renderer,
+                                   255 * rp.opacity / OPACITY_MAX,
+                                   255 * rp.opacity / OPACITY_MAX,
+                                   255 * rp.opacity / OPACITY_MAX,
+                                   255 * rp.opacity / OPACITY_MAX);
+
+            SDL_RenderDrawPoint(window->renderer, rp.x + window->w / 2 - 1,
+                                                  -rp.y + window->h / 2 - 1);
+        }
+    }
+
+    for (int c = 0; c < rand() % 128; c++)
+        new_point(window->universe, window);
+
+}
 
 void menu(struct window *window)
 {
     // Initialize the stars lib
-    struct universe *u = NULL;
-    new_universe(&u, window->w, window->h, 256, window);
+    new_universe(&window->universe, window->w, window->h, 256, window);
 
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
@@ -74,35 +100,12 @@ void menu(struct window *window)
             begin = SDL_GetTicks();
         escape = handle_escape_event(window);
 
-        // Display textures
+        // Display black bg
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
-        for (;;)
-        {
-            struct return_point rp;
-            int return_code = process_point(u, &rp);
-
-            if (return_code == 0)
-                break;
-
-            if (return_code == 1)
-            {
-                SDL_SetRenderDrawColor(window->renderer,
-                                       255 * rp.opacity / OPACITY_MAX,
-                                       255 * rp.opacity / OPACITY_MAX,
-                                       255 * rp.opacity / OPACITY_MAX,
-                                       255 * rp.opacity / OPACITY_MAX);
-
-                SDL_RenderDrawPoint(window->renderer, rp.x + window->w / 2 - 1,
-                                                      -rp.y + window->h / 2 - 1);
-            }
-        }
-
-        for (int c = 0; c < rand() % 128; c++)
-            new_point(u, window);
-
+        render_stars(window);
         render_menu_texts(window, begin);
         SDL_RenderPresent(window->renderer);
 

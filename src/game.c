@@ -10,6 +10,7 @@
 #include "hud.h"
 #include "path.h"
 #include "weapon.h"
+#include "end.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -195,59 +196,74 @@ void reset_game_attributes(struct window *window)
 
 void play_game(struct window *window)
 {
-    load_music(window, "data/spy.ogg", 1);
-
-    SDL_Rect pos;
-    init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
-    SDL_Rect pos_src_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
-
     int escape = 0;
-    int dead = 0;
-    unsigned long framecount = 0;
 
-    while (!escape && !dead)
+    while (!escape)
     {
-        // Get and handle events
-        update_events(window->in);
-        handle_quit_event(window);
-        escape = handle_escape_event(window);
-        handle_arrow_event(window, &pos);
-        handle_shot_event(window, &pos);
-        handle_bomb_event(window);
+        load_music(window, "data/spy.ogg", 1);
 
-        // Move elements and background
-        move_shots(window);
-        move_enemies(window, &pos);
-        move_explosions(window);
-        move_enemy_shots(window);
-        move_background(framecount, window, &pos_src_bg);
+        SDL_Rect pos;
+        init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
+        SDL_Rect pos_src_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
 
-        // Check collisions
-        check_collisions(window, &pos);
+        int dead = 0;
+        int won = 0;
+        unsigned long framecount = 0;
 
-        // If dead, wait some frames and respawn
-        dead = respawn(window, &pos);
+        while (!escape && !dead && !won)
+        {
+            // Get and handle events
+            update_events(window->in);
+            handle_quit_event(window);
+            escape = handle_escape_event(window);
+            handle_arrow_event(window, &pos);
+            handle_shot_event(window, &pos);
+            handle_bomb_event(window);
 
-        // Display textures
-        SDL_RenderClear(window->renderer);
-        render_background(window, &pos_src_bg);
-        render_trail(window, &pos, 0);
-        render_enemies_health(window);
-        render_shots(window);
-        render_enemy_shots(window);
-        render_enemies(window);
-        if (window->health > 0)
-            SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
-        render_explosions(window);
-        render_hud(window);
-        execute_path_action(window); // Create enemies, display wave titles...
-        SDL_RenderPresent(window->renderer);
+            // Move elements and background
+            move_shots(window);
+            move_enemies(window, &pos);
+            move_explosions(window);
+            move_enemy_shots(window);
+            move_background(framecount, window, &pos_src_bg);
 
-        // Wait a frame
-        SDL_framerateDelay(window->fps);
-        framecount++;
+            // Check collisions
+            check_collisions(window, &pos);
+
+            // If dead, wait some frames and respawn
+            dead = respawn(window, &pos);
+
+            // Display textures
+            SDL_RenderClear(window->renderer);
+            render_background(window, &pos_src_bg);
+            render_trail(window, &pos, 0);
+            render_enemies_health(window);
+            render_shots(window);
+            render_enemy_shots(window);
+            render_enemies(window);
+            if (window->health > 0)
+                SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
+            render_explosions(window);
+            render_hud(window);
+
+            // Create enemies, display wave titles...
+            won = execute_path_action(window) && !window->list[BOSS_LIST]->next
+                                              && !window->list[EXPLOSION_LIST]->next;
+            SDL_RenderPresent(window->renderer);
+
+            // Wait a frame
+            SDL_framerateDelay(window->fps);
+            framecount++;
+        }
+
+        if (won)
+            success(window);
+
+        else if (dead)
+            escape = failure(window);
+
+        reset_game_attributes(window);
     }
 
-    reset_game_attributes(window);
     load_music(window, "data/hybris.ogg", 1);
 }

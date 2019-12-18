@@ -25,6 +25,9 @@ void *xrealloc(void *ptr, size_t size, SDL_Window *window);
 SDL_Texture *get_text_texture(struct window *window, TTF_Font *font,
                               const char *text, SDL_Color fg);
 
+void render_text(struct window *window, TTF_Font *font, const char *text, SDL_Color fg,
+                 int x, int y);
+
 TTF_Font *load_font(struct window *window, const char *filename,
                     int pt_size);
 

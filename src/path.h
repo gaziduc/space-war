@@ -35,6 +35,6 @@ struct path
 
 struct vector *load_paths(struct window *window, char *filename);
 
-void execute_path_action(struct window *window);
+int execute_path_action(struct window *window);
 
 #endif

@@ -89,7 +89,7 @@ struct vector *load_paths(struct window *window, char *filename)
 }
 
 
-void execute_path_action(struct window *window)
+int execute_path_action(struct window *window)
 {
     // If not EOF
     if (window->paths->index < window->paths->size)
@@ -101,5 +101,9 @@ void execute_path_action(struct window *window)
             create_enemies(window);
         else if (type == TITLE)
             render_wave_title(window);
+
+        return 0;
     }
+    else
+        return 1;
 }

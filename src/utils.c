@@ -144,6 +144,26 @@ SDL_Texture *get_text_texture(struct window *window, TTF_Font *font,
 }
 
 
+void render_text(struct window *window, TTF_Font *font, const char *text, SDL_Color fg,
+                 int x, int y)
+{
+    SDL_Texture *texture = get_text_texture(window, font, text, fg);
+
+    int w = 0;
+    int h = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
+    if (x == POS_CENTERED)
+        x = window->w / 2 - w / 2;
+
+    if (y == POS_CENTERED)
+        y = window->h / 2 - h / 2;
+
+    SDL_Rect pos_dst = { .x = x, .y = y, .w = w, .h = h };
+    SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
+
+    SDL_DestroyTexture(texture);
+}
 
 
 TTF_Font *load_font(struct window *window, const char *filename,
