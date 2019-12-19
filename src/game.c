@@ -257,7 +257,10 @@ void play_game(struct window *window)
         }
 
         if (won)
+        {
             success(window);
+            escape = 1;
+        }
 
         else if (dead)
             escape = failure(window);

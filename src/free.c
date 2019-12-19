@@ -2,6 +2,7 @@
 #include "free.h"
 #include "list.h"
 #include "vector.h"
+#include "stars.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
@@ -67,6 +68,7 @@ void free_all(struct window *window)
     Mix_CloseAudio();
     free_sounds(window);
     Mix_FreeMusic(window->music);
+    free_universe(window->universe);
     free_window(window);
 
     Mix_Quit();

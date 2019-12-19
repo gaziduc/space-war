@@ -3,6 +3,7 @@
 #include "list.h"
 #include "path.h"
 #include "game.h"
+#include "stars.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -56,6 +57,7 @@ static void load_fonts(struct window *window)
     window->fonts->pixel = load_font(window, "data/pixel.ttf", 26);
     window->fonts->zero4b_30 = load_font(window, "data/04b_30.ttf", 120);
     window->fonts->zero4b_30_small = load_font(window, "data/04b_30.ttf", 60);
+    window->fonts->zero4b_30_extra_small = load_font(window, "data/04b_30.ttf", 40);
 }
 
 void load_music(struct window *window, const char *filename, int must_free)
@@ -136,6 +138,9 @@ struct window *init_all(int width, int height)
 
     load_music(window, "data/hybris.ogg", 0);
     load_sounds(window);
+
+    // Initialize the stars lib
+    new_universe(&window->universe, window->w, window->h, 256, window);
 
     return window;
 }

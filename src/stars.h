@@ -25,6 +25,8 @@ struct return_point
     int opacity;
 };
 
+void free_universe(struct universe *u);
+
 int process_point(struct universe *u, struct return_point *rp);
 
 #endif /* !STARS_H */

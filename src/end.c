@@ -26,6 +26,9 @@ static void render_success_texts(struct window *window, Uint32 begin)
 
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 POS_CENTERED, window->h / 2);
+
+    render_text(window, window->fonts->zero4b_30_extra_small, "CONTINUE: ENTER",
+                green, POS_CENTERED, window->h / 2 + 180);
 }
 
 
@@ -75,6 +78,12 @@ static void render_failure_texts(struct window *window, Uint32 begin)
 
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 POS_CENTERED, window->h / 2);
+
+    render_text(window, window->fonts->zero4b_30_extra_small, "RETRY: ENTER", red,
+                POS_CENTERED, window->h / 2 + 160);
+
+    render_text(window, window->fonts->zero4b_30_extra_small, "BACK: ESCAPE", red,
+                POS_CENTERED, window->h / 2 + 220);
 }
 
 

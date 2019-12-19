@@ -85,9 +85,6 @@ void render_stars(struct window *window)
 
 void menu(struct window *window)
 {
-    // Initialize the stars lib
-    new_universe(&window->universe, window->w, window->h, 256, window);
-
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
 
@@ -100,7 +97,7 @@ void menu(struct window *window)
             begin = SDL_GetTicks();
         escape = handle_escape_event(window);
 
-        // Display black bg
+        // Display black bachground
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
         SDL_RenderClear(window->renderer);
 

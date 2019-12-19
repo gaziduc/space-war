@@ -56,6 +56,22 @@ static void kill_point(struct universe *universe, struct points* to_kill)
     }
 }
 
+
+void free_universe(struct universe *u)
+{
+    struct points *p = u->points;
+
+    while (p)
+    {
+        struct points *to_delete = p;
+        p = p->next;
+        free(to_delete);
+    }
+
+    free(u);
+}
+
+
 int process_point(struct universe *u, struct return_point *rp)
 {
     if (u->iterator == NULL)
