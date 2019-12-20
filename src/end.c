@@ -32,15 +32,29 @@ static void render_success_texts(struct window *window, Uint32 begin)
 }
 
 
+static int handle_retry_event(struct window *window)
+{
+    if (window->in->key[SDL_SCANCODE_RETURN])
+    {
+        window->in->key[SDL_SCANCODE_RETURN] = 0;
+        return 1;
+    }
+
+    return 0;
+}
+
+
 void success(struct window *window)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
 
+    load_music(window, "data/success.ogg", 1);
+
     while (!escape)
     {
         update_events(window->in);
-        escape = handle_escape_event(window);
+        escape = handle_retry_event(window);
 
         SDL_RenderClear(window->renderer);
 
@@ -87,23 +101,13 @@ static void render_failure_texts(struct window *window, Uint32 begin)
 }
 
 
-static int handle_retry_event(struct window *window)
-{
-    if (window->in->key[SDL_SCANCODE_RETURN])
-    {
-        window->in->key[SDL_SCANCODE_RETURN] = 0;
-        return 1;
-    }
-
-    return 0;
-}
-
-
 int failure(struct window *window)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
     int retry = 0;
+
+    load_music(window, "data/failure.ogg", 1);
 
     while (!escape && !retry)
     {

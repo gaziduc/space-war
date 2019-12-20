@@ -4,7 +4,9 @@
 #include "game.h"
 #include "stars.h"
 #include "menu.h"
+#include "level.h"
 #include <SDL2/SDL.h>
+
 
 static int handle_play_event(struct window *window)
 {
@@ -12,7 +14,7 @@ static int handle_play_event(struct window *window)
     {
         window->in->key[SDL_SCANCODE_RETURN] = 0;
 
-        play_game(window);
+        select_level(window);
 
         return 1;
     }
@@ -83,6 +85,7 @@ void render_stars(struct window *window)
 
 }
 
+
 void menu(struct window *window)
 {
     int escape = 0;
@@ -97,7 +100,7 @@ void menu(struct window *window)
             begin = SDL_GetTicks();
         escape = handle_escape_event(window);
 
-        // Display black bachground
+        // Display black background
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
         SDL_RenderClear(window->renderer);
 
