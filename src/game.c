@@ -11,6 +11,7 @@
 #include "path.h"
 #include "weapon.h"
 #include "end.h"
+#include "vector.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -189,18 +190,22 @@ void reset_game_attributes(struct window *window)
     window->is_wave_title = 0;
     window->wave_title_time = 0;
     window->num_bombs = 3;
-    window->paths->index = 0;
     window->lives = 1;
 }
 
 
-void play_game(struct window *window)
+void play_game(struct window *window, int mission_num)
 {
+    // Load enemy paths and set enemy timer
+    char s[50] = { 0 };
+    sprintf(s, "data/level%d.txt", mission_num);
+    window->paths = load_paths(window, s);
+
     int escape = 0;
 
     while (!escape)
     {
-        load_music(window, "data/spy.ogg", 1);
+        load_music(window, "data/madness.ogg", 1);
 
         SDL_Rect pos;
         init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
@@ -214,7 +219,7 @@ void play_game(struct window *window)
         {
             // Get and handle events
             update_events(window->in);
-            handle_quit_event(window);
+            handle_quit_event(window, 1);
             escape = handle_escape_event(window);
             handle_arrow_event(window, &pos);
             handle_shot_event(window, &pos);
@@ -266,7 +271,9 @@ void play_game(struct window *window)
             escape = failure(window);
 
         reset_game_attributes(window);
+        window->paths->index = 0;
     }
 
+    free_vector(window->paths);
     load_music(window, "data/hybris.ogg", 1);
 }

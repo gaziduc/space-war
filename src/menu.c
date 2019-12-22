@@ -82,7 +82,6 @@ void render_stars(struct window *window)
 
     for (int c = 0; c < rand() % 128; c++)
         new_point(window->universe, window);
-
 }
 
 
@@ -95,7 +94,7 @@ void menu(struct window *window)
     {
         // Get and handle events
         update_events(window->in);
-        handle_quit_event(window);
+        handle_quit_event(window, 0);
         if (handle_play_event(window))
             begin = SDL_GetTicks();
         escape = handle_escape_event(window);

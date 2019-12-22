@@ -17,6 +17,6 @@ int main(int argc, char *argv[])
     menu(window);
 
     // Free all memory and exit
-    free_all(window);
+    free_all(window, 0);
     return EXIT_SUCCESS;
 }

@@ -114,9 +114,7 @@ struct window *init_all(int width, int height)
 
     // We can now shot
     window->last_shot_time = 0;
-
-    // Load enemy paths and set enemy timer
-    window->paths = load_paths(window, "data/paths.txt");
+    window->paths = NULL;
 
     // Set player health, bombs number, window->path->index...
     reset_game_attributes(window);

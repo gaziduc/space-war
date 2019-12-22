@@ -27,11 +27,11 @@ void update_events(struct input *in)
     }
 }
 
-void handle_quit_event(struct window *window)
+void handle_quit_event(struct window *window, int is_in_level)
 {
     if (window->in->quit)
     {
-        free_all(window);
+        free_all(window, is_in_level);
         exit(EXIT_SUCCESS);
     }
 }

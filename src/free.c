@@ -54,7 +54,7 @@ static void free_sounds(struct window *window)
 }
 
 
-void free_all(struct window *window)
+void free_all(struct window *window, int is_in_level)
 {
     free_textures(window);
     free(window->in);
@@ -63,7 +63,9 @@ void free_all(struct window *window)
     for (enum list_type i = 0; i < NUM_LISTS; i++)
         free_list(window->list[i]);
 
-    free_vector(window->paths);
+    if (is_in_level)
+        free_vector(window->paths);
+
     free_fonts(window);
     Mix_CloseAudio();
     free_sounds(window);
