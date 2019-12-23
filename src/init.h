@@ -99,7 +99,7 @@ struct window
     Uint32 wave_title_time;
     int num_bombs;
     struct universe *universe;
-    struct points *stars;
+    struct point *stars;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

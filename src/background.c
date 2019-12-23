@@ -1,28 +1,41 @@
 #include "init.h"
-#include "stars.h"
+#include "background.h"
 #include "utils.h"
 #include <SDL2/SDL.h>
 
 
 void init_background(struct window *window)
 {
-    window->stars = xmalloc(sizeof(struct points), window->window);
+    window->stars = xmalloc(sizeof(struct point), window->window);
     window->stars->next = NULL;
+
+    // Create some initial points
+    for (int c = 0; c < 2 * window->w; c++)
+    {
+        struct point *new = xmalloc(sizeof(struct point), window->window);
+        new->x = rand() % window->w;
+        new->y = rand() % window->h;
+        new->z = 2;
+        new->opacity = rand() % 256;
+
+        new->next = window->stars->next;
+        window->stars->next = new;
+    }
 }
 
 void move_background(struct window *window)
 {
-    struct points *last = window->stars;
-    struct points *p = window->stars->next;
+    struct point *last = window->stars;
+    struct point *p = window->stars->next;
 
     while (p)
     {
-        p->x -= p->z / 48;
+        p->x -= p->z;
 
         // Delete point
         if (p->x < 0)
         {
-            struct points *to_delete = p;
+            struct point *to_delete = p;
             last->next = p->next;
             p = p->next;
             free(to_delete);
@@ -35,12 +48,13 @@ void move_background(struct window *window)
     }
 
     // Create some points
-    for (int c = 0; c < rand() % 6; c++)
+    for (int c = 0; c < rand() % 16; c++)
     {
-        struct points *new = xmalloc(sizeof(struct points), window->window);
+        struct point *new = xmalloc(sizeof(struct point), window->window);
         new->x = window->w - 1;
         new->y = rand() % window->h;
-        new->z = rand() % 256;
+        new->z = 2;
+        new->opacity = rand() % 256;
 
         new->next = window->stars->next;
         window->stars->next = new;
@@ -50,11 +64,11 @@ void move_background(struct window *window)
 
 void render_background(struct window *window)
 {
-    struct points *p = window->stars->next;
+    struct point *p = window->stars->next;
 
     while (p)
     {
-        SDL_SetRenderDrawColor(window->renderer, p->z, p->z, p->z, p->z);
+        SDL_SetRenderDrawColor(window->renderer, p->opacity, p->opacity, p->opacity, p->opacity);
         SDL_RenderDrawPoint(window->renderer, p->x, p->y);
 
         p = p->next;
@@ -62,7 +76,7 @@ void render_background(struct window *window)
 }
 
 
-void free_background(struct points *star)
+void free_background(struct point *star)
 {
     if (star->next)
         free_background(star->next);
