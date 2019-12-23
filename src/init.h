@@ -18,7 +18,6 @@ struct textures
 {
     struct collision_texture *ship;
     struct collision_texture *shot;
-    SDL_Texture *bg;
     struct collision_texture *enemy;
     SDL_Texture *explosion;
     SDL_Texture *trail;
@@ -100,6 +99,7 @@ struct window
     Uint32 wave_title_time;
     int num_bombs;
     struct universe *universe;
+    struct points *stars;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

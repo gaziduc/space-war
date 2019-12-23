@@ -8,10 +8,10 @@
 
 static void render_title(struct window *window, Uint8 alpha)
 {
-    SDL_Color fg = { 255, 0, 0, alpha };
+    SDL_Color fg = { 0, 255, 255, alpha };
 
     SDL_Texture *texture = get_text_texture(
-                           window, window->fonts->zero4b_30,
+                           window, window->fonts->zero4b_30_small,
                            window->paths->data[window->paths->index].line.title,
                            fg);
 

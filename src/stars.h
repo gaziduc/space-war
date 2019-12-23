@@ -5,6 +5,14 @@
 
 #define OPACITY_MAX 8
 
+struct points
+{
+    int x;
+    int y;
+    int z;
+    struct points *next;
+};
+
 struct universe
 {
     int width;

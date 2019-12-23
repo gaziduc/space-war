@@ -1,7 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
-#define TITLE_ALPHA_MAX 224
+#define TITLE_ALPHA_MAX 240
 
 void render_stars(struct window *window);
 

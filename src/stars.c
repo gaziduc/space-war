@@ -4,14 +4,6 @@
 #include <stdlib.h>
 
 
-struct points
-{
-    int x;
-    int y;
-    int z;
-    struct points *next;
-};
-
 void new_universe(struct universe **u, int width, int height, int depth, struct window *window)
 {
     *u = xmalloc(sizeof(struct universe), window->window);

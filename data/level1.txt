@@ -5,6 +5,10 @@
 # A: stadard
 # 0: boss
 
+$ Move:_Arrow_Keys
+$ Shoot:_Space
+$ Bomb:_C
+
 $ Wave_1/3
 1000 540 1 4 A
 4000 140 1 4 A

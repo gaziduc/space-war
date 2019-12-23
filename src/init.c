@@ -41,7 +41,6 @@ static void load_textures(struct window *window)
 
     window->img->ship = load_texture_collision("data/ship.png", window);
     window->img->shot = load_texture_collision("data/shot.bmp", window);
-    window->img->bg = load_texture("data/background.jpg", window);
     window->img->enemy = load_texture_collision("data/enemy.png", window);
     window->img->explosion = load_texture("data/explosion.png", window);
     window->img->trail = load_texture("data/trail.png", window);

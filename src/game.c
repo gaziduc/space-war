@@ -12,6 +12,7 @@
 #include "weapon.h"
 #include "end.h"
 #include "vector.h"
+#include "background.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -113,46 +114,6 @@ void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
 }
 
 
-static void move_background(unsigned long framecount, struct window *window, SDL_Rect *pos_src_bg)
-{
-    if (framecount % 2 == 0)
-    {
-        pos_src_bg->x++;
-
-        int w = 0;
-        SDL_QueryTexture(window->img->bg, NULL, NULL, &w, NULL);
-
-        if (pos_src_bg->x >= w)
-            pos_src_bg->x = 0;
-
-    }
-}
-
-
-static void render_background(struct window *window, SDL_Rect *pos_src_bg)
-{
-    int w = 0;
-    SDL_QueryTexture(window->img->bg, NULL, NULL, &w, NULL);
-
-    if (pos_src_bg->x + window->w <= w)
-    {
-        // pos_dst_bg is here to avoid a glitch when passing NULL
-        // on fourth parameter of SDL_RenderCopy on some Linux congigurations
-        SDL_Rect pos_dst_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
-        SDL_RenderCopy(window->renderer, window->img->bg, pos_src_bg, &pos_dst_bg);
-    }
-    else
-    {
-        SDL_Rect pos_dst_bg = { .x = 0, .y = 0, .w = w - pos_src_bg->x, .h = window->h };
-        SDL_RenderCopy(window->renderer, window->img->bg, pos_src_bg, &pos_dst_bg);
-
-        SDL_Rect pos_src_bg2 = { .x = 0, .y = 0, .w = window->w - pos_dst_bg.w, .h = window->h };
-        SDL_Rect pos_dst_bg2 = { .x = pos_dst_bg.w , .y = 0, window->w - pos_dst_bg.w, .h = window->h };
-        SDL_RenderCopy(window->renderer, window->img->bg, &pos_src_bg2, &pos_dst_bg2);
-    }
-}
-
-
 static int respawn(struct window *window, SDL_Rect *pos)
 {
     if (window->health <= 0)
@@ -207,9 +168,10 @@ void play_game(struct window *window, int mission_num)
     {
         load_music(window, "data/madness.ogg", 1);
 
+        init_background(window);
+
         SDL_Rect pos;
         init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
-        SDL_Rect pos_src_bg = { .x = 0, .y = 0, .w = window->w, .h = window->h };
 
         int dead = 0;
         int won = 0;
@@ -230,7 +192,7 @@ void play_game(struct window *window, int mission_num)
             move_enemies(window, &pos);
             move_explosions(window);
             move_enemy_shots(window);
-            move_background(framecount, window, &pos_src_bg);
+            move_background(window);
 
             // Check collisions
             check_collisions(window, &pos);
@@ -239,8 +201,9 @@ void play_game(struct window *window, int mission_num)
             dead = respawn(window, &pos);
 
             // Display textures
+            SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
             SDL_RenderClear(window->renderer);
-            render_background(window, &pos_src_bg);
+            render_background(window);
             render_trail(window, &pos, 0);
             render_enemies_health(window);
             render_shots(window);
@@ -260,6 +223,8 @@ void play_game(struct window *window, int mission_num)
             SDL_framerateDelay(window->fps);
             framecount++;
         }
+
+        free_background(window->stars);
 
         if (won)
         {
