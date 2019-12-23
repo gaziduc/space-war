@@ -1,7 +1,7 @@
 # space-war
 Space War is a shoot'em up game where you pilot a spaceship and your goal is to destroy all the enemies ship.
 
-![](https://s5.gifyu.com/images/2019-12-16-204300_1920x1080_scrot.png)
+![](https://s5.gifyu.com/images/2019-12-23-215812_1920x1080_scrot.png)
 ## Prerequisites to build and play
 The following libraries must be installed:
 ```
