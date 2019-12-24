@@ -19,21 +19,21 @@ static int handle_play_event(struct window *window)
 }
 
 
-static void handle_arrow_event(struct window *window, int *selected_level)
+static void handle_arrow_event(struct window *window, int *selected, int max)
 {
     if (window->in->key[SDL_SCANCODE_UP])
     {
         window->in->key[SDL_SCANCODE_UP] = 0;
 
-        if (*selected_level > 1)
-            (*selected_level)--;
+        if (*selected > 1)
+            (*selected)--;
     }
     if (window->in->key[SDL_SCANCODE_DOWN])
     {
         window->in->key[SDL_SCANCODE_DOWN] = 0;
 
-        if ( *selected_level < NUM_LEVELS)
-            (*selected_level)++;
+        if ( *selected < max)
+            (*selected)++;
     }
 }
 
@@ -51,6 +51,85 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
 
     SDL_RenderCopy(window->renderer, texture, NULL, &pos);
     SDL_DestroyTexture(texture);
+}
+
+
+
+static void render_level_difficulties(struct window *window, Uint32 begin, int selected_difficulty)
+{
+    Uint32 alpha = SDL_GetTicks() - begin;
+
+    if (alpha > TITLE_ALPHA_MAX)
+        alpha = TITLE_ALPHA_MAX;
+    else if (alpha == 0)
+        alpha = 1;
+
+    SDL_Color blue = { 0, 255, 255, alpha };
+    SDL_Color green = { 0, 255, 0, alpha };
+
+    char *s_list[NUM_DIFFICULTIES] = { "-> Easy (3 Bombs)", "-> Hard (1 Bomb)" };
+
+    for (int i = 1; i <= NUM_DIFFICULTIES; i++)
+    {
+        int y = 360 + (i - 1) * 80;
+
+        if (i != selected_difficulty)
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3,
+                        blue, 150, y);
+        else
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
+                        green, 150, y);
+    }
+}
+
+
+static void level_difficulty(struct window *window, int selected_level)
+{
+    int escape = 0;
+    int selected_difficulty = 1;
+    Uint32 begin = SDL_GetTicks();
+
+    char s[50] = { 0 };
+    sprintf(s, "Mission %d", selected_level);
+
+    while (!escape)
+    {
+        // Get and handle events
+        update_events(window->in);
+        handle_quit_event(window, 0);
+
+        if (handle_play_event(window))
+        {
+            play_game(window, selected_level, selected_difficulty);
+            begin = SDL_GetTicks();
+        }
+
+        handle_arrow_event(window, &selected_difficulty, NUM_DIFFICULTIES);
+        escape = handle_escape_event(window);
+
+        // Display black bachground
+        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(window->renderer);
+
+        // Process/Draw all the things
+        render_stars(window);
+
+        Uint32 alpha = SDL_GetTicks() - begin;
+
+        if (alpha > TITLE_ALPHA_MAX)
+            alpha = TITLE_ALPHA_MAX;
+        else if (alpha == 0)
+            alpha = 1;
+
+        SDL_Color orange = { 255, 128, 0, alpha };
+
+        render_text(window, window->fonts->zero4b_30_small, s, orange, POS_CENTERED, 150);
+        render_level_difficulties(window, begin, selected_difficulty);
+        SDL_RenderPresent(window->renderer);
+
+        // Wait a frame
+        SDL_framerateDelay(window->fps);
+    }
 }
 
 
@@ -87,6 +166,9 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
         case 2:
             render_selected_level_title(window, "Andromeda Galaxy", alpha);
             break;
+        case 3:
+            render_selected_level_title(window, "Hyperspace", alpha);
+            break;
 
         default:
             error("Unknown selected level", "Unknown selected level number", window->window);
@@ -109,11 +191,11 @@ void select_level(struct window *window)
 
         if (handle_play_event(window))
         {
-            play_game(window, selected_level);
+            level_difficulty(window, selected_level);
             begin = SDL_GetTicks();
         }
 
-        handle_arrow_event(window, &selected_level);
+        handle_arrow_event(window, &selected_level, NUM_LEVELS);
         escape = handle_escape_event(window);
 
         // Display black bachground

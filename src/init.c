@@ -86,6 +86,8 @@ struct window *init_all(int width, int height)
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         error("Could not load SDL2", SDL_GetError(), NULL);
 
+    SDL_ShowCursor(SDL_DISABLE);
+
     // Create window and renderer
     struct window *window = init_window(width, height);
 
@@ -114,9 +116,6 @@ struct window *init_all(int width, int height)
     // We can now shot
     window->last_shot_time = 0;
     window->paths = NULL;
-
-    // Set player health, bombs number, window->path->index...
-    reset_game_attributes(window);
 
     // Init SDL2_tff and load fonts
     if (TTF_Init() == -1)

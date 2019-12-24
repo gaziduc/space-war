@@ -82,6 +82,8 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
             prev->next = temp->next;
             free(to_delete);
 
+            window->lives--;
+
             // Go to next shot
             temp = prev->next;
         }

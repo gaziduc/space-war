@@ -13,6 +13,7 @@
 #include "end.h"
 #include "vector.h"
 #include "background.h"
+#include "level.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -116,6 +117,10 @@ void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
 
 static int respawn(struct window *window, SDL_Rect *pos)
 {
+    // If already dead (e.g. a enemy managed to pass to the left of the screen)
+    if (window->lives <= 0)
+        return 1;
+
     if (window->health <= 0)
     {
         window->respawn_frame++;
@@ -139,7 +144,7 @@ static int respawn(struct window *window, SDL_Rect *pos)
 }
 
 
-void reset_game_attributes(struct window *window)
+void reset_game_attributes(struct window *window, int difficulty)
 {
     for (enum list_type i = 0; i < NUM_LISTS; i++)
         clear_list(window->list[i]);
@@ -150,12 +155,26 @@ void reset_game_attributes(struct window *window)
     window->respawn_frame = 0;
     window->is_wave_title = 0;
     window->wave_title_time = 0;
-    window->num_bombs = 3;
+
+    switch (difficulty)
+    {
+        case EASY:
+            window->num_bombs = 3;
+            break;
+        case HARD:
+            window->num_bombs = 1;
+            break;
+
+        default:
+            error("Unknown difficulty level", "Unknown difficulty level", window->window);
+            break;
+    }
+
     window->lives = 1;
 }
 
 
-void play_game(struct window *window, int mission_num)
+void play_game(struct window *window, int mission_num, int difficulty)
 {
     // Load enemy paths and set enemy timer
     char s[50] = { 0 };
@@ -169,6 +188,9 @@ void play_game(struct window *window, int mission_num)
         load_music(window, "data/madness.ogg", 1);
 
         init_background(window);
+
+        reset_game_attributes(window, difficulty);
+        window->paths->index = 0;
 
         SDL_Rect pos;
         init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
@@ -234,9 +256,6 @@ void play_game(struct window *window, int mission_num)
 
         else if (dead)
             escape = failure(window);
-
-        reset_game_attributes(window);
-        window->paths->index = 0;
     }
 
     free_vector(window->paths);
