@@ -12,7 +12,7 @@ struct point
 
 void init_background(struct window *window);
 
-void move_background(struct window *window);
+void move_background(struct window *window, unsigned long framecount);
 
 void render_background(struct window *window);
 

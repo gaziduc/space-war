@@ -14,16 +14,19 @@ static void render_life(struct window *window)
     if (health < 200)
         boxRGBA(window->renderer, 10 + health, 10, 10 + 200, 40, 255, 0, 0, 192);
 
-    char s[50] = { 0 };
-    sprintf(s, "+%d SHIP(S)", window->lives - 1);
+    if (window->lives > 1)
+    {
+        char s[50] = { 0 };
+        sprintf(s, "+%d SHIP(S)", window->lives - 1);
 
-    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
-    SDL_Texture *texture = get_text_texture(window, window->fonts->pixel, s, color);
+        SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
+        SDL_Texture *texture = get_text_texture(window, window->fonts->pixel, s, color);
 
-    SDL_Rect pos_dst = { .x = 240, .y = 13, .w = 0, .h = 0 };
-    SDL_QueryTexture(texture, NULL, NULL, &pos_dst.w, &pos_dst.h);
-    SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
-    SDL_DestroyTexture(texture);
+        SDL_Rect pos_dst = { .x = 240, .y = 13, .w = 0, .h = 0 };
+        SDL_QueryTexture(texture, NULL, NULL, &pos_dst.w, &pos_dst.h);
+        SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
+        SDL_DestroyTexture(texture);
+    }
 }
 
 static void render_score(struct window *window)

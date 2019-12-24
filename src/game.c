@@ -192,7 +192,7 @@ void play_game(struct window *window, int mission_num)
             move_enemies(window, &pos);
             move_explosions(window);
             move_enemy_shots(window);
-            move_background(window);
+            move_background(window, framecount);
 
             // Check collisions
             check_collisions(window, &pos);

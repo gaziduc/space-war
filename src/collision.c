@@ -42,7 +42,7 @@ static int collision(SDL_Rect *pos1, struct collision_texture *t1,
 
 
 static void check_collisions_list(struct window *window, SDL_Rect *pos,
-                                  enum list_type type)
+                                  enum list_type type, struct collision_texture *enemy_texture)
 {
     struct list *temp_enemy = window->list[type]->next;
     struct list *prev_enemy = window->list[type];
@@ -57,7 +57,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
         while (temp_shot)
         {
             // If collision shot <-> enemy
-            if (collision(&temp_enemy->pos_dst, window->img->enemy,
+            if (collision(&temp_enemy->pos_dst, enemy_texture,
                           &temp_shot->pos_dst, window->img->shot))
             {
                 // Decrease enemy health
@@ -102,7 +102,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
         // If collision ship <-> enemy
         if (window->health > 0 && !deleted_enemy
-            && collision(&temp_enemy->pos_dst, window->img->enemy,
+            && collision(&temp_enemy->pos_dst, enemy_texture,
                          pos, window->img->ship))
         {
             // Add an explosion
@@ -169,6 +169,6 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
 void check_collisions(struct window *window, SDL_Rect *pos)
 {
-    check_collisions_list(window, pos, ENEMY_LIST);
-    check_collisions_list(window, pos, BOSS_LIST);
+    check_collisions_list(window, pos, ENEMY_LIST, window->img->enemy);
+    check_collisions_list(window, pos, BOSS_LIST, window->img->boss);
 }
