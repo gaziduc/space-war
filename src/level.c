@@ -67,7 +67,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
     SDL_Color blue = { 0, 255, 255, alpha };
     SDL_Color green = { 0, 255, 0, alpha };
 
-    char *s_list[NUM_DIFFICULTIES] = { "-> Easy (3 Bombs)", "-> Hard (1 Bomb)" };
+    char *s_list[NUM_DIFFICULTIES] = { "-> Easy", "-> Hard" };
 
     for (int i = 1; i <= NUM_DIFFICULTIES; i++)
     {
@@ -79,6 +79,33 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                         green, 150, y);
+    }
+
+    SDL_Color yellow = { 255, 255, 0, alpha };
+
+    switch (selected_difficulty)
+    {
+        case EASY:
+            render_text(window, window->fonts->zero4b_30_extra_small,
+                        "20 HP", yellow, window->w / 2, 360);
+            render_text(window, window->fonts->zero4b_30_extra_small,
+                        "3 Bombs", yellow, window->w / 2, 410);
+            render_text(window, window->fonts->zero4b_30_extra_small,
+                        "Score bonus: 0", yellow, window->w / 2, 460);
+            break;
+        case HARD:
+            render_text(window, window->fonts->zero4b_30_extra_small,
+                        "5 HP", yellow, window->w / 2, 360);
+            render_text(window, window->fonts->zero4b_30_extra_small,
+                        "1 Bomb", yellow, window->w / 2, 410);
+            render_text(window, window->fonts->zero4b_30_extra_small,
+                        "Score bonus: 1000", yellow, window->w / 2, 460);
+            break;
+
+        default:
+            error("Unknown selected difficulty", "Unknown selected difficulty", window->window);
+            break;
+
     }
 }
 

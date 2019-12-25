@@ -115,7 +115,7 @@ void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
 }
 
 
-static int respawn(struct window *window, SDL_Rect *pos)
+static int respawn(struct window *window, SDL_Rect *pos, int difficulty)
 {
     // If already dead (e.g. a enemy managed to pass to the left of the screen)
     if (window->lives <= 0)
@@ -129,7 +129,21 @@ static int respawn(struct window *window, SDL_Rect *pos)
         {
             if (window->lives > 1)
             {
-                window->health = MAX_HEALTH;
+                switch (difficulty)
+                {
+                    case EASY:
+                        window->health = MAX_HEALTH_EASY;
+                        break;
+
+                    case HARD:
+                        window->health = MAX_HEALTH_HARD;
+                        break;
+
+                    default:
+                        error("Unknown difficulty level", "Unknown difficulty level", window->window);
+                        break;
+                }
+
                 window->respawn_frame = 0;
                 init_position(120, POS_CENTERED, window, window->img->ship->texture, pos);
 
@@ -150,7 +164,6 @@ void reset_game_attributes(struct window *window, int difficulty)
         clear_list(window->list[i]);
 
     window->last_enemy_time = 0;
-    window->health = MAX_HEALTH;
     window->score = 0;
     window->respawn_frame = 0;
     window->is_wave_title = 0;
@@ -159,9 +172,11 @@ void reset_game_attributes(struct window *window, int difficulty)
     switch (difficulty)
     {
         case EASY:
+            window->health = MAX_HEALTH_EASY;
             window->num_bombs = 3;
             break;
         case HARD:
+            window->health = MAX_HEALTH_HARD;
             window->num_bombs = 1;
             break;
 
@@ -220,7 +235,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             check_collisions(window, &pos);
 
             // If dead, wait some frames and respawn
-            dead = respawn(window, &pos);
+            dead = respawn(window, &pos, difficulty);
 
             // Display textures
             SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
@@ -234,7 +249,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (window->health > 0)
                 SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
             render_explosions(window);
-            render_hud(window);
+            render_hud(window, difficulty);
 
             // Create enemies, display wave titles...
             won = execute_path_action(window) && !window->list[BOSS_LIST]->next
