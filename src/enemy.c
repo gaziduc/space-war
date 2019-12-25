@@ -51,9 +51,9 @@ void create_enemies(struct window *window)
         char type = window->paths->data[window->paths->index].line.enemy_path.enemy_type;
 
         if (type >= 'A' && type <= 'Z')
-            list_push_front(&pos, window, ENEMY_LIST, NULL, NULL);
+            list_push_front(&pos, window, ENEMY_LIST, NULL, NULL, 0);
         else if (type >= '0' && type <= '9')
-            list_push_front(&pos, window, BOSS_LIST, NULL, NULL);
+            list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0);
 
         window->last_enemy_time = ticks;
         window->paths->index++;
@@ -73,7 +73,7 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
         temp->framecount++;
 
         if (temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)

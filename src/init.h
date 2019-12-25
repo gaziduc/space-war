@@ -6,6 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+
 struct collision_texture
 {
     SDL_Texture *texture;
@@ -23,12 +24,18 @@ struct textures
     SDL_Texture *trail;
     struct collision_texture *enemy_shot;
     struct collision_texture *boss;
+    struct collision_texture *health;
 };
 
 struct input
 {
     char key[SDL_NUM_SCANCODES];
     char quit;
+};
+
+enum object_type
+{
+    HEALTH = 0
 };
 
 struct list
@@ -40,6 +47,7 @@ struct list
     int health;
     int max_health;
     int last_time_hurt;
+    enum object_type type;
     struct list *next;
 };
 
@@ -50,6 +58,7 @@ enum list_type
     EXPLOSION_LIST,
     ENEMY_SHOT_LIST,
     BOSS_LIST,
+    OBJECT_LIST,
     NUM_LISTS
 };
 
@@ -73,6 +82,7 @@ struct sounds
 {
     Mix_Chunk *shot;
     Mix_Chunk *explosion;
+    Mix_Chunk *power_up;
 };
 
 struct window
@@ -89,6 +99,7 @@ struct window
     struct vector *paths;
     Uint32 last_enemy_time;
     int health;
+    int max_health;
     int lives;
     struct fonts *fonts;
     int score;
@@ -100,6 +111,7 @@ struct window
     int num_bombs;
     struct universe *universe;
     struct point *stars;
+    int bonus;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

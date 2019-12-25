@@ -5,7 +5,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 
-static void render_life(struct window *window, int difficulty)
+static void render_life(struct window *window)
 {
     int health = window->health;
     if (health < 0)
@@ -15,22 +15,8 @@ static void render_life(struct window *window, int difficulty)
     boxRGBA(window->renderer, 10, 10, 10 + health, 40, 0, 255, 0, 192);
 
     // Render red part
-    switch (difficulty)
-    {
-        case EASY:
-            if (health < MAX_HEALTH_EASY)
-                boxRGBA(window->renderer, 10 + health, 10, 10 + MAX_HEALTH_EASY, 40, 255, 0, 0, 192);
-            break;
-
-        case HARD:
-            if (health < MAX_HEALTH_HARD)
-                boxRGBA(window->renderer, 10 + health, 10, 10 + MAX_HEALTH_HARD, 40, 255, 0, 0, 192);
-            break;
-
-        default:
-            error("Unknown difficulty level", "Unknown difficulty level", window->window);
-            break;
-    }
+    if (health < window->max_health)
+        boxRGBA(window->renderer, 10 + health, 10, 10 + window->max_health, 40, 255, 0, 0, 192);
 
     if (window->lives > 1)
     {
@@ -76,9 +62,9 @@ static void render_bombs(struct window *window)
 
 }
 
-void render_hud(struct window *window, int difficulty)
+void render_hud(struct window *window)
 {
-    render_life(window, difficulty);
+    render_life(window);
     render_score(window);
     render_bombs(window);
 }

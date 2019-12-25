@@ -36,6 +36,11 @@ void vector_add_path(struct vector *vector, const struct path *p, struct window 
         vector->data[vector->size].type = TITLE;
         strcpy(vector->data[vector->size].line.title, p->line.title);
     }
+    else if (p->type == OBJECT)
+    {
+        vector->data[vector->size].type = OBJECT;
+        vector->data[vector->size].line.type = p->line.type;
+    }
     else if (p->type == ENEMY)
     {
         vector->data[vector->size].type = ENEMY;

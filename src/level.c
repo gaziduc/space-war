@@ -185,22 +185,19 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
             render_text(window, window->fonts->zero4b_30_small, s, green, 150, y);
     }
 
-    switch (selected_level)
-    {
-        case 1:
-            render_selected_level_title(window, "The Milky Way", alpha);
-            break;
-        case 2:
-            render_selected_level_title(window, "Andromeda Galaxy", alpha);
-            break;
-        case 3:
-            render_selected_level_title(window, "Hyperspace", alpha);
-            break;
+    char *s_list[NUM_LEVELS] = { "The Milky Way",
+                                 "Andromeda Galaxy",
+                                 "Hyperspace",
+                                 "New Universe",
+                                 "Unknown",
+                                 "Unknown",
+                                 "Unknown",
+                                 "Unknown",
+                                 "Unknown",
+                                 "Unknown",
+                               };
 
-        default:
-            error("Unknown selected level", "Unknown selected level number", window->window);
-            break;
-    }
+    render_selected_level_title(window, s_list[selected_level - 1], alpha);
 }
 
 

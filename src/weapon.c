@@ -5,7 +5,7 @@
 
 void shoot(struct window *window, SDL_Rect *pos)
 {
-    list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL);
+    list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL, 0);
     Mix_PlayChannel(-1, window->sounds->shot, 0);
 }
 
@@ -22,7 +22,7 @@ void bomb(struct window *window)
 
         // Destroy enemy
         list_push_front(&enemy_to_delete->pos_dst, window, EXPLOSION_LIST,
-                        window->img->enemy->texture, NULL);
+                        window->img->enemy->texture, NULL, 0);
 
         free(enemy_to_delete);
         Mix_PlayChannel(-1, window->sounds->explosion, 0);

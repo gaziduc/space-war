@@ -46,6 +46,7 @@ static void load_textures(struct window *window)
     window->img->trail = load_texture("data/trail.png", window);
     window->img->enemy_shot = load_texture_collision("data/enemy_shot.bmp", window);
     window->img->boss = load_texture_collision("data/boss.png", window);
+    window->img->health = load_texture_collision("data/health.png", window);
 }
 
 
@@ -78,6 +79,7 @@ static void load_sounds(struct window *window)
 
     window->sounds->shot = load_sound(window, "data/shot.wav");
     window->sounds->explosion = load_sound(window, "data/explosion.wav");
+    window->sounds->power_up = load_sound(window, "data/power_up.wav");
 }
 
 struct window *init_all(int width, int height)

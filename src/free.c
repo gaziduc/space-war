@@ -24,6 +24,7 @@ static void free_textures(struct window *window)
     SDL_DestroyTexture(window->img->explosion);
     SDL_DestroyTexture(window->img->trail);
     free_collision_texture(window->img->boss);
+    free_collision_texture(window->img->health);
     free(window->img);
 }
 
@@ -49,6 +50,7 @@ static void free_sounds(struct window *window)
 {
     Mix_FreeChunk(window->sounds->shot);
     Mix_FreeChunk(window->sounds->explosion);
+    Mix_FreeChunk(window->sounds->power_up);
     free(window->sounds);
 }
 

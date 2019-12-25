@@ -4,12 +4,14 @@
 #include "init.h"
 
 #define NUM_FIELDS_TITLE 1
+#define NUM_FIELDS_OBJECT 1
 #define NUM_FIELDS_ENEMY 5
 
 enum path_line_type
 {
     TITLE = 0,
     ENEMY,
+    OBJECT
 };
 
 struct enemy_path
@@ -25,6 +27,7 @@ union path_line
 {
     char title[128];
     struct enemy_path enemy_path;
+    enum object_type type;
 };
 
 struct path

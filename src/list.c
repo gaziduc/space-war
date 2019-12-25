@@ -4,6 +4,7 @@
 #include "enemy.h"
 #include "explosion.h"
 #include "boss.h"
+#include "object.h"
 
 void init_list(struct window *window, enum list_type type)
 {
@@ -17,7 +18,7 @@ void init_list(struct window *window, enum list_type type)
 
 void list_push_front(SDL_Rect *pos, struct window *window,
                      enum list_type type, SDL_Texture *texture,
-                     SDL_Rect *ship_pos)
+                     SDL_Rect *ship_pos, enum object_type object)
 {
     // Allocating memory for new shot
     struct list *new = xmalloc(sizeof(struct list), window->window);
@@ -39,6 +40,9 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             break;
         case BOSS_LIST:
             set_boss_attributes(new, pos, window);
+            break;
+        case OBJECT_LIST:
+            set_object_attributes(new, object, window);
             break;
 
         default:

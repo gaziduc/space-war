@@ -66,7 +66,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
                 // Add an explosion
                 list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                                window->img->enemy->texture, NULL);
+                                window->img->enemy->texture, NULL, 0);
 
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -107,7 +107,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
         {
             // Add an explosion
             list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                            window->img->enemy->texture, NULL);
+                            window->img->enemy->texture, NULL, 0);
 
             Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -146,7 +146,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                       &temp_enemy_shot->pos_dst, window->img->enemy_shot))
         {
             // Add an explosion
-            list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture, NULL);
+            list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture, NULL, 0);
 
             Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -167,8 +167,44 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 }
 
 
+void check_collisions_objects(struct window *window, SDL_Rect *pos)
+{
+    struct list *temp = window->list[OBJECT_LIST]->next;
+    struct list *prev = window->list[OBJECT_LIST];
+
+    while (temp)
+    {
+        if (window->health > 0 &&
+            collision(pos, window->img->ship,
+                      &temp->pos_dst, window->img->health))
+        {
+            // Play sound
+            Mix_PlayChannel(-1, window->sounds->power_up, 0);
+
+            // Increase health
+            window->health += 30;
+            if (window->health > window->max_health)
+                window->health = window->max_health;
+
+            // Delete object
+            struct list *to_delete = temp;
+            temp = temp->next;
+            free(to_delete);
+
+            prev->next = temp;
+        }
+        else
+        {
+            prev = temp;
+            temp = temp->next;
+        }
+    }
+}
+
+
 void check_collisions(struct window *window, SDL_Rect *pos)
 {
     check_collisions_list(window, pos, ENEMY_LIST, window->img->enemy);
     check_collisions_list(window, pos, BOSS_LIST, window->img->boss);
+    check_collisions_objects(window, pos);
 }

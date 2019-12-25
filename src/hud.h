@@ -3,6 +3,6 @@
 
 #include "init.h"
 
-void render_hud(struct window *window, int difficulty);
+void render_hud(struct window *window);
 
 #endif /* !HUD_H */

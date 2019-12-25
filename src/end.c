@@ -17,7 +17,7 @@ static void render_success_texts(struct window *window, Uint32 begin)
     SDL_Color green = { .r = 0, .g = 192, .b = 0, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30, "SUCCESS", green,
-                POS_CENTERED, window->h / 2 - 300);
+                POS_CENTERED, window->h / 2 - 350);
 
     // Print score
     char s[50] = { 0 };
@@ -26,24 +26,28 @@ static void render_success_texts(struct window *window, Uint32 begin)
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
-                POS_CENTERED, window->h / 2 - 90);
+                POS_CENTERED, window->h / 2 - 140);
 
     // Health Bonus
     sprintf(s, "Health Bonus: %d", window->health);
 
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
-                POS_CENTERED, window->h / 2 - 40);
+                POS_CENTERED, window->h / 2 - 90);
 
     // Bombs Bonus
     int bombs_bonus = window->num_bombs * 100;
     sprintf(s, "Bombs Bonus: %d", bombs_bonus);
 
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
+                POS_CENTERED, window->h / 2 - 40);
+
+    // Difficulty bonus
+    sprintf(s, "Difficulty Bonus: %d", window->bonus);
+    render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
                 POS_CENTERED, window->h / 2 + 10);
 
-
     // Total
-    sprintf(s, "TOTAL: %d", window->score + window->health + bombs_bonus);
+    sprintf(s, "TOTAL: %d", window->score + window->health + bombs_bonus + window->bonus);
 
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 POS_CENTERED, window->h / 2 + 90);

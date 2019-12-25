@@ -10,7 +10,7 @@ void init_background(struct window *window)
     window->stars->next = NULL;
 
     // Create some initial points
-    for (int c = 0; c < 2 * window->w; c++)
+    for (int c = 0; c < 4 * window->w; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
         new->x = rand() % window->w;
