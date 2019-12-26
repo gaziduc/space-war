@@ -25,6 +25,7 @@ struct textures
     struct collision_texture *enemy_shot;
     struct collision_texture *boss;
     struct collision_texture *health;
+    struct collision_texture *asteroid;
 };
 
 struct input
@@ -48,6 +49,8 @@ struct list
     int max_health;
     int last_time_hurt;
     enum object_type type;
+    char enemy_type;
+    struct collision_texture *texture;
     struct list *next;
 };
 

@@ -42,7 +42,7 @@ static int collision(SDL_Rect *pos1, struct collision_texture *t1,
 
 
 static void check_collisions_list(struct window *window, SDL_Rect *pos,
-                                  enum list_type type, struct collision_texture *enemy_texture)
+                                  enum list_type type)
 {
     struct list *temp_enemy = window->list[type]->next;
     struct list *prev_enemy = window->list[type];
@@ -57,7 +57,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
         while (temp_shot)
         {
             // If collision shot <-> enemy
-            if (collision(&temp_enemy->pos_dst, enemy_texture,
+            if (collision(&temp_enemy->pos_dst, temp_enemy->texture,
                           &temp_shot->pos_dst, window->img->shot))
             {
                 // Decrease enemy health
@@ -66,7 +66,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
                 // Add an explosion
                 list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                                window->img->enemy->texture, NULL, 0);
+                                temp_enemy->texture->texture, NULL, 0, 0);
 
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -102,12 +102,12 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
         // If collision ship <-> enemy
         if (window->health > 0 && !deleted_enemy
-            && collision(&temp_enemy->pos_dst, enemy_texture,
+            && collision(&temp_enemy->pos_dst, temp_enemy->texture,
                          pos, window->img->ship))
         {
             // Add an explosion
             list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                            window->img->enemy->texture, NULL, 0);
+                            temp_enemy->texture->texture, NULL, 0, 0);
 
             Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -130,7 +130,8 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
             else /* if (type == BOSS_LIST) */
             {
                 // Add an explosion
-                list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture, NULL, 0);
+                list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                                NULL, 0, 0);
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
                 window->health = 0;
@@ -146,33 +147,37 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
     }
 
 
-    struct list *temp_enemy_shot = window->list[ENEMY_SHOT_LIST]->next;
-    struct list *prev_enemy_shot = window->list[ENEMY_SHOT_LIST];
-
-    while (temp_enemy_shot)
+    if (type == ENEMY_LIST)
     {
-        // If collision ship <-> enemy shot
-        if (window->health > 0 &&
-            collision(pos, window->img->ship,
-                      &temp_enemy_shot->pos_dst, window->img->enemy_shot))
+        struct list *temp_enemy_shot = window->list[ENEMY_SHOT_LIST]->next;
+        struct list *prev_enemy_shot = window->list[ENEMY_SHOT_LIST];
+
+        while (temp_enemy_shot)
         {
-            // Add an explosion
-            list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture, NULL, 0);
+            // If collision ship <-> enemy shot
+            if (window->health > 0 &&
+                collision(pos, window->img->ship,
+                          &temp_enemy_shot->pos_dst, window->img->enemy_shot))
+            {
+                // Add an explosion
+                list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                                NULL, 0, 0);
 
-            Mix_PlayChannel(-1, window->sounds->explosion, 0);
+                Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
-            // Delete enemy shot
-            struct list *enemy_shot_to_delete = temp_enemy_shot;
-            prev_enemy_shot->next = temp_enemy_shot->next;
-            temp_enemy_shot = temp_enemy_shot->next;
-            free(enemy_shot_to_delete);
+                // Delete enemy shot
+                struct list *enemy_shot_to_delete = temp_enemy_shot;
+                prev_enemy_shot->next = temp_enemy_shot->next;
+                temp_enemy_shot = temp_enemy_shot->next;
+                free(enemy_shot_to_delete);
 
-            window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
-        }
-        else
-        {
-            prev_enemy_shot = temp_enemy_shot;
-            temp_enemy_shot = temp_enemy_shot->next;
+                window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+            }
+            else
+            {
+                prev_enemy_shot = temp_enemy_shot;
+                temp_enemy_shot = temp_enemy_shot->next;
+            }
         }
     }
 }
@@ -215,7 +220,7 @@ void check_collisions_objects(struct window *window, SDL_Rect *pos)
 
 void check_collisions(struct window *window, SDL_Rect *pos)
 {
-    check_collisions_list(window, pos, ENEMY_LIST, window->img->enemy);
-    check_collisions_list(window, pos, BOSS_LIST, window->img->boss);
+    check_collisions_list(window, pos, ENEMY_LIST);
+    check_collisions_list(window, pos, BOSS_LIST);
     check_collisions_objects(window, pos);
 }

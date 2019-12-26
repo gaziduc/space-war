@@ -3,7 +3,7 @@
 
 #include "init.h"
 
-#define TIME_SHOW_TITLE 3000
+#define TIME_SHOW_TITLE 2000
 
 void render_wave_title(struct window *window);
 

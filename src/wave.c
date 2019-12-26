@@ -16,7 +16,7 @@ static void render_title(struct window *window, Uint8 alpha)
                            fg);
 
     SDL_Rect pos;
-    init_position(POS_CENTERED, POS_CENTERED, window, texture, &pos);
+    init_position(POS_CENTERED, 40, window, texture, &pos);
 
     SDL_RenderCopy(window->renderer, texture, NULL, &pos);
 

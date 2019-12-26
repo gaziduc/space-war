@@ -10,14 +10,31 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
-void set_enemy_attributes(struct list *new, SDL_Rect *pos, struct window *window)
-{
-    init_position(window->w, pos->y, window, window->img->enemy->texture, &new->pos_dst);
 
+void set_enemy_attributes(struct list *new, SDL_Rect *pos,
+                          struct window *window, char enemy_type)
+{
     new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
     new->health = window->paths->data[window->paths->index].line.enemy_path.health;
     new->max_health = new->health;
     new->last_time_hurt = 0;
+    new->enemy_type = enemy_type;
+
+    switch (enemy_type)
+    {
+        case 'A':
+            new->texture = window->img->enemy;
+            break;
+
+        case 'B':
+            new->texture = window->img->asteroid;
+            break;
+
+        default:
+            break;
+    }
+
+    init_position(window->w, pos->y, window, new->texture->texture, &new->pos_dst);
 }
 
 
@@ -36,6 +53,9 @@ void create_enemies(struct window *window)
             case 'A':
                 SDL_QueryTexture(window->img->enemy->texture, NULL, NULL, NULL, &h);
                 break;
+            case 'B':
+                SDL_QueryTexture(window->img->asteroid->texture, NULL, NULL, NULL, &h);
+                break;
 
             case '0':
                 SDL_QueryTexture(window->img->boss->texture, NULL, NULL, NULL, &h);
@@ -51,15 +71,23 @@ void create_enemies(struct window *window)
         char type = window->paths->data[window->paths->index].line.enemy_path.enemy_type;
 
         if (type >= 'A' && type <= 'Z')
-            list_push_front(&pos, window, ENEMY_LIST, NULL, NULL, 0);
+            list_push_front(&pos, window, ENEMY_LIST, NULL, NULL, 0, type);
         else if (type >= '0' && type <= '9')
-            list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0);
+            list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0, type);
 
         window->last_enemy_time = ticks;
         window->paths->index++;
     }
 }
 
+
+static int is_shooting(char enemy_type)
+{
+    if (enemy_type == 'A')
+        return 1;
+
+    return 0;
+}
 
 void move_enemies(struct window *window, SDL_Rect *ship_pos)
 {
@@ -72,8 +100,10 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
         temp->pos_dst.x -= temp->speed.x;
         temp->framecount++;
 
-        if (temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0);
+        int shoot = is_shooting(temp->enemy_type);
+
+        if (shoot && temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0, 0);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)
@@ -82,7 +112,8 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
             prev->next = temp->next;
             free(to_delete);
 
-            window->lives--;
+            if (shoot)
+                window->lives--;
 
             // Go to next shot
             temp = prev->next;
@@ -106,10 +137,11 @@ void render_enemies(struct window *window)
     while (temp)
     {
         // Display enemy trail
-        render_trail(window, &temp->pos_dst, 1);
+        if (is_shooting(temp->enemy_type))
+            render_trail(window, &temp->pos_dst, 1);
 
         // Display enemy
-        SDL_RenderCopy(window->renderer, window->img->enemy->texture, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, temp->texture->texture, NULL, &temp->pos_dst);
 
         // Go to next enemy
         temp = temp->next;
@@ -122,13 +154,19 @@ void render_enemies(struct window *window)
 
 void render_enemy_health(struct window *window, struct list *enemy)
 {
-    boxRGBA(window->renderer, enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50, enemy->pos_dst.y - 25,
-                              enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health, enemy->pos_dst.y - 20,
-                              0, 255, 0, 192);
+    boxRGBA(window->renderer,
+            enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50,
+            enemy->pos_dst.y - 25,
+            enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health,
+            enemy->pos_dst.y - 20,
+            0, 255, 0, 192);
 
-    boxRGBA(window->renderer, enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health, enemy->pos_dst.y - 25,
-                              enemy->pos_dst.x + enemy->pos_dst.w / 2 + 50, enemy->pos_dst.y - 20,
-                              255, 0, 0, 192);
+    boxRGBA(window->renderer,
+            enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health,
+            enemy->pos_dst.y - 25,
+            enemy->pos_dst.x + enemy->pos_dst.w / 2 + 50,
+            enemy->pos_dst.y - 20,
+            255, 0, 0, 192);
 }
 
 

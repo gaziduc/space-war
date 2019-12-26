@@ -91,7 +91,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
             render_text(window, window->fonts->zero4b_30_extra_small,
                         "3 Bombs", yellow, window->w / 2, 410);
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "Score bonus: 0", yellow, window->w / 2, 460);
+                        "Bonus: 0", yellow, window->w / 2, 460);
             break;
         case HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
@@ -99,14 +99,22 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
             render_text(window, window->fonts->zero4b_30_extra_small,
                         "1 Bomb", yellow, window->w / 2, 410);
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "Score bonus: 1000", yellow, window->w / 2, 460);
+                        "Bonus: 1000", yellow, window->w / 2, 460);
             break;
 
         default:
             error("Unknown selected difficulty", "Unknown selected difficulty", window->window);
             break;
-
     }
+
+    SDL_Color orange = { 255, 128, 0, alpha };
+
+    render_text(window, window->fonts->zero4b_30_extra_small, "Choose your difficulty.",
+                orange, 150, 770);
+
+    render_text(window, window->fonts->zero4b_30_extra_small, "Press ENTER to start mission !",
+                orange, 150, 840);
+
 }
 
 

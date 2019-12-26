@@ -15,6 +15,8 @@ void set_boss_attributes(struct list *new, SDL_Rect *pos, struct window *window)
     new->health = window->paths->data[window->paths->index].line.enemy_path.health;
     new->max_health = new->health;
     new->last_time_hurt = 0;
+
+    new->texture = window->img->boss;
 }
 
 
@@ -31,7 +33,7 @@ void create_boss(struct window *window)
 
         SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].line.enemy_path.pos_y - h / 2, .w = 0, .h = 0 };
 
-        list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0);
+        list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0, 0);
 
         window->last_enemy_time = ticks;
         window->paths->index++;
@@ -60,7 +62,7 @@ void move_boss(struct window *window, SDL_Rect *ship_pos)
         temp->framecount++;
 
         if (temp->framecount % FRAMES_BETWEEN_BOSS_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0, 0);
 
         temp = temp->next;
     }

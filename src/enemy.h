@@ -6,7 +6,8 @@
 #define FRAMES_BETWEEN_ENEMY_SHOTS 180
 #define ENEMY_SHOT_SPEED 7
 
-void set_enemy_attributes(struct list *new, SDL_Rect *pos, struct window *window);
+void set_enemy_attributes(struct list *new, SDL_Rect *pos,
+                          struct window *window, char enemy_type);
 
 void create_enemies(struct window *window);
 

@@ -13,7 +13,7 @@ void set_object_attributes(struct list *new, enum object_type type, struct windo
 
 void create_object(struct window *window, enum object_type type)
 {
-    list_push_front(NULL, window, OBJECT_LIST, NULL, NULL, type);
+    list_push_front(NULL, window, OBJECT_LIST, NULL, NULL, type, 0);
 
     window->paths->index++;
 }
