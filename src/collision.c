@@ -111,19 +111,30 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
             Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
-            // Delete enemy
-            struct list *enemy_to_delete = temp_enemy;
-            prev_enemy->next = temp_enemy->next;
-            temp_enemy = temp_enemy->next;
-            free(enemy_to_delete);
+            if (type == ENEMY_LIST)
+            {
+                // Delete enemy
+                struct list *enemy_to_delete = temp_enemy;
+                prev_enemy->next = temp_enemy->next;
+                temp_enemy = temp_enemy->next;
+                free(enemy_to_delete);
 
-            deleted_enemy = 1;
+                deleted_enemy = 1;
 
-            // Increase score
-            window->score += SCORE_TO_INCREASE;
+                // Increase score
+                window->score += SCORE_TO_INCREASE;
 
-            // Decrease health
-            window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
+                // Decrease health
+                window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
+            }
+            else /* if (type == BOSS_LIST) */
+            {
+                // Add an explosion
+                list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture, NULL, 0);
+                Mix_PlayChannel(-1, window->sounds->explosion, 0);
+
+                window->health = 0;
+            }
         }
 
 
