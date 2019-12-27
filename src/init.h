@@ -47,7 +47,7 @@ struct list
     SDL_Point speed;
     int health;
     int max_health;
-    int last_time_hurt;
+    Uint32 last_time_hurt;
     enum object_type type;
     char enemy_type;
     struct collision_texture *texture;
@@ -62,6 +62,7 @@ enum list_type
     ENEMY_SHOT_LIST,
     BOSS_LIST,
     OBJECT_LIST,
+    HUD_LIST,
     NUM_LISTS
 };
 

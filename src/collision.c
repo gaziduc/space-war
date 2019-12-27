@@ -78,6 +78,10 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
                 if (temp_enemy->health <= 0)
                 {
+                    // Add a "+100" text above the dead enemy
+                    list_push_front(&temp_enemy->pos_dst, window, HUD_LIST,
+                                    NULL, NULL, 0, 0);
+
                     // Delete enemy
                     struct list *enemy_to_delete = temp_enemy;
                     prev_enemy->next = temp_enemy->next;
@@ -113,6 +117,10 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
             if (type == ENEMY_LIST)
             {
+                // Add a "+100" text above the dead enemy
+                list_push_front(&temp_enemy->pos_dst, window, HUD_LIST,
+                                NULL, NULL, 0, 0);
+
                 // Delete enemy
                 struct list *enemy_to_delete = temp_enemy;
                 prev_enemy->next = temp_enemy->next;

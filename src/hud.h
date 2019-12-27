@@ -3,6 +3,14 @@
 
 #include "init.h"
 
+#define SCORE_TIME 1000
+
 void render_hud(struct window *window);
+
+void set_hud_text(struct list *new, SDL_Rect *pos_dst, struct window *window);
+
+void move_hud_texts(struct window *window);
+
+void render_hud_texts(struct window *window);
 
 #endif /* !HUD_H */

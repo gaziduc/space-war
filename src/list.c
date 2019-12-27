@@ -5,6 +5,7 @@
 #include "explosion.h"
 #include "boss.h"
 #include "object.h"
+#include "hud.h"
 
 void init_list(struct window *window, enum list_type type)
 {
@@ -44,6 +45,9 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             break;
         case OBJECT_LIST:
             set_object_attributes(new, object, window);
+            break;
+        case HUD_LIST:
+            set_hud_text(new, pos, window);
             break;
 
         default:

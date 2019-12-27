@@ -221,6 +221,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             move_explosions(window);
             move_enemy_shots(window);
             move_objects(window);
+            move_hud_texts(window);
             move_background(window, framecount);
 
             // Check collisions
@@ -242,6 +243,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (window->health > 0)
                 SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
             render_explosions(window);
+            render_hud_texts(window);
             render_hud(window);
 
             // Create enemies, display wave titles...

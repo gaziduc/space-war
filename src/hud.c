@@ -2,6 +2,9 @@
 #include "utils.h"
 #include "game.h"
 #include "level.h"
+#include "hud.h"
+#include "menu.h"
+#include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 
@@ -59,12 +62,87 @@ static void render_bombs(struct window *window)
     SDL_QueryTexture(texture, NULL, NULL, &pos_dst.w, &pos_dst.h);
     SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
     SDL_DestroyTexture(texture);
-
 }
+
 
 void render_hud(struct window *window)
 {
     render_life(window);
     render_score(window);
     render_bombs(window);
+}
+
+
+void set_hud_text(struct list *new, SDL_Rect *pos_dst, struct window *window)
+{
+    /* Get text width */
+    // Random color as we are just getting text length
+    SDL_Color color = { 0, 0, 0, 0 };
+    SDL_Surface *surface = TTF_RenderText_Blended(window->fonts->pixel, "+100", color);
+
+    new->pos_dst.x = pos_dst->x + pos_dst->w / 2 - surface->w / 2;
+    new->pos_dst.y = pos_dst->y;
+    new->last_time_hurt = SDL_GetTicks();
+
+    SDL_FreeSurface(surface);
+}
+
+
+void move_hud_texts(struct window *window)
+{
+    struct list *temp = window->list[HUD_LIST]->next;
+    struct list *prev = window->list[HUD_LIST];
+
+    while (temp)
+    {
+        // Delete text if time since it exists > SCORE_TIME
+        if (SDL_GetTicks() - temp->last_time_hurt > SCORE_TIME)
+        {
+            struct list *to_delete = temp;
+            prev->next = temp->next;
+            free(to_delete);
+
+            temp = prev->next;
+        }
+        else
+        {
+            temp->pos_dst.y--;
+
+            prev = temp;
+            temp = temp->next;
+        }
+    }
+}
+
+
+void render_hud_texts(struct window *window)
+{
+    struct list *temp = window->list[HUD_LIST]->next;
+
+    while (temp)
+    {
+        // Display text
+        Uint32 alpha = SDL_GetTicks() - temp->last_time_hurt;
+
+        if (alpha >= SCORE_TIME)
+        {
+            // Go to next element
+            temp = temp->next;
+            continue;
+        }
+
+        if (alpha == 0)
+            alpha = 1;
+        if (alpha > SCORE_TIME - TITLE_ALPHA_MAX)
+            alpha = SCORE_TIME - alpha;
+        else if (alpha > TITLE_ALPHA_MAX)
+            alpha = TITLE_ALPHA_MAX;
+
+        SDL_Color blue = { 0, 255, 255, alpha };
+        render_text(window, window->fonts->pixel, "+100", blue,
+                    temp->pos_dst.x, temp->pos_dst.y);
+
+        // Go to next element
+        temp = temp->next;
+    }
 }
