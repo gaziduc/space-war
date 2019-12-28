@@ -10,16 +10,31 @@
 
 static void render_life(struct window *window)
 {
+    int anim_health_low = window->animated_health_low;
+    if (anim_health_low < 0)
+        anim_health_low = 0;
+
     int health = window->health;
     if (health < 0)
         health = 0;
 
     // Render green part
-    boxRGBA(window->renderer, 10, 10, 10 + health, 40, 0, 255, 0, 192);
+    boxRGBA(window->renderer, 10, 10, 10 + anim_health_low, 40, 0, 255, 0, 192);
+
+    int anim_health_high = window->animated_health_high;
+
+    // Render orange part
+    if (anim_health_high > anim_health_low)
+        boxRGBA(window->renderer, 10 + anim_health_low, 10, 10 + anim_health_high, 40, 255, 128, 0, 192);
 
     // Render red part
-    if (health < window->max_health)
-        boxRGBA(window->renderer, 10 + health, 10, 10 + window->max_health, 40, 255, 0, 0, 192);
+    if (anim_health_high < window->max_health)
+        boxRGBA(window->renderer, 10 + anim_health_high, 10, 10 + window->max_health, 40, 255, 0, 0, 192);
+
+    if (anim_health_low > health)
+        window->animated_health_low--;
+    else if (anim_health_low < anim_health_high)
+        window->animated_health_high--;
 
     if (window->lives > 1)
     {

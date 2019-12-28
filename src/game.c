@@ -176,6 +176,8 @@ void reset_game_attributes(struct window *window, int difficulty)
     }
 
     window->max_health = window->health;
+    window->animated_health_low = window->health;
+    window->animated_health_high = window->health;
     window->lives = 1;
 }
 

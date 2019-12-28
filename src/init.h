@@ -104,6 +104,8 @@ struct window
     Uint32 last_enemy_time;
     int health;
     int max_health;
+    int animated_health_low;
+    int animated_health_high;
     int lives;
     struct fonts *fonts;
     int score;
