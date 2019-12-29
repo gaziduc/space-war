@@ -23,6 +23,8 @@ void bomb(struct window *window)
         // Destroy enemy
         list_push_front(&enemy_to_delete->pos_dst, window, EXPLOSION_LIST,
                         window->img->enemy->texture, NULL, 0, 0);
+        list_push_front(&enemy_to_delete->pos_dst, window, HUD_LIST, NULL,
+                        NULL, 0, 0);
 
         free(enemy_to_delete);
         Mix_PlayChannel(-1, window->sounds->explosion, 0);
