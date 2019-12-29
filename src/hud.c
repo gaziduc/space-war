@@ -25,14 +25,22 @@ static void render_life(struct window *window)
 
     // Render orange part
     if (anim_health_high > anim_health_low)
-        boxRGBA(window->renderer, 10 + anim_health_low, 10, 10 + anim_health_high, 40, 255, 128, 0, 192);
+        boxRGBA(window->renderer, 10 + anim_health_low, 10, 10 + anim_health_high, 40,
+                255, 128, 0, 192);
 
     // Render red part
     if (anim_health_high < window->max_health)
-        boxRGBA(window->renderer, 10 + anim_health_high, 10, 10 + window->max_health, 40, 255, 0, 0, 192);
+        boxRGBA(window->renderer, 10 + anim_health_high, 10, 10 + window->max_health, 40,
+                255, 0, 0, 192);
 
-    if (anim_health_low > health)
-        window->animated_health_low--;
+    // If ship took a health potion
+    if (anim_health_low < health || anim_health_high < health)
+    {
+        window->animated_health_low = health;
+        window->animated_health_high = health;
+    }
+    else if (anim_health_low > health)
+        window->animated_health_low -= 2;
     else if (anim_health_low < anim_health_high)
         window->animated_health_high--;
 
