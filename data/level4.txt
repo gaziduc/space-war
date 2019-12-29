@@ -4,7 +4,7 @@
 # num_ms_to_appear pos_y speed health enemy_type
 
 # Enemy_type usage:
-# A: stadard
+# A: standard
 # B: asteroid
 # 0: boss
 

@@ -2,7 +2,7 @@
 # $ wave_name
 # num_ms_to_appear pos_y speed health enemy_type
 # enemy_type:
-# A: stadard
+# A: standard
 # 0: boss
 
 $ Wave_1
