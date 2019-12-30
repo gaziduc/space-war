@@ -118,14 +118,14 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
 }
 
 
-static void level_difficulty(struct window *window, int selected_level)
+static void level_difficulty(struct window *window, int selected_level, const char *str)
 {
     int escape = 0;
     int selected_difficulty = 1;
     Uint32 begin = SDL_GetTicks();
 
     char s[50] = { 0 };
-    sprintf(s, "Mission %d", selected_level);
+    sprintf(s, "Mission %d - %s", selected_level, str);
 
     while (!escape)
     {
@@ -168,7 +168,8 @@ static void level_difficulty(struct window *window, int selected_level)
 }
 
 
-static void render_level_texts(struct window *window, Uint32 begin, int selected_level)
+static void render_level_texts(struct window *window, Uint32 begin, int selected_level,
+                               char **s_list)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -193,6 +194,17 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
             render_text(window, window->fonts->zero4b_30_small, s, green, 150, y);
     }
 
+
+    render_selected_level_title(window, s_list[selected_level - 1], alpha);
+}
+
+
+void select_level(struct window *window)
+{
+    int escape = 0;
+    int selected_level = 1;
+    Uint32 begin = SDL_GetTicks();
+
     char *s_list[NUM_LEVELS] = { "The Milky Way",
                                  "Andromeda Galaxy",
                                  "Hyperspace",
@@ -205,16 +217,6 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
                                  "Unknown",
                                };
 
-    render_selected_level_title(window, s_list[selected_level - 1], alpha);
-}
-
-
-void select_level(struct window *window)
-{
-    int escape = 0;
-    int selected_level = 1;
-    Uint32 begin = SDL_GetTicks();
-
     while (!escape)
     {
         // Get and handle events
@@ -223,7 +225,7 @@ void select_level(struct window *window)
 
         if (handle_play_event(window))
         {
-            level_difficulty(window, selected_level);
+            level_difficulty(window, selected_level, s_list[selected_level - 1]);
             begin = SDL_GetTicks();
         }
 
@@ -236,7 +238,7 @@ void select_level(struct window *window)
 
         // Process/Draw all the things
         render_stars(window);
-        render_level_texts(window, begin, selected_level);
+        render_level_texts(window, begin, selected_level, s_list);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

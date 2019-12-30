@@ -86,7 +86,7 @@ static void load_sounds(struct window *window)
 struct window *init_all(int width, int height)
 {
     // Init SDL2
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
         error("Could not load SDL2", SDL_GetError(), NULL);
 
     SDL_ShowCursor(SDL_DISABLE);
@@ -105,6 +105,19 @@ struct window *init_all(int width, int height)
 
     // Init inputs
     window->in = xcalloc(1, sizeof(struct input), window->window);
+
+    // Init controller
+    for (int i = 0; i < SDL_NumJoysticks(); i++)
+    {
+        if (SDL_IsGameController(i))
+        {
+            window->in->c.controller = SDL_GameControllerOpen(i);
+            break;
+        }
+        else
+            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Controller not reconized",
+                                     "Your controller is not compatible.", window->window);
+    }
 
     // Init framerate manager
     window->fps = xmalloc(sizeof(FPSmanager), window->window);

@@ -28,10 +28,17 @@ struct textures
     struct collision_texture *asteroid;
 };
 
+struct controller
+{
+    SDL_GameController *controller;
+    char c_button[SDL_CONTROLLER_BUTTON_MAX];
+};
+
 struct input
 {
-    char key[SDL_NUM_SCANCODES];
     char quit;
+    char key[SDL_NUM_SCANCODES];
+    struct controller c;
 };
 
 enum object_type

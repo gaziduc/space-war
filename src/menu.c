@@ -10,11 +10,13 @@
 
 static int handle_play_event(struct window *window)
 {
-    if (window->in->key[SDL_SCANCODE_RETURN])
+    if (window->in->key[SDL_SCANCODE_RETURN]
+        || window->in->key[SDL_SCANCODE_KP_ENTER]
+        || window->in->c.c_button[SDL_CONTROLLER_BUTTON_A])
     {
         window->in->key[SDL_SCANCODE_RETURN] = 0;
-
-        select_level(window);
+        window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
+        window->in->c.c_button[SDL_CONTROLLER_BUTTON_A] = 0;
 
         return 1;
     }
@@ -23,7 +25,31 @@ static int handle_play_event(struct window *window)
 }
 
 
-static void render_menu_texts(struct window *window, Uint32 begin)
+static void handle_arrow_event(struct window *window, int *selected, int max)
+{
+    if (window->in->key[SDL_SCANCODE_UP]
+        || window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_UP])
+    {
+        window->in->key[SDL_SCANCODE_UP] = 0;
+        window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
+
+        if (*selected > 1)
+            (*selected)--;
+    }
+
+    if (window->in->key[SDL_SCANCODE_DOWN]
+        || window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
+    {
+        window->in->key[SDL_SCANCODE_DOWN] = 0;
+        window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
+
+        if (*selected < max)
+            (*selected)++;
+    }
+}
+
+
+static void render_menu_texts(struct window *window, Uint32 begin, int selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -34,26 +60,27 @@ static void render_menu_texts(struct window *window, Uint32 begin)
 
     SDL_Rect pos = { .x = 150, .y = 150, .w = 0, .h = 0 };
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
-    SDL_Color red = { .r = 255, .g = 0, .b = 0, .a = alpha };
+    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
 
+    // Render title
     SDL_Texture *title = get_text_texture(window, window->fonts->zero4b_30, "SPACE WAR", blue);
     SDL_QueryTexture(title, NULL, NULL, &pos.w, &pos.h);
     SDL_RenderCopy(window->renderer, title, NULL, &pos);
     SDL_DestroyTexture(title);
 
-    pos.y = 740;
+    // Render items
+    char *s_list[NUM_ITEMS] = { "-> PLAY", "-> OPTIONS", "-> QUIT" };
 
-    SDL_Texture *play = get_text_texture(window, window->fonts->zero4b_30_small, "PLAY: ENTER", red);
-    SDL_QueryTexture(play, NULL, NULL, &pos.w, &pos.h);
-    SDL_RenderCopy(window->renderer, play, NULL, &pos);
-    SDL_DestroyTexture(play);
+    for (int i = 1; i <= NUM_ITEMS; i++)
+    {
+        if (selected_item != i)
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
+                        150, 640 + (i - 1) * 100);
+        else
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
+                        150, 640 + (i - 1) * 100);
 
-    pos.y = 840;
-
-    SDL_Texture *quit = get_text_texture(window, window->fonts->zero4b_30_small, "QUIT: ESCAPE", red);
-    SDL_QueryTexture(quit, NULL, NULL, &pos.w, &pos.h);
-    SDL_RenderCopy(window->renderer, quit, NULL, &pos);
-    SDL_DestroyTexture(quit);
+    }
 }
 
 
@@ -88,6 +115,7 @@ void render_stars(struct window *window)
 void menu(struct window *window)
 {
     int escape = 0;
+    int selected_item = 1;
     Uint32 begin = SDL_GetTicks();
 
     while (!escape)
@@ -95,9 +123,22 @@ void menu(struct window *window)
         // Get and handle events
         update_events(window->in);
         handle_quit_event(window, 0);
+        handle_arrow_event(window, &selected_item, NUM_ITEMS);
+
         if (handle_play_event(window))
+        {
+            switch (selected_item)
+            {
+                case 1:
+                    select_level(window);
+                    break;
+                case 3:
+                    escape = 1;
+                    break;
+            }
+
             begin = SDL_GetTicks();
-        escape = handle_escape_event(window);
+        }
 
         // Display black background
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
@@ -105,7 +146,7 @@ void menu(struct window *window)
 
         // Process/Draw all the things
         render_stars(window);
-        render_menu_texts(window, begin);
+        render_menu_texts(window, begin, selected_item);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

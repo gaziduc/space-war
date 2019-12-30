@@ -19,7 +19,8 @@ static void render_life(struct window *window)
         health = 0;
 
     // Render green part
-    boxRGBA(window->renderer, 10, 10, 10 + anim_health_low, 40, 0, 255, 0, 192);
+    if (anim_health_low > 0)
+        boxRGBA(window->renderer, 10, 10, 10 + anim_health_low, 40, 0, 255, 0, 192);
 
     int anim_health_high = window->animated_health_high;
 

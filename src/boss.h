@@ -1,7 +1,7 @@
 #ifndef BOSS_H
 #define BOSS_H
 
-#define FRAMES_BETWEEN_BOSS_SHOTS 60
+#define FRAMES_BETWEEN_BOSS_SHOTS 40
 
 void set_boss_attributes(struct list *new, SDL_Rect *pos, struct window *window);
 
