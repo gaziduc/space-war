@@ -28,10 +28,18 @@ struct textures
     struct collision_texture *asteroid;
 };
 
+
+struct axis
+{
+    Sint16 value;
+    int state;
+};
+
 struct controller
 {
     SDL_GameController *controller;
-    char c_button[SDL_CONTROLLER_BUTTON_MAX];
+    char button[SDL_CONTROLLER_BUTTON_MAX];
+    struct axis axis[SDL_CONTROLLER_AXIS_MAX];
 };
 
 struct input

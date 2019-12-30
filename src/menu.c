@@ -8,47 +8,6 @@
 #include <SDL2/SDL.h>
 
 
-static int handle_play_event(struct window *window)
-{
-    if (window->in->key[SDL_SCANCODE_RETURN]
-        || window->in->key[SDL_SCANCODE_KP_ENTER]
-        || window->in->c.c_button[SDL_CONTROLLER_BUTTON_A])
-    {
-        window->in->key[SDL_SCANCODE_RETURN] = 0;
-        window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
-        window->in->c.c_button[SDL_CONTROLLER_BUTTON_A] = 0;
-
-        return 1;
-    }
-
-    return 0;
-}
-
-
-static void handle_arrow_event(struct window *window, int *selected, int max)
-{
-    if (window->in->key[SDL_SCANCODE_UP]
-        || window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_UP])
-    {
-        window->in->key[SDL_SCANCODE_UP] = 0;
-        window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
-
-        if (*selected > 1)
-            (*selected)--;
-    }
-
-    if (window->in->key[SDL_SCANCODE_DOWN]
-        || window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
-    {
-        window->in->key[SDL_SCANCODE_DOWN] = 0;
-        window->in->c.c_button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
-
-        if (*selected < max)
-            (*selected)++;
-    }
-}
-
-
 static void render_menu_texts(struct window *window, Uint32 begin, int selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
@@ -123,7 +82,7 @@ void menu(struct window *window)
         // Get and handle events
         update_events(window->in);
         handle_quit_event(window, 0);
-        handle_arrow_event(window, &selected_item, NUM_ITEMS);
+        handle_select_arrow_event(window, &selected_item, NUM_ITEMS);
 
         if (handle_play_event(window))
         {

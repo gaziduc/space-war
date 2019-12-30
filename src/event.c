@@ -8,6 +8,10 @@ void update_events(struct input *in)
     in->quit = 0;
     SDL_Event event;
 
+    // Reset axis state
+    for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
+        in->c.axis[i].state = 0;
+
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -27,11 +31,20 @@ void update_events(struct input *in)
 
         // Controller events
         case SDL_CONTROLLERBUTTONDOWN:
-            in->c.c_button[event.cbutton.button] = 1;
+            in->c.button[event.cbutton.button] = 1;
             break;
 
         case SDL_CONTROLLERBUTTONUP:
-            in->c.c_button[event.cbutton.button] = 0;
+            in->c.button[event.cbutton.button] = 0;
+            break;
+
+        case SDL_CONTROLLERAXISMOTION:
+            // For menus
+            if (abs(event.caxis.value) >= DEAD_ZONE
+                && abs(in->c.axis[event.caxis.axis].value) < DEAD_ZONE)
+                in->c.axis[event.caxis.axis].state = 1;
+
+            in->c.axis[event.caxis.axis].value = event.caxis.value;
             break;
 
         default:
@@ -52,13 +65,58 @@ void handle_quit_event(struct window *window, int is_in_level)
 int handle_escape_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_ESCAPE]
-        || window->in->c.c_button[SDL_CONTROLLER_BUTTON_BACK])
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_BACK])
     {
         window->in->key[SDL_SCANCODE_ESCAPE] = 0;
-        window->in->c.c_button[SDL_CONTROLLER_BUTTON_BACK] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_BACK] = 0;
 
         return 1;
     }
 
     return 0;
+}
+
+
+int handle_play_event(struct window *window)
+{
+    if (window->in->key[SDL_SCANCODE_RETURN]
+        || window->in->key[SDL_SCANCODE_KP_ENTER]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_A])
+    {
+        window->in->key[SDL_SCANCODE_RETURN] = 0;
+        window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_A] = 0;
+
+        return 1;
+    }
+
+    return 0;
+}
+
+
+void handle_select_arrow_event(struct window *window, int *selected, int max)
+{
+    if (window->in->key[SDL_SCANCODE_UP]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP]
+        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
+    {
+        window->in->key[SDL_SCANCODE_UP] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
+
+        if (*selected > 1)
+            (*selected)--;
+    }
+
+    if (window->in->key[SDL_SCANCODE_DOWN]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
+        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
+    {
+        window->in->key[SDL_SCANCODE_DOWN] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
+
+        if (*selected < max)
+            (*selected)++;
+    }
 }

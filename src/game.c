@@ -21,18 +21,37 @@
 
 static void handle_arrow_event(struct window *window, SDL_Rect *pos)
 {
-    // Move ship
-    if (window->in->key[SDL_SCANCODE_UP])
+    /* Move ship */
+    // Up
+    if (window->in->key[SDL_SCANCODE_UP]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP])
         pos->y -= SHIP_SPEED;
+    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE)
+        pos->y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32768;
 
-    if (window->in->key[SDL_SCANCODE_DOWN])
+    // Down
+    if (window->in->key[SDL_SCANCODE_DOWN]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
         pos->y += SHIP_SPEED;
+    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE)
+        pos->y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY] .value* SHIP_SPEED / 32767;
 
-    if (window->in->key[SDL_SCANCODE_LEFT])
+
+    // Left
+    if (window->in->key[SDL_SCANCODE_LEFT]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP])
         pos->x -= SHIP_SPEED;
+    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value<= -DEAD_ZONE)
+        pos->x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32768;
 
-    if (window->in->key[SDL_SCANCODE_RIGHT])
+
+    // Right
+    if (window->in->key[SDL_SCANCODE_RIGHT]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT])
         pos->x += SHIP_SPEED;
+    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE)
+        pos->x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32767;
+
 
     // Prevent out of bounds
     if (pos->y < 0)
@@ -49,7 +68,8 @@ static void handle_arrow_event(struct window *window, SDL_Rect *pos)
 
 static void handle_shot_event(struct window *window, SDL_Rect *pos)
 {
-    if (window->in->key[SDL_SCANCODE_SPACE] && window->health > 0)
+    if ((window->in->key[SDL_SCANCODE_SPACE]
+         || window->in->c.button[SDL_CONTROLLER_BUTTON_A]) && window->health > 0)
     {
         Uint32 current_time = SDL_GetTicks();
 
@@ -66,9 +86,11 @@ static void handle_shot_event(struct window *window, SDL_Rect *pos)
 
 static void handle_bomb_event(struct window *window)
 {
-    if (window->in->key[SDL_SCANCODE_C])
+    if (window->in->key[SDL_SCANCODE_C]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_B])
     {
         window->in->key[SDL_SCANCODE_C] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_B] = 0;
 
         if (window->health > 0 && window->num_bombs > 0)
         {

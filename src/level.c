@@ -7,36 +7,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
-static int handle_play_event(struct window *window)
-{
-    if (window->in->key[SDL_SCANCODE_RETURN])
-    {
-        window->in->key[SDL_SCANCODE_RETURN] = 0;
-        return 1;
-    }
-
-    return 0;
-}
-
-
-static void handle_arrow_event(struct window *window, int *selected, int max)
-{
-    if (window->in->key[SDL_SCANCODE_UP])
-    {
-        window->in->key[SDL_SCANCODE_UP] = 0;
-
-        if (*selected > 1)
-            (*selected)--;
-    }
-    if (window->in->key[SDL_SCANCODE_DOWN])
-    {
-        window->in->key[SDL_SCANCODE_DOWN] = 0;
-
-        if ( *selected < max)
-            (*selected)++;
-    }
-}
-
 
 static void render_selected_level_title(struct window *window, const char *s, Uint32 alpha)
 {
@@ -139,7 +109,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
             begin = SDL_GetTicks();
         }
 
-        handle_arrow_event(window, &selected_difficulty, NUM_DIFFICULTIES);
+        handle_select_arrow_event(window, &selected_difficulty, NUM_DIFFICULTIES);
         escape = handle_escape_event(window);
 
         // Display black bachground
@@ -209,7 +179,7 @@ void select_level(struct window *window)
                                  "Andromeda Galaxy",
                                  "Hyperspace",
                                  "New Universe",
-                                 "Unknown",
+                                 "Spatial Army",
                                  "Unknown",
                                  "Unknown",
                                  "Unknown",
@@ -229,7 +199,7 @@ void select_level(struct window *window)
             begin = SDL_GetTicks();
         }
 
-        handle_arrow_event(window, &selected_level, NUM_LEVELS);
+        handle_select_arrow_event(window, &selected_level, NUM_LEVELS);
         escape = handle_escape_event(window);
 
         // Display black bachground
