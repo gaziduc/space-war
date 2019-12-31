@@ -102,6 +102,8 @@ struct sounds
     Mix_Chunk *shot;
     Mix_Chunk *explosion;
     Mix_Chunk *power_up;
+    Mix_Chunk *select;
+    Mix_Chunk *play;
 };
 
 struct window

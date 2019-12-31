@@ -81,6 +81,8 @@ static void load_sounds(struct window *window)
     window->sounds->shot = load_sound(window, "data/shot.wav");
     window->sounds->explosion = load_sound(window, "data/explosion.wav");
     window->sounds->power_up = load_sound(window, "data/power_up.wav");
+    window->sounds->select = load_sound(window, "data/select.wav");
+    window->sounds->play = load_sound(window, "data/play.wav");
 }
 
 struct window *init_all(int width, int height)

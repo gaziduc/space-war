@@ -43,6 +43,7 @@ static void free_fonts(struct window *window)
     TTF_CloseFont(window->fonts->pixel);
     TTF_CloseFont(window->fonts->zero4b_30);
     TTF_CloseFont(window->fonts->zero4b_30_small);
+    TTF_CloseFont(window->fonts->zero4b_30_extra_small);
     free(window->fonts);
 }
 
@@ -52,6 +53,8 @@ static void free_sounds(struct window *window)
     Mix_FreeChunk(window->sounds->shot);
     Mix_FreeChunk(window->sounds->explosion);
     Mix_FreeChunk(window->sounds->power_up);
+    Mix_FreeChunk(window->sounds->select);
+    Mix_FreeChunk(window->sounds->play);
     free(window->sounds);
 }
 

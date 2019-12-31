@@ -87,6 +87,8 @@ int handle_play_event(struct window *window)
         window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_A] = 0;
 
+        Mix_PlayChannel(-1, window->sounds->play, 0);
+
         return 1;
     }
 
@@ -105,7 +107,10 @@ void handle_select_arrow_event(struct window *window, int *selected, int max)
         window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
 
         if (*selected > 1)
+        {
             (*selected)--;
+            Mix_PlayChannel(-1, window->sounds->select, 0);
+        }
     }
 
     if (window->in->key[SDL_SCANCODE_DOWN]
@@ -117,6 +122,9 @@ void handle_select_arrow_event(struct window *window, int *selected, int max)
         window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
 
         if (*selected < max)
+        {
             (*selected)++;
+            Mix_PlayChannel(-1, window->sounds->select, 0);
+        }
     }
 }
