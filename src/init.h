@@ -107,6 +107,13 @@ struct sounds
     Mix_Chunk *play;
 };
 
+struct settings
+{
+    int music_volume;
+    int sfx_volume;
+    int is_fullscreen;
+};
+
 struct window
 {
     SDL_Window *window;
@@ -136,6 +143,7 @@ struct window
     struct universe *universe;
     struct point *stars;
     int bonus;
+    struct settings *settings;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

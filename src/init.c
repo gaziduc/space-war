@@ -4,6 +4,7 @@
 #include "path.h"
 #include "game.h"
 #include "stars.h"
+#include "setting.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -11,14 +12,17 @@
 
 static struct window *init_window(int width, int height)
 {
-    struct window *window = xmalloc(sizeof(struct window), NULL);
+    struct window *window = xcalloc(1, sizeof(struct window), NULL);
+
+    load_settings(window);
 
     window->window = SDL_CreateWindow("Space War",
                                       SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED,
                                       width,
                                       height,
-                                      SDL_WINDOW_FULLSCREEN);
+                                      window->settings->is_fullscreen ? SDL_WINDOW_FULLSCREEN
+                                                                      : 0);
 
     if (!window->window)
         error("Could not create window", SDL_GetError(), NULL);
@@ -156,6 +160,9 @@ struct window *init_all(int width, int height)
 
     // Initialize the stars lib
     new_universe(&window->universe, window->w, window->h, 256, window);
+
+    // Init settings
+    window->settings = xmalloc(sizeof(struct settings), window->window);
 
     return window;
 }

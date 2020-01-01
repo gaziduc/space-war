@@ -69,7 +69,7 @@ static void handle_arrow_event(struct window *window, SDL_Rect *pos)
 static void handle_shot_event(struct window *window, SDL_Rect *pos)
 {
     if ((window->in->key[SDL_SCANCODE_SPACE]
-         || window->in->c.button[SDL_CONTROLLER_BUTTON_A]) && window->health > 0)
+         || window->in->c.axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE) && window->health > 0)
     {
         Uint32 current_time = SDL_GetTicks();
 

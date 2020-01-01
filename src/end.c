@@ -58,17 +58,6 @@ static void render_success_texts(struct window *window, Uint32 begin)
 }
 
 
-static int handle_retry_event(struct window *window)
-{
-    if (window->in->key[SDL_SCANCODE_RETURN])
-    {
-        window->in->key[SDL_SCANCODE_RETURN] = 0;
-        return 1;
-    }
-
-    return 0;
-}
-
 
 void success(struct window *window)
 {
@@ -80,7 +69,7 @@ void success(struct window *window)
     while (!escape)
     {
         update_events(window->in, window);
-        escape = handle_retry_event(window);
+        escape = handle_play_event(window);
 
         SDL_RenderClear(window->renderer);
 
@@ -139,7 +128,7 @@ int failure(struct window *window)
     {
         update_events(window->in, window);
         escape = handle_escape_event(window);
-        retry = handle_retry_event(window);
+        retry = handle_play_event(window);
 
         SDL_RenderClear(window->renderer);
 
