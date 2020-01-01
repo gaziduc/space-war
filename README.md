@@ -4,10 +4,12 @@ Space War is a shoot'em up game where you pilot a spaceship and your goal is to 
 ![](https://s5.gifyu.com/images/2019-12-29-002144_1920x1080_scrot.png)
 ## Prerequisites to play
 ### Hardware
-- Minimum screen resolution: 1920 x 1080 px
+- **Screen resolution**: at least **1920 x 1080 px** (= Full HD 1080p)
+- **RAM**: about **50 Mo** (in addition to what to OS consumes) is necessary to run the game normally.
+- **Storage**: about **30 Mo** of available space
 ### Software
-- OS : All
-- The following libraries must be installed:
+- Operating System : Linux, Mac, Windows 
+- If your OS is not Windows, the following libraries must be installed:
 ```
 sdl2
 sdl2_image
