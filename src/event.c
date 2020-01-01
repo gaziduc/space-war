@@ -3,7 +3,7 @@
 #include "free.h"
 #include <SDL2/SDL.h>
 
-void update_events(struct input *in)
+void update_events(struct input *in, struct window *window)
 {
     in->quit = 0;
     SDL_Event event;
@@ -30,6 +30,28 @@ void update_events(struct input *in)
             break;
 
         // Controller events
+        case SDL_CONTROLLERDEVICEADDED:
+            if (!in->c.controller)
+            {
+                if (SDL_IsGameController(event.cdevice.which))
+                {
+                    in->c.controller = SDL_GameControllerOpen(event.cdevice.which);
+                    window->in->c.id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(window->in->c.controller));
+                }
+                else
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Controller not reconized",
+                                             "Your controller is not compatible.", window->window);
+            }
+            break;
+
+        case SDL_CONTROLLERDEVICEREMOVED:
+            if (event.cdevice.which == in->c.id)
+            {
+                SDL_GameControllerClose(in->c.controller);
+                in->c.controller = NULL;
+            }
+            break;
+
         case SDL_CONTROLLERBUTTONDOWN:
             in->c.button[event.cbutton.button] = 1;
             break;

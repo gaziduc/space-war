@@ -6,7 +6,7 @@
 
 #define DEAD_ZONE 8196
 
-void update_events(struct input *in);
+void update_events(struct input *in, struct window *window);
 
 void handle_quit_event(struct window *window, int is_in_level);
 

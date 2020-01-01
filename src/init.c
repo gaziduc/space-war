@@ -114,6 +114,7 @@ struct window *init_all(int width, int height)
         if (SDL_IsGameController(i))
         {
             window->in->c.controller = SDL_GameControllerOpen(i);
+            window->in->c.id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(window->in->c.controller));
             break;
         }
         else

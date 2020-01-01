@@ -79,7 +79,7 @@ void success(struct window *window)
 
     while (!escape)
     {
-        update_events(window->in);
+        update_events(window->in, window);
         escape = handle_retry_event(window);
 
         SDL_RenderClear(window->renderer);
@@ -137,7 +137,7 @@ int failure(struct window *window)
 
     while (!escape && !retry)
     {
-        update_events(window->in);
+        update_events(window->in, window);
         escape = handle_escape_event(window);
         retry = handle_retry_event(window);
 

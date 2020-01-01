@@ -80,7 +80,7 @@ void menu(struct window *window)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in);
+        update_events(window->in, window);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, NUM_ITEMS);
 

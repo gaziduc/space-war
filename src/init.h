@@ -38,6 +38,7 @@ struct axis
 struct controller
 {
     SDL_GameController *controller;
+    Sint32 id;
     char button[SDL_CONTROLLER_BUTTON_MAX];
     struct axis axis[SDL_CONTROLLER_AXIS_MAX];
 };

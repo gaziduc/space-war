@@ -232,7 +232,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
         while (!escape && !dead && !won)
         {
             // Get and handle events
-            update_events(window->in);
+            update_events(window->in, window);
             handle_quit_event(window, 1);
             escape = handle_escape_event(window);
             handle_arrow_event(window, &pos);
