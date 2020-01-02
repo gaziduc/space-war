@@ -29,8 +29,8 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
 
     char s_list[NUM_SETTINGS][50] = { 0 };
     sprintf(s_list[0], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
-    sprintf(s_list[1], "< Music Volume: %d %% >", window->settings->music_volume);
-    sprintf(s_list[2], "< SFX Volume: %d %% >", window->settings->sfx_volume);
+    sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
+    sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
 
     // Render items
     for (int i = 1; i <= NUM_SETTINGS; i++)
@@ -87,6 +87,78 @@ void load_settings(struct window *window)
 }
 
 
+static void handle_arrow_event(struct window *window, const int selected_item)
+{
+    if (window->in->key[SDL_SCANCODE_LEFT]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
+        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+    {
+        window->in->key[SDL_SCANCODE_LEFT] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = 0;
+
+        switch (selected_item)
+        {
+            case 2:
+                if (window->settings->music_volume > 0)
+                {
+                    window->settings->music_volume -= MIX_MAX_VOLUME / 8; // -= 16
+                    Mix_VolumeMusic(window->settings->music_volume);
+                    write_settings(window);
+                }
+                break;
+
+            case 3:
+                if (window->settings->sfx_volume > 0)
+                {
+                    window->settings->sfx_volume -= MIX_MAX_VOLUME / 8; // -= 16
+                    Mix_Volume(-1, window->settings->sfx_volume);
+                    Mix_PlayChannel(-1, window->sounds->select, 0);
+                    write_settings(window);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    if (window->in->key[SDL_SCANCODE_RIGHT]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
+        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+    {
+        window->in->key[SDL_SCANCODE_RIGHT] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
+
+        switch (selected_item)
+        {
+            case 2:
+                if (window->settings->music_volume < MIX_MAX_VOLUME)
+                {
+                    window->settings->music_volume += MIX_MAX_VOLUME / 8; // -= 16
+                    Mix_VolumeMusic(window->settings->music_volume);
+                    write_settings(window);
+                }
+                break;
+
+            case 3:
+                if (window->settings->sfx_volume < MIX_MAX_VOLUME)
+                {
+                    window->settings->sfx_volume += MIX_MAX_VOLUME / 8; // -= 16
+                    Mix_Volume(-1, window->settings->sfx_volume);
+                    Mix_PlayChannel(-1, window->sounds->select, 0);
+                    write_settings(window);
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+
 void settings(struct window *window)
 {
     int escape = 0;
@@ -100,27 +172,23 @@ void settings(struct window *window)
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, NUM_SETTINGS);
 
-        if (handle_play_event(window))
+        if (handle_play_event(window) && selected_item == 1)
         {
-            switch (selected_item)
+            if (is_fullscreen(window))
             {
-                case 1:
-                    if (is_fullscreen(window))
-                    {
-                        window->settings->is_fullscreen = 0;
-                        SDL_SetWindowFullscreen(window->window, 0);
-                    }
-                    else
-                    {
-                        window->settings->is_fullscreen = 1;
-                        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
-                    }
-
-                    write_settings(window);
-                    break;
+                window->settings->is_fullscreen = 0;
+                SDL_SetWindowFullscreen(window->window, 0);
             }
+            else
+            {
+                window->settings->is_fullscreen = 1;
+                SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
+            }
+
+            write_settings(window);
         }
 
+        handle_arrow_event(window, selected_item);
         escape = handle_escape_event(window);
 
         // Display black background

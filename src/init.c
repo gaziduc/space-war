@@ -100,6 +100,8 @@ struct window *init_all(int width, int height)
     // Create window and renderer
     struct window *window = init_window(width, height);
 
+    SDL_ShowCursor(SDL_DISABLE);
+
     // Init SDL2_image
     int img_flags = IMG_INIT_JPG | IMG_INIT_PNG;
     int img_initted = IMG_Init(img_flags);
@@ -146,23 +148,24 @@ struct window *init_all(int width, int height)
 
     load_fonts(window);
 
-    // Init SDL2_mixer and load music
+    // Init SDL2_mixer
     int mix_flags = MIX_INIT_OGG;
     int mix_initted = Mix_Init(mix_flags);
     if ((mix_initted & mix_flags) != mix_flags)
         error("Could not load SDL2_mixer", Mix_GetError(), window->window);
 
+    // Load music with volume settings
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
         error("Could not initialize SDL2_mixer", Mix_GetError(), window->window);
+
+    Mix_VolumeMusic(window->settings->music_volume);
+    Mix_Volume(-1, window->settings->sfx_volume);
 
     load_music(window, "data/hybris.ogg", 0);
     load_sounds(window);
 
     // Initialize the stars lib
     new_universe(&window->universe, window->w, window->h, 256, window);
-
-    // Init settings
-    window->settings = xmalloc(sizeof(struct settings), window->window);
 
     return window;
 }
