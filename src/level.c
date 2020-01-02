@@ -51,25 +51,17 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
                         green, 150, y);
     }
 
-    SDL_Color yellow = { 255, 255, 0, alpha };
+    SDL_Color grey = { 128, 128, 128, alpha };
 
     switch (selected_difficulty)
     {
         case EASY:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "20 HP", yellow, window->w / 2, 360);
-            render_text(window, window->fonts->zero4b_30_extra_small,
-                        "3 Bombs", yellow, window->w / 2, 410);
-            render_text(window, window->fonts->zero4b_30_extra_small,
-                        "Bonus: 0", yellow, window->w / 2, 460);
+                        "20 HP - 3 Bombs - 0 Bonus", grey, 150, 560);
             break;
         case HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "5 HP", yellow, window->w / 2, 360);
-            render_text(window, window->fonts->zero4b_30_extra_small,
-                        "1 Bomb", yellow, window->w / 2, 410);
-            render_text(window, window->fonts->zero4b_30_extra_small,
-                        "Bonus: 1000", yellow, window->w / 2, 460);
+                        "5 HP - 1 Bomb - 1000 Bonus", grey, 150, 560);
             break;
 
         default:
@@ -78,9 +70,6 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
     }
 
     SDL_Color orange = { 255, 128, 0, alpha };
-
-    render_text(window, window->fonts->zero4b_30_extra_small, "Choose your difficulty.",
-                orange, 150, 770);
 
     render_text(window, window->fonts->zero4b_30_extra_small, "Press ENTER to start mission !",
                 orange, 150, 840);
@@ -128,7 +117,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
 
         SDL_Color orange = { 255, 128, 0, alpha };
 
-        render_text(window, window->fonts->zero4b_30_small, s, orange, POS_CENTERED, 150);
+        render_text(window, window->fonts->zero4b_30_small, s, orange, 150, 150);
         render_level_difficulties(window, begin, selected_difficulty);
         SDL_RenderPresent(window->renderer);
 
