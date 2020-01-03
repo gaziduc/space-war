@@ -44,7 +44,7 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             set_boss_attributes(new, pos, window);
             break;
         case OBJECT_LIST:
-            set_object_attributes(new, object, window);
+            set_object_attributes(new, object, window, window->img->objects[object]);
             break;
         case HUD_LIST:
             set_hud_text(new, pos, window);

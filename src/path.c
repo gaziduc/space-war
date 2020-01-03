@@ -41,6 +41,10 @@ static void set_object_type(struct window *window, const char *filename, FILE *f
             p->line.type = HEALTH;
             break;
 
+        case 'S':
+            p->line.type = SHIELD;
+            break;
+
         default:
             error(filename, "Could not load file because it is corrupted.", window->window);
             break;

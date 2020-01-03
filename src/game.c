@@ -68,8 +68,9 @@ static void handle_arrow_event(struct window *window, SDL_Rect *pos)
 
 static void handle_shot_event(struct window *window, SDL_Rect *pos)
 {
-    if ((window->in->key[SDL_SCANCODE_SPACE]
-         || window->in->c.axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE) && window->health > 0)
+    if (window->health > 0
+        && (window->in->key[SDL_SCANCODE_SPACE]
+            || window->in->c.axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE))
     {
         Uint32 current_time = SDL_GetTicks();
 
@@ -201,6 +202,7 @@ void reset_game_attributes(struct window *window, int difficulty)
     window->animated_health_low = window->health;
     window->animated_health_high = window->health;
     window->lives = 1;
+    window->shield_time = -10000;
 }
 
 
@@ -265,7 +267,10 @@ void play_game(struct window *window, int mission_num, int difficulty)
             render_enemy_shots(window);
             render_enemies(window);
             if (window->health > 0)
+            {
+                render_shield_aura(window, &pos);
                 SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
+            }
             render_explosions(window);
             render_hud_texts(window);
             render_hud(window);
@@ -278,6 +283,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
             // Wait a frame
             SDL_framerateDelay(window->fps);
             framecount++;
+
+
         }
 
         free_background(window->stars);

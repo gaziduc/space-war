@@ -50,7 +50,9 @@ static void load_textures(struct window *window)
     window->img->trail = load_texture("data/trail.png", window);
     window->img->enemy_shot = load_texture_collision("data/enemy_shot.bmp", window);
     window->img->boss = load_texture_collision("data/boss.png", window);
-    window->img->health = load_texture_collision("data/health.png", window);
+    window->img->objects[HEALTH] = load_texture_collision("data/health.png", window);
+    window->img->objects[SHIELD] = load_texture_collision("data/shield.png", window);
+    window->img->aura = load_texture("data/aura.png", window);
     window->img->asteroid = load_texture_collision("data/asteroid.png", window);
 }
 

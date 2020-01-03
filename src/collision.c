@@ -133,7 +133,10 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 window->score += SCORE_TO_INCREASE;
 
                 // Decrease health
-                window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
+                if (SDL_GetTicks() - window->shield_time < 10000)
+                    window->shield_time = 0;
+                else
+                    window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
             }
             else /* if (type == BOSS_LIST) */
             {
@@ -167,19 +170,22 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 collision(pos, window->img->ship,
                           &temp_enemy_shot->pos_dst, window->img->enemy_shot))
             {
-                // Add an explosion
-                list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture,
-                                NULL, 0, 0);
-
-                Mix_PlayChannel(-1, window->sounds->explosion, 0);
-
                 // Delete enemy shot
                 struct list *enemy_shot_to_delete = temp_enemy_shot;
                 prev_enemy_shot->next = temp_enemy_shot->next;
                 temp_enemy_shot = temp_enemy_shot->next;
                 free(enemy_shot_to_delete);
 
-                window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+                if (SDL_GetTicks() - window->shield_time >= 10000)
+                {
+                    // Add an explosion
+                    list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                                    NULL, 0, 0);
+
+                    Mix_PlayChannel(-1, window->sounds->explosion, 0);
+
+                    window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+                }
             }
             else
             {
@@ -200,15 +206,27 @@ void check_collisions_objects(struct window *window, SDL_Rect *pos)
     {
         if (window->health > 0 &&
             collision(pos, window->img->ship,
-                      &temp->pos_dst, window->img->health))
+                      &temp->pos_dst, temp->texture))
         {
             // Play sound
             Mix_PlayChannel(-1, window->sounds->power_up, 0);
 
-            // Increase health
-            window->health += 30;
-            if (window->health > window->max_health)
-                window->health = window->max_health;
+            switch (temp->type)
+            {
+                case HEALTH: // Increase health
+                    window->health += 30;
+                    if (window->health > window->max_health)
+                        window->health = window->max_health;
+                    break;
+
+                case SHIELD: // Activate  shield
+                    window->shield_time = SDL_GetTicks();
+                    break;
+
+                default:
+                    error("Unknown object", "Unknown object type", window->window);
+                    break;
+            }
 
             // Delete object
             struct list *to_delete = temp;

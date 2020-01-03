@@ -7,6 +7,13 @@
 #include <SDL2/SDL_mixer.h>
 
 
+enum object_type
+{
+    HEALTH = 0,
+    SHIELD,
+    NUM_OBJECTS
+};
+
 struct collision_texture
 {
     SDL_Texture *texture;
@@ -24,8 +31,9 @@ struct textures
     SDL_Texture *trail;
     struct collision_texture *enemy_shot;
     struct collision_texture *boss;
-    struct collision_texture *health;
+    struct collision_texture *objects[NUM_OBJECTS];
     struct collision_texture *asteroid;
+    SDL_Texture *aura;
 };
 
 
@@ -48,11 +56,6 @@ struct input
     char quit;
     char key[SDL_NUM_SCANCODES];
     struct controller c;
-};
-
-enum object_type
-{
-    HEALTH = 0
 };
 
 struct list
@@ -144,6 +147,7 @@ struct window
     struct point *stars;
     int bonus;
     struct settings *settings;
+    int shield_time;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

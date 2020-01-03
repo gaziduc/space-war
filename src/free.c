@@ -24,8 +24,12 @@ static void free_textures(struct window *window)
     SDL_DestroyTexture(window->img->explosion);
     SDL_DestroyTexture(window->img->trail);
     free_collision_texture(window->img->boss);
-    free_collision_texture(window->img->health);
+
+    for (enum object_type i = 0; i < NUM_OBJECTS; i++)
+        free_collision_texture(window->img->objects[i]);
+
     free_collision_texture(window->img->asteroid);
+    SDL_DestroyTexture(window->img->aura);
     free(window->img);
 }
 
