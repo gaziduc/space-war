@@ -37,7 +37,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
     SDL_Color blue = { 0, 255, 255, alpha };
     SDL_Color green = { 0, 255, 0, alpha };
 
-    char *s_list[NUM_DIFFICULTIES] = { "-> Easy", "-> Hard" };
+    char *s_list[NUM_DIFFICULTIES] = { "-> Easy", "-> Hard", "-> Really Hard" };
 
     for (int i = 1; i <= NUM_DIFFICULTIES; i++)
     {
@@ -57,23 +57,22 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
     {
         case EASY:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "20 HP - 3 Bombs - 0 Bonus", grey, 150, 560);
+                        "20 HP - 2 Bombs - 999+ Ammo - 0 Bonus", grey, 150, 760);
             break;
         case HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "5 HP - 1 Bomb - 1000 Bonus", grey, 150, 560);
+                        "7 HP - 1 Bomb - 999+ Ammo - 1000 Bonus", grey, 150, 760);
+            break;
+
+        case REALLY_HARD:
+            render_text(window, window->fonts->zero4b_30_extra_small,
+                        "3 HP - 1 Bomb - 200 Ammo - 3000 Bonus", grey, 150, 760);
             break;
 
         default:
             error("Unknown selected difficulty", "Unknown selected difficulty", window->window);
             break;
     }
-
-    SDL_Color orange = { 255, 128, 0, alpha };
-
-    render_text(window, window->fonts->zero4b_30_extra_small, "Press ENTER to start mission !",
-                orange, 150, 840);
-
 }
 
 

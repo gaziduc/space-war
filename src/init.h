@@ -148,6 +148,7 @@ struct window
     int bonus;
     struct settings *settings;
     int shield_time;
+    int ammo;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

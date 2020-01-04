@@ -1,6 +1,8 @@
 #ifndef OBJECT_H
 #define OBJECT_H
 
+#define SHIELD_TIME 20000
+
 void set_object_attributes(struct list *new, enum object_type type,
                            struct window *window, struct collision_texture *collision);
 

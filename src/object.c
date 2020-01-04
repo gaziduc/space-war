@@ -1,6 +1,7 @@
 #include "utils.h"
 #include "path.h"
 #include "list.h"
+#include "object.h"
 #include <SDL2/SDL.h>
 
 void set_object_attributes(struct list *new, enum object_type type,
@@ -71,7 +72,7 @@ void render_objects(struct window *window)
 
 void render_shield_aura(struct window *window, SDL_Rect *ship_pos)
 {
-    if (SDL_GetTicks() - window->shield_time < 10000)
+    if (SDL_GetTicks() - window->shield_time < SHIELD_TIME)
     {
         int w = 0;
         int h = 0;

@@ -2,6 +2,7 @@
 #include "list.h"
 #include "collision.h"
 #include "utils.h"
+#include "object.h"
 
 static int collision_aabb(SDL_Rect *pos1, SDL_Rect *pos2)
 {
@@ -133,7 +134,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 window->score += SCORE_TO_INCREASE;
 
                 // Decrease health
-                if (SDL_GetTicks() - window->shield_time < 10000)
+                if (SDL_GetTicks() - window->shield_time < SHIELD_TIME)
                     window->shield_time = 0;
                 else
                     window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
@@ -176,7 +177,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 temp_enemy_shot = temp_enemy_shot->next;
                 free(enemy_shot_to_delete);
 
-                if (SDL_GetTicks() - window->shield_time >= 10000)
+                if (SDL_GetTicks() - window->shield_time >= SHIELD_TIME)
                 {
                     // Add an explosion
                     list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture,

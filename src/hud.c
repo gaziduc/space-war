@@ -63,7 +63,7 @@ static void render_life(struct window *window)
 static void render_score(struct window *window)
 {
     char s[50] = { 0 };
-    sprintf(s, "SCORE: %d", window->score);
+    sprintf(s, "SCORE %d", window->score);
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
     SDL_Texture *texture = get_text_texture(window, window->fonts->pixel, s, color);
@@ -77,23 +77,38 @@ static void render_score(struct window *window)
 static void render_bombs(struct window *window)
 {
     char s[50] = { 0 };
-    sprintf(s, "BOMBS: %d", window->num_bombs);
+    sprintf(s, "BOMBS %d", window->num_bombs);
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
     SDL_Texture *texture = get_text_texture(window, window->fonts->pixel, s, color);
 
-    SDL_Rect pos_dst = { .x = 12, .y = 76, .w = 0, .h = 0 };
+    SDL_Rect pos_dst = { .x = 12, .y = 102, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos_dst.w, &pos_dst.h);
     SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
     SDL_DestroyTexture(texture);
 }
 
 
+static void render_ammo(struct window *window)
+{
+    char s[50] = { 0 };
+
+    if (window->ammo > 0)
+        sprintf(s, "AMMO  %d", window->ammo);
+    else
+        sprintf(s, "AMMO  999+");
+
+    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
+
+    render_text(window, window->fonts->pixel, s, color, 12, 76);
+}
+
 void render_hud(struct window *window)
 {
     render_life(window);
     render_score(window);
     render_bombs(window);
+    render_ammo(window);
 }
 
 

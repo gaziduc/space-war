@@ -157,6 +157,8 @@ struct window *init_all(int width, int height)
         error("Could not load SDL2_mixer", Mix_GetError(), window->window);
 
     // Load music with volume settings
+    Mix_AllocateChannels(16);
+
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
         error("Could not initialize SDL2_mixer", Mix_GetError(), window->window);
 

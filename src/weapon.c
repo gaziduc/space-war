@@ -5,8 +5,14 @@
 
 void shoot(struct window *window, SDL_Rect *pos)
 {
-    list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
-    Mix_PlayChannel(-1, window->sounds->shot, 0);
+    if (window->ammo == -1 || window->ammo > 0)
+    {
+        list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+        Mix_PlayChannel(-1, window->sounds->shot, 0);
+
+        if (window->ammo > 0)
+            window->ammo--;
+    }
 }
 
 

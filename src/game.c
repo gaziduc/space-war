@@ -184,13 +184,21 @@ void reset_game_attributes(struct window *window, int difficulty)
     {
         case EASY:
             window->health = MAX_HEALTH_EASY;
-            window->num_bombs = 3;
+            window->num_bombs = 2;
             window->bonus = 0;
+            window->ammo = -1; // -1 means infinite
             break;
         case HARD:
             window->health = MAX_HEALTH_HARD;
             window->num_bombs = 1;
-            window->bonus = 1000;
+            window->bonus = 1500;
+            window->ammo = -1;
+            break;
+        case REALLY_HARD:
+            window->health = MAX_HEALTH_REALLY_HARD;
+            window->num_bombs = 1;
+            window->bonus = 3000;
+            window->ammo = 200;
             break;
 
         default:
@@ -202,7 +210,7 @@ void reset_game_attributes(struct window *window, int difficulty)
     window->animated_health_low = window->health;
     window->animated_health_high = window->health;
     window->lives = 1;
-    window->shield_time = -10000;
+    window->shield_time = -SHIELD_TIME;
 }
 
 

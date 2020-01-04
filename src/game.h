@@ -7,7 +7,8 @@
 #define SHIP_SPEED 8
 #define SHOT_SPEED 20
 #define MAX_HEALTH_EASY 200
-#define MAX_HEALTH_HARD 50
+#define MAX_HEALTH_HARD 70
+#define MAX_HEALTH_REALLY_HARD  30
 
 void render_trail(struct window *window, SDL_Rect *pos, int is_enemy);
 

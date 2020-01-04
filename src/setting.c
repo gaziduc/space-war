@@ -48,9 +48,9 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
 static void write_settings(struct window *window)
 {
     // Open file
-    FILE *f = fopen("settings.ini", "w");
+    FILE *f = fopen("settings.txt", "w");
     if (!f)
-        error("settings.ini", "Couldn't open settings.ini for writing.", window->window);
+        error("settings.txt", "Couldn't open settings.txt for writing.", window->window);
 
     // Write settings
     fprintf(f, "fullscreen %d\n", window->settings->is_fullscreen);
@@ -67,7 +67,7 @@ void load_settings(struct window *window)
     window->settings = xmalloc(sizeof(struct settings), window->window);
 
     // Open file
-    FILE *f = fopen("settings.ini", "r");
+    FILE *f = fopen("settings.txt", "r");
     if (!f)
     {
         window->settings->is_fullscreen = 1;
