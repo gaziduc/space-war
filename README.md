@@ -21,6 +21,7 @@ sdl2_mixer
 ```shell
 git clone https://github.com/gaziduc/space-war.git
 cd space-war
+cmake .
 make
 ./space-war
 ```
