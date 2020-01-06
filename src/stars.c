@@ -30,9 +30,10 @@ void new_point(struct universe *u, struct window *window)
 
 static void kill_point(struct universe *universe, struct points* to_kill)
 {
-    struct points *p_ptr, *last_ptr = NULL;
+    struct points *p_ptr = universe->points;
+    struct points *last_ptr = NULL;
 
-    for (p_ptr = universe->points; p_ptr != NULL; p_ptr = p_ptr->next)
+    while (p_ptr)
     {
         if (p_ptr == to_kill)
         {
@@ -42,9 +43,13 @@ static void kill_point(struct universe *universe, struct points* to_kill)
                 last_ptr->next = p_ptr->next;
 
             free(p_ptr);
+            break;
         }
         else
+        {
             last_ptr = p_ptr;
+            p_ptr = p_ptr->next;
+        }
     }
 }
 

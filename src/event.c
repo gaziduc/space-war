@@ -1,6 +1,7 @@
 #include "event.h"
 #include "init.h"
 #include "free.h"
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 
 void update_events(struct input *in, struct window *window)

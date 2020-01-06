@@ -1,6 +1,7 @@
 #include "init.h"
 #include "background.h"
 #include "utils.h"
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 
 

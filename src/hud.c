@@ -4,6 +4,7 @@
 #include "level.h"
 #include "hud.h"
 #include "menu.h"
+#include <stdio.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
 

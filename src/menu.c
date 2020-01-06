@@ -6,6 +6,7 @@
 #include "menu.h"
 #include "level.h"
 #include "setting.h"
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 
 

@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "utils.h"
 #include "level.h"
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
