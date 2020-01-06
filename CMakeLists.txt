@@ -19,11 +19,13 @@ else ()
     add_compile_options(-Wall -Wextra -Werror -pedantic -std=c99 -O2)
 endif ()
 
+if (NOT MSVC)
+    add_link_options(-lm)
+endif ()
+
 add_executable(${PROJECT_NAME} ${SRC})
 target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_GFX_LIBRARY})
 
 if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS /SUBSYSTEM:WINDOWS)
-else ()
-    add_link_options(-lm)
 endif ()
