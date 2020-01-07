@@ -17,13 +17,15 @@ if (MSVC)
     add_compile_options(/W3)
 else ()
     add_compile_options(-Wall -Wextra -Werror -pedantic -std=c99 -O2)
-endif ()
-
-if (NOT MSVC)
     add_link_options(-lm)
 endif ()
 
-add_executable(${PROJECT_NAME} ${SRC})
+if (WIN32)
+    add_executable(${PROJECT_NAME} ${SRC} icon/res.rc)
+else ()
+    add_executable(${PROJECT_NAME} ${SRC})
+endif ()
+
 target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_GFX_LIBRARY})
 
 if (MSVC)
