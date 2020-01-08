@@ -16,7 +16,7 @@ include_directories(SRC ${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SDL2_IMAGE
 if (MSVC)
     add_compile_options(/W3)
 else ()
-    add_compile_options(-Wall -Wextra -Werror -pedantic -std=c99 -O2)
+    add_compile_options(-Wall -Wextra -Werror -pedantic -std=c99)
     add_link_options(-lm)
 endif ()
 
