@@ -30,6 +30,7 @@ static void free_textures(struct window *window)
 
     free_collision_texture(window->img->asteroid);
     SDL_DestroyTexture(window->img->aura);
+
     free(window->img);
 }
 
@@ -80,6 +81,8 @@ void free_all(struct window *window, int is_in_level)
     free_sounds(window);
     Mix_FreeMusic(window->music);
     free_universe(window->universe);
+    free(window->save);
+    free(window->settings);
     free_window(window);
 
     Mix_Quit();

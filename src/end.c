@@ -1,6 +1,7 @@
 #include "event.h"
 #include "utils.h"
 #include "menu.h"
+#include "save.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -60,8 +61,15 @@ static void render_success_texts(struct window *window, Uint32 begin)
 
 
 
-void success(struct window *window)
+void success(struct window *window, const int level_num, const int difficulty)
 {
+    if (window->save->progress[level_num - 1] < difficulty)
+        window->save->progress[level_num - 1] = difficulty;
+
+    // Save
+    write_save(window, window->save);
+
+
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
     int selected = 1;

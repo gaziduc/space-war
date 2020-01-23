@@ -6,6 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+#define NUM_LEVELS 10
 
 enum object_type
 {
@@ -117,6 +118,11 @@ struct settings
     int is_fullscreen;
 };
 
+struct save
+{
+    int progress[NUM_LEVELS];
+};
+
 struct window
 {
     SDL_Window *window;
@@ -149,6 +155,7 @@ struct window
     struct settings *settings;
     int shield_time;
     int ammo;
+    struct save *save;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

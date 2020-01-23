@@ -5,6 +5,7 @@
 #include "game.h"
 #include "stars.h"
 #include "setting.h"
+#include "save.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -170,6 +171,9 @@ struct window *init_all(int width, int height)
 
     // Initialize the stars lib
     new_universe(&window->universe, window->w, window->h, 256, window);
+
+    // Load save file and progress
+    read_save(window);
 
     return window;
 }

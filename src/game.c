@@ -300,7 +300,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
         if (won)
         {
-            success(window);
+            success(window, mission_num, difficulty);
             escape = 1;
         }
 

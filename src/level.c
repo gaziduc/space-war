@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "level.h"
 #include <stdio.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -26,7 +27,8 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
 
 
 
-static void render_level_difficulties(struct window *window, Uint32 begin, int selected_difficulty)
+static void render_level_difficulties(struct window *window, Uint32 begin,
+                                      int level, int selected_difficulty)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -38,18 +40,30 @@ static void render_level_difficulties(struct window *window, Uint32 begin, int s
     SDL_Color blue = { 0, 255, 255, alpha };
     SDL_Color green = { 0, 255, 0, alpha };
 
-    char *s_list[NUM_DIFFICULTIES] = { "-> Easy", "-> Hard", "-> Really Hard" };
+    char *s_list[NUM_DIFFICULTIES] = { "-> Easy *", "-> Hard *", "-> Really Hard *" };
 
     for (int i = 1; i <= NUM_DIFFICULTIES; i++)
     {
         int y = 360 + (i - 1) * 80;
+        char s[100] = { 0 };
 
-        if (i != selected_difficulty)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3,
-                        blue, 150, y);
+        if (window->save->progress[level - 1] < i)
+        {
+            if (i != selected_difficulty)
+                snprintf(s, strlen(s_list[i - 1] + 3) - 1, s_list[i - 1] + 3);
+            else
+                snprintf(s, strlen(s_list[i - 1]) - 1, s_list[i - 1]);
+        }
         else
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
-                        green, 150, y);
+        {
+            if (i != selected_difficulty)
+                strcpy(s, s_list[i - 1] + 3);
+            else
+                strcpy(s, s_list[i - 1]);
+        }
+
+        render_text(window, window->fonts->zero4b_30_small, s,
+                    i != selected_difficulty ? blue : green, 150, y);
     }
 
     SDL_Color grey = { 128, 128, 128, alpha };
@@ -118,7 +132,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         SDL_Color orange = { 255, 128, 0, alpha };
 
         render_text(window, window->fonts->zero4b_30_small, s, orange, 150, 150);
-        render_level_difficulties(window, begin, selected_difficulty);
+        render_level_difficulties(window, begin, selected_level, selected_difficulty);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
@@ -143,7 +157,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     for (int i = 1; i <= NUM_LEVELS; i++)
     {
         char s[50] = { 0 };
-        sprintf(s, "-> Mission %d", i);
+        sprintf(s, "-> Mission %d %.*s", i, window->save->progress[i - 1], "***");
 
         int y = 150 + (i - 1) * 80;
 
