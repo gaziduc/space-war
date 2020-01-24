@@ -150,7 +150,12 @@ int failure(struct window *window)
         update_events(window->in, window);
         escape = handle_escape_event(window);
         if (handle_play_event(window))
-            escape = 1;
+        {
+            if (selected == 2)
+                escape = 1;
+            break;
+        }
+
         handle_select_arrow_event(window, &selected, 2);
 
         SDL_RenderClear(window->renderer);
@@ -165,9 +170,6 @@ int failure(struct window *window)
 
         SDL_framerateDelay(window->fps);
     }
-
-    if (selected == 1)
-        escape = 0;
 
     return escape;
 }
