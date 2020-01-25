@@ -17,6 +17,8 @@ sdl2_gfx
 sdl2_ttf
 sdl2_mixer
 ```
+## Play only
+Go to the release section: https://github.com/gaziduc/space-war/releases
 ## Download, build and play:
 ```shell
 git clone https://github.com/gaziduc/space-war.git
