@@ -1,0 +1,14 @@
+# Usage:
+# $ wave_name
+# @ object_type
+# num_ms_to_appear pos_y speed health enemy_type
+
+# Enemy_type usage:
+# A: standard
+# B: asteroid
+# 0: boss
+
+$ Boss
+1000 320 5 25 0
+0 540 5 25 0
+0 760 5 25 0

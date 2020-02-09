@@ -11,7 +11,7 @@ void set_boss_attributes(struct list *new, SDL_Rect *pos, struct window *window)
     init_position(window->w, pos->y, window, window->img->boss->texture, &new->pos_dst);
 
     new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
-    new->speed.y = 2;
+    new->speed.y = window->paths->data[window->paths->index].line.enemy_path.speed_x;
     new->health = window->paths->data[window->paths->index].line.enemy_path.health;
     new->max_health = new->health;
     new->last_time_hurt = 0;

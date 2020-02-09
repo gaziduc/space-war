@@ -183,7 +183,7 @@ void select_level(struct window *window)
                                  "Hyperspace",
                                  "New Universe",
                                  "Spatial Army",
-                                 "Unknown",
+                                 "Bosses",
                                  "Unknown",
                                  "Unknown",
                                  "Unknown",

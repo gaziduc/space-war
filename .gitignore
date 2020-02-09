@@ -4,3 +4,10 @@
 
 /.vs
 /out/build/x64-Debug
+CMakeCache.txt
+/CMakeFiles
+Makefile
+cmake_install.cmake
+space-war
+settings.txt
+save.bin
