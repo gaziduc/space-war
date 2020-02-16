@@ -48,14 +48,14 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
 static void write_settings(struct window *window)
 {
     // Open file
-    FILE *f = fopen("settings.txt", "w");
+    FILE *f = fopen("settings.ini", "w");
     if (!f)
-        error("settings.txt", "Couldn't open settings.txt for writing.", window->window);
+        error("settings.ini", "Couldn't open settings.txt for writing.", window->window);
 
     // Write settings
-    fprintf(f, "fullscreen %d\n", window->settings->is_fullscreen);
-    fprintf(f, "music_volume %d\n", window->settings->music_volume);
-    fprintf(f, "sfx_volume %d\n", window->settings->sfx_volume);
+    fprintf(f, "fullscreen=%d\n", window->settings->is_fullscreen);
+    fprintf(f, "music_volume=%d\n", window->settings->music_volume);
+    fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
 
     // Close file
     fclose(f);
@@ -67,7 +67,7 @@ void load_settings(struct window *window)
     window->settings = xmalloc(sizeof(struct settings), window->window);
 
     // Open file
-    FILE *f = fopen("settings.txt", "r");
+    FILE *f = fopen("settings.ini", "r");
     if (!f)
     {
         window->settings->is_fullscreen = 1;
@@ -78,9 +78,9 @@ void load_settings(struct window *window)
     }
 
     // Read settings
-    fscanf(f, "fullscreen %d\n", &window->settings->is_fullscreen);
-    fscanf(f, "music_volume %d\n", &window->settings->music_volume);
-    fscanf(f, "sfx_volume %d\n", &window->settings->sfx_volume);
+    fscanf(f, "fullscreen=%d\n", &window->settings->is_fullscreen);
+    fscanf(f, "music_volume=%d\n", &window->settings->music_volume);
+    fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
 
     // Close file
     fclose(f);
