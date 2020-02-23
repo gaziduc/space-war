@@ -3,6 +3,7 @@
 #include "init.h"
 #include "save.h"
 #include "utils.h"
+#include <stdio.h>
 #include <SDL2/SDL.h>
 
 

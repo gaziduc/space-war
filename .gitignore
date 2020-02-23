@@ -11,3 +11,5 @@ cmake_install.cmake
 space-war
 settings.ini
 save.bin
+/out/build/x64-Release
+/CMakeSettings.json
