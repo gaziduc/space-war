@@ -184,10 +184,6 @@ void select_level(struct window *window)
                                  "New Universe",
                                  "Spatial Army",
                                  "Bosses",
-                                 "Unknown",
-                                 "Unknown",
-                                 "Unknown",
-                                 "Unknown",
                                };
 
     while (!escape)

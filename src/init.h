@@ -6,7 +6,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
-#define NUM_LEVELS 10
+#define NUM_LEVELS 6
 
 enum object_type
 {
