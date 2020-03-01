@@ -35,19 +35,25 @@ void update_events(struct input *in, struct window *window)
             if (!in->c.controller)
             {
                 if (SDL_IsGameController(event.cdevice.which))
-                {
-                    in->c.controller = SDL_GameControllerOpen(event.cdevice.which);
-                    window->in->c.id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(window->in->c.controller));
-                }
+                    init_controller(in, event.cdevice.which);
                 else
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Controller not reconized",
-                                             "Your controller is not compatible.", window->window);
+                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING,
+                                             "Controller not reconized",
+                                             "Your controller is not compatible.",
+                                              window->window);
             }
             break;
 
         case SDL_CONTROLLERDEVICEREMOVED:
             if (event.cdevice.which == in->c.id)
             {
+                // Free haptic
+                if (in->c.haptic)
+                {
+                    SDL_HapticClose(in->c.haptic);
+                    in->c.haptic = NULL;
+                }
+
                 SDL_GameControllerClose(in->c.controller);
                 in->c.controller = NULL;
             }
@@ -150,4 +156,19 @@ void handle_select_arrow_event(struct window *window, int *selected, int max)
             Mix_PlayChannel(-1, window->sounds->select, 0);
         }
     }
+}
+
+
+void init_controller(struct input *in, Sint32 which)
+{
+    in->c.controller = SDL_GameControllerOpen(which);
+    SDL_Joystick *temp = SDL_GameControllerGetJoystick(in->c.controller);
+
+    // Get instance ID
+    in->c.id = SDL_JoystickInstanceID(temp);
+
+    // Get force feedback
+    in->c.haptic = SDL_HapticOpenFromJoystick(temp);
+    if (in->c.haptic)
+        SDL_HapticRumbleInit(in->c.haptic);
 }

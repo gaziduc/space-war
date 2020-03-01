@@ -50,6 +50,7 @@ struct controller
     Sint32 id;
     char button[SDL_CONTROLLER_BUTTON_MAX];
     struct axis axis[SDL_CONTROLLER_AXIS_MAX];
+    SDL_Haptic *haptic;
 };
 
 struct input
@@ -113,9 +114,10 @@ struct sounds
 
 struct settings
 {
+    int is_fullscreen;
     int music_volume;
     int sfx_volume;
-    int is_fullscreen;
+    int is_force_feedback;
 };
 
 struct save

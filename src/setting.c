@@ -31,6 +31,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[0], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
     sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
     sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
+    sprintf(s_list[3], "Force Feedback %s", window->settings->is_force_feedback ? "Yes" : "No");
 
     // Render items
     for (int i = 1; i <= NUM_SETTINGS; i++)
@@ -56,6 +57,7 @@ static void write_settings(struct window *window)
     fprintf(f, "fullscreen=%d\n", window->settings->is_fullscreen);
     fprintf(f, "music_volume=%d\n", window->settings->music_volume);
     fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
+    fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
 
     // Close file
     fclose(f);
@@ -73,6 +75,7 @@ void load_settings(struct window *window)
         window->settings->is_fullscreen = 1;
         window->settings->music_volume = MIX_MAX_VOLUME;
         window->settings->sfx_volume = MIX_MAX_VOLUME;
+        window->settings->is_force_feedback = 1;
 
         return;
     }
@@ -81,6 +84,7 @@ void load_settings(struct window *window)
     fscanf(f, "fullscreen=%d\n", &window->settings->is_fullscreen);
     fscanf(f, "music_volume=%d\n", &window->settings->music_volume);
     fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
+    fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
 
     // Close file
     fclose(f);
@@ -172,18 +176,23 @@ void settings(struct window *window)
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, NUM_SETTINGS);
 
-        if (handle_play_event(window) && selected_item == 1)
+        if (handle_play_event(window))
         {
-            if (is_fullscreen(window))
+            if (selected_item == 1)
             {
-                window->settings->is_fullscreen = 0;
-                SDL_SetWindowFullscreen(window->window, 0);
+                if (is_fullscreen(window))
+                {
+                    window->settings->is_fullscreen = 0;
+                    SDL_SetWindowFullscreen(window->window, 0);
+                }
+                else
+                {
+                    window->settings->is_fullscreen = 1;
+                    SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
+                }
             }
-            else
-            {
-                window->settings->is_fullscreen = 1;
-                SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
-            }
+            else if (selected_item == 4)
+                window->settings->is_force_feedback = !window->settings->is_force_feedback;
 
             write_settings(window);
         }

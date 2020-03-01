@@ -6,6 +6,7 @@
 #include "stars.h"
 #include "setting.h"
 #include "save.h"
+#include "event.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -101,14 +102,13 @@ static void load_sounds(struct window *window)
 struct window *init_all(int width, int height)
 {
     // Init SDL2
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0)
         error("Could not load SDL2", SDL_GetError(), NULL);
-
-    SDL_ShowCursor(SDL_DISABLE);
 
     // Create window and renderer
     struct window *window = init_window(width, height);
 
+    // Hide cursor
     SDL_ShowCursor(SDL_DISABLE);
 
     // Init SDL2_image
@@ -128,8 +128,7 @@ struct window *init_all(int width, int height)
     {
         if (SDL_IsGameController(i))
         {
-            window->in->c.controller = SDL_GameControllerOpen(i);
-            window->in->c.id = SDL_JoystickInstanceID(SDL_GameControllerGetJoystick(window->in->c.controller));
+            init_controller(window->in, i);
             break;
         }
         else

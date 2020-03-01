@@ -134,10 +134,14 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 window->score += SCORE_TO_INCREASE;
 
                 // Decrease health
-                if (SDL_GetTicks() - window->shield_time < SHIELD_TIME)
+                if (SDL_GetTicks() - window->shield_time < SHIELD_TIME) // If shield
                     window->shield_time = 0;
                 else
                     window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
+
+                // Force feedback
+                if (window->settings->is_force_feedback && window->in->c.haptic)
+                    SDL_HapticRumblePlay(window->in->c.haptic, 0.5, 500);
             }
             else /* if (type == BOSS_LIST) */
             {
@@ -147,6 +151,11 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
                 window->health = 0;
+
+                // Force feedback
+                if (window->settings->is_force_feedback && window->in->c.haptic)
+                    SDL_HapticRumblePlay(window->in->c.haptic, 0.75, 750);
+
             }
         }
 
@@ -186,6 +195,10 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                     Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
                     window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+
+                    // force feedback
+                    if (window->settings->is_force_feedback && window->in->c.haptic)
+                        SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
                 }
             }
             else
@@ -211,6 +224,11 @@ void check_collisions_objects(struct window *window, SDL_Rect *pos)
         {
             // Play sound
             Mix_PlayChannel(-1, window->sounds->power_up, 0);
+
+            // force feedback
+            if (window->settings->is_force_feedback && window->in->c.haptic)
+                SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
+
 
             switch (temp->type)
             {
