@@ -171,7 +171,6 @@ struct window *init_all(int width, int height)
     Mix_VolumeMusic(window->settings->music_volume);
     Mix_Volume(-1, window->settings->sfx_volume);
 
-    load_music(window, "data/hybris.ogg", 0);
     load_sounds(window);
 
     // Initialize the stars lib
