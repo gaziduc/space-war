@@ -6,6 +6,7 @@
 #include "menu.h"
 #include "level.h"
 #include "setting.h"
+#include "credits.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -30,16 +31,16 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     SDL_DestroyTexture(title);
 
     // Render items
-    char *s_list[NUM_ITEMS] = { "-> PLAY", "-> SETTINGS", "-> QUIT" };
+    char *s_list[NUM_ITEMS] = { "-> PLAY", "-> SETTINGS", "-> CREDITS", "-> QUIT" };
 
     for (int i = 1; i <= NUM_ITEMS; i++)
     {
         if (selected_item != i)
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
-                        150, 640 + (i - 1) * 100);
+                        150, 570 + (i - 1) * 100);
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 640 + (i - 1) * 100);
+                        150, 570 + (i - 1) * 100);
 
     }
 }
@@ -99,6 +100,9 @@ void menu(struct window *window)
                     settings(window);
                     break;
                 case 3:
+                    credits(window);
+                    break;
+                case 4:
                     escape = 1;
                     break;
             }

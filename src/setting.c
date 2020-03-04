@@ -31,7 +31,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[0], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
     sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
     sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
-    sprintf(s_list[3], "Force Feedback %s", window->settings->is_force_feedback ? "Yes" : "No");
+    sprintf(s_list[3], "Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
 
     // Render items
     for (int i = 1; i <= NUM_SETTINGS; i++)
