@@ -112,7 +112,7 @@ void credits(struct window *window)
     char screen[CREDITS_LINES][CREDITS_COLS] = { 0 };
     Uint32 begin = SDL_GetTicks();
 
-    char *msg = "GAME CREATED BY DAVID \"GAZI\" GHIASSI\n\n\n\nPROGRAMMED IN C LAGUAGE\n\n\n\n";
+    char *msg = "GAME CREATED BY DAVID \"GAZI\" GHIASSI\n\n\n\nPROGRAMMED IN C LANGUAGE\n\n\n\n";
     char *h_line = "*------------------*\n";
 
     size_t line = 0;
