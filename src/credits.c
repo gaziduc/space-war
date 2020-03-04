@@ -10,7 +10,7 @@
 static int render_screen(struct window *window, char screen[][CREDITS_COLS],
                           size_t line, size_t col, Uint32 begin)
 {
-    static SDL_Color green = { 0, 255, 0, 255 };
+    static SDL_Color green = { 0, 255, 0, TITLE_ALPHA_MAX };
 
     // Handle events
     update_events(window->in, window);
@@ -26,6 +26,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
     // Render stars
     render_stars(window);
 
+    // Render letters
     for (int i = 0; i < CREDITS_LINES; i++)
     {
         for (int j = 0; j < CREDITS_COLS; j++)
@@ -41,7 +42,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
         }
     }
 
-    // Print cursor
+    // Render cursor
     Uint32 alpha = (SDL_GetTicks() - begin) % 1000;
 
     if (alpha <= 511)
