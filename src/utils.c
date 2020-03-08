@@ -37,7 +37,8 @@ struct collision_texture *load_texture_collision(const char *path, struct window
     collision->h = surface->h;
     collision->collision = xmalloc(surface->w * surface->h * sizeof(short), window->window);
 
-    SDL_LockSurface(surface);
+    if (SDL_MUSTLOCK(surface))
+        SDL_LockSurface(surface);
 
     for (int i = 0; i < surface->w; i++)
     {
@@ -54,7 +55,8 @@ struct collision_texture *load_texture_collision(const char *path, struct window
         }
     }
 
-    SDL_UnlockSurface(surface);
+    if (SDL_MUSTLOCK(surface))
+        SDL_UnlockSurface(surface);
 
     collision->texture = SDL_CreateTextureFromSurface(window->renderer, surface);
 
