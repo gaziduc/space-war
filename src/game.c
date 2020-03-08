@@ -324,7 +324,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
         if (won)
         {
-            if (is_arcade && mission_num < NUM_LEVELS + 1)
+            if (is_arcade && mission_num < NUM_LEVELS)
             {
                 free_vector(window->paths);
 
