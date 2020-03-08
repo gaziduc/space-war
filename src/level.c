@@ -98,7 +98,11 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     Uint32 begin = SDL_GetTicks();
 
     char s[50] = { 0 };
-    sprintf(s, "Mission %d - %s", selected_level, str);
+
+    if (selected_level == NUM_LEVELS + 1)
+        sprintf(s, "Arcade Mode");
+    else
+        sprintf(s, "Mission %d - %s", selected_level, str);
 
     while (!escape)
     {
@@ -154,10 +158,15 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
 
-    for (int i = 1; i <= NUM_LEVELS; i++)
+    for (int i = 1; i <= NUM_LEVELS + 1; i++)
     {
         char s[50] = { 0 };
-        sprintf(s, "-> Mission %d %.*s", i, window->save->progress[i - 1], "***");
+
+        if (i != NUM_LEVELS + 1)
+            sprintf(s, "-> Mission %d %.*s", i, window->save->progress[i - 1], "***");
+        else
+            sprintf(s, "-> Arcade Mode %.*s", window->save->progress[i - 1], "***");
+
 
         int y = 150 + (i - 1) * 80;
 
@@ -166,7 +175,6 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
         else
             render_text(window, window->fonts->zero4b_30_small, s, green, 150, y);
     }
-
 
     render_selected_level_title(window, s_list[selected_level - 1], alpha);
 }
@@ -178,12 +186,13 @@ void select_level(struct window *window)
     int selected_level = 1;
     Uint32 begin = SDL_GetTicks();
 
-    char *s_list[NUM_LEVELS] = { "The Milky Way",
+    char *s_list[NUM_LEVELS + 1] = { "The Milky Way",
                                  "Andromeda Galaxy",
                                  "Hyperspace",
                                  "New Universe",
                                  "Spatial Army",
                                  "Bosses",
+                                 "Arcade Mode"
                                };
 
     while (!escape)
@@ -198,7 +207,7 @@ void select_level(struct window *window)
             begin = SDL_GetTicks();
         }
 
-        handle_select_arrow_event(window, &selected_level, NUM_LEVELS);
+        handle_select_arrow_event(window, &selected_level, NUM_LEVELS + 1);
         escape = handle_escape_event(window);
 
         // Display black bachground

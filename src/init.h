@@ -122,7 +122,7 @@ struct settings
 
 struct save
 {
-    int progress[NUM_LEVELS];
+    int progress[NUM_LEVELS + 1];
 };
 
 struct window

@@ -170,13 +170,16 @@ static int respawn(struct window *window, SDL_Rect *pos)
 }
 
 
-void reset_game_attributes(struct window *window, int difficulty)
+void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 {
     for (enum list_type i = 0; i < NUM_LISTS; i++)
         clear_list(window->list[i]);
 
     window->last_enemy_time = 0;
-    window->score = 0;
+
+    if (all_reset)
+        window->score = 0;
+
     window->respawn_frame = 0;
     window->is_wave_title = 0;
     window->wave_title_time = 0;
@@ -184,19 +187,22 @@ void reset_game_attributes(struct window *window, int difficulty)
     switch (difficulty)
     {
         case EASY:
-            window->health = MAX_HEALTH_EASY;
+            if (all_reset)
+                window->health = MAX_HEALTH_EASY;
             window->num_bombs = 2;
             window->bonus = 0;
             window->ammo = -1; // -1 means infinite
             break;
         case HARD:
-            window->health = MAX_HEALTH_HARD;
+            if (all_reset)
+                window->health = MAX_HEALTH_HARD;
             window->num_bombs = 1;
             window->bonus = 1500;
             window->ammo = -1;
             break;
         case REALLY_HARD:
-            window->health = MAX_HEALTH_REALLY_HARD;
+            if (all_reset)
+                window->health = MAX_HEALTH_REALLY_HARD;
             window->num_bombs = 1;
             window->bonus = 3000;
             window->ammo = 200;
@@ -207,9 +213,13 @@ void reset_game_attributes(struct window *window, int difficulty)
             break;
     }
 
-    window->max_health = window->health;
-    window->animated_health_low = window->health;
-    window->animated_health_high = window->health;
+    if (all_reset)
+    {
+        window->max_health = window->health;
+        window->animated_health_low = window->health;
+        window->animated_health_high = window->health;
+    }
+
     window->lives = 1;
     window->shield_time = -SHIELD_TIME;
 }
@@ -217,24 +227,39 @@ void reset_game_attributes(struct window *window, int difficulty)
 
 void play_game(struct window *window, int mission_num, int difficulty)
 {
+    int is_arcade = 0;
+
+    // Set mode to arcade if necessary
+    if (mission_num == NUM_LEVELS + 1)
+    {
+        is_arcade = 1;
+        mission_num = 1;
+    }
+
     // Load enemy paths and set enemy timer
     char s[50] = { 0 };
     sprintf(s, "data/level%d.txt", mission_num);
     window->paths = load_paths(window, s);
 
     int escape = 0;
+    int retry = 1;
+    SDL_Rect pos;
 
     while (!escape)
     {
-        load_music(window, "data/madness.ogg", 1);
+        reset_game_attributes(window, difficulty, retry);
 
-        init_background(window);
+        if (retry)
+        {
+            load_music(window, "data/madness.ogg", 1);
+            init_background(window);
 
-        reset_game_attributes(window, difficulty);
+            init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
+
+            retry = 0;
+        }
+
         window->paths->index = 0;
-
-        SDL_Rect pos;
-        init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
 
         int dead = 0;
         int won = 0;
@@ -296,16 +321,36 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
         }
 
-        free_background(window->stars);
 
         if (won)
         {
-            success(window, mission_num, difficulty);
-            escape = 1;
+            if (is_arcade && mission_num < NUM_LEVELS + 1)
+            {
+                free_vector(window->paths);
+
+                mission_num++;
+                sprintf(s, "data/level%d.txt", mission_num);
+                window->paths = load_paths(window, s);
+            }
+            else
+            {
+                free_background(window->stars);
+
+                success(window, mission_num, difficulty);
+                escape = 1;
+            }
         }
 
         else if (dead)
+        {
+            free_background(window->stars);
+            if (is_arcade)
+                mission_num = 1;
+
             escape = failure(window);
+            if (!escape)
+                retry = 1;
+        }
     }
 
     free_vector(window->paths);
