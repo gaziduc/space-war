@@ -3,8 +3,8 @@
 
 #include "init.h"
 
-#define CREDITS_CHAR_W 21
-#define CREDITS_CHAR_H 26
+#define CREDITS_CHAR_W 23
+#define CREDITS_CHAR_H 34
 #define CREDITS_COLS 50
 #define CREDITS_LINES 30
 #define LEFT_PADDING 150

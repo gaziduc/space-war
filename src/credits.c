@@ -33,11 +33,10 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
         {
             if (screen[i][j])
             {
-                char text[2] = { screen[i][j], '\0' };
-
-                render_text(window, window->fonts->pixel, text, green,
+                render_text(window, window->fonts->pixel_large, screen[i] + j, green,
                             LEFT_PADDING + j * CREDITS_CHAR_W,
                             UP_PADDING + i * CREDITS_CHAR_H);
+                break;
             }
         }
     }

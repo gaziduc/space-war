@@ -70,6 +70,7 @@ static void load_fonts(struct window *window)
     window->fonts = xmalloc(sizeof(struct fonts), window->window);
 
     window->fonts->pixel = load_font(window, "data/pixel.ttf", 26);
+    window->fonts->pixel_large = load_font(window, "data/pixel.ttf", 37);
     window->fonts->zero4b_30 = load_font(window, "data/04b_30.ttf", 120);
     window->fonts->zero4b_30_small = load_font(window, "data/04b_30.ttf", 60);
     window->fonts->zero4b_30_extra_small = load_font(window, "data/04b_30.ttf", 40);

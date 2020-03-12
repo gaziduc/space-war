@@ -98,6 +98,7 @@ struct vector
 struct fonts
 {
     TTF_Font *pixel;
+    TTF_Font *pixel_large;
     TTF_Font *zero4b_30;
     TTF_Font *zero4b_30_small;
     TTF_Font *zero4b_30_extra_small;
