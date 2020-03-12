@@ -5,6 +5,8 @@
 # A: standard
 # 0: boss
 
+$ Mission_1
+
 $ Wave_1
 1000 540 1 4 A
 4000 140 1 4 A

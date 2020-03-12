@@ -349,7 +349,14 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
             escape = failure(window);
             if (!escape)
+            {
                 retry = 1;
+                if (is_arcade)
+                {
+                    free_vector(window->paths);
+                    window->paths = load_paths(window, "data/level1.txt");
+                }
+            }
         }
     }
 

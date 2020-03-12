@@ -8,6 +8,8 @@
 # B: asteroid
 # 0: boss
 
+$ Mission_5
+
 $ Wave_1
 @ S
 6000 540 2 6 B
