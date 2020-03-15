@@ -112,8 +112,8 @@ void credits(struct window *window)
     char screen[CREDITS_LINES][CREDITS_COLS] = { 0 };
     Uint32 begin = SDL_GetTicks();
 
-    char *msg = "GAME CREATED BY DAVID \"GAZI\" GHIASSI\n\n\n\nPROGRAMMED IN C LANGUAGE\n\n\n\n";
-    char *h_line = "*------------------*\n";
+    char *msg = "GAME CREATED BY DAVID \"GAZI\" GHIASSI\n\n\nPROGRAMMED IN C LANGUAGE\n\n\n";
+    char *h_line = "+------------------+\n";
 
     size_t line = 0;
     size_t col = 0;
@@ -148,6 +148,6 @@ void credits(struct window *window)
     if (add_letters(window, screen, h_line, &line, &col, 50, 0, begin))
         return;
 
-    if (add_letters(window, screen, "\n\n\n\nTHANKS FOR PLAYING!", &line, &col, 50, 42000, begin))
+    if (add_letters(window, screen, "\n\n\nTHANKS FOR PLAYING!", &line, &col, 50, 42000, begin))
         return;
 }
