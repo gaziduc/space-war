@@ -11,13 +11,15 @@ void init_background(struct window *window)
     window->stars->next = NULL;
 
     // Create some initial points
-    for (int c = 0; c < 4 * window->w; c++)
+    for (int c = 0; c < 8 * window->h; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
         new->x = rand() % window->w;
         new->y = rand() % window->h;
-        new->z = 1;
+        new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
+        if (new->z > 4)
+            new->opacity /= 2;
 
         new->next = window->stars->next;
         window->stars->next = new;
@@ -26,15 +28,13 @@ void init_background(struct window *window)
 
 void move_background(struct window *window, unsigned long framecount)
 {
-    if (framecount % 2 == 0)
-        return;
-
     struct point *last = window->stars;
     struct point *p = window->stars->next;
 
     while (p)
     {
-        p->x -= p->z;
+        if (framecount % p->z == 0)
+            p->x--;
 
         // Delete point
         if (p->x < 0)
@@ -52,13 +52,15 @@ void move_background(struct window *window, unsigned long framecount)
     }
 
     // Create some points
-    for (int c = 0; c < rand() % 16; c++)
+    for (int c = 0; c < rand() % 10; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
         new->x = window->w - 1;
         new->y = rand() % window->h;
-        new->z = 1;
+        new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
+        if (new->z > 4)
+            new->opacity /= 2;
 
         new->next = window->stars->next;
         window->stars->next = new;
