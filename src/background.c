@@ -52,7 +52,7 @@ void move_background(struct window *window, unsigned long framecount)
     }
 
     // Create some points
-    for (int c = 0; c < rand() % 10; c++)
+    for (int c = 0; c < rand() % 6; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
         new->x = window->w - 1;
