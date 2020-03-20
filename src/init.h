@@ -7,6 +7,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #define NUM_LEVELS 6
+#define NUM_ROTATING_FRAMES 60
 
 enum object_type
 {
@@ -34,6 +35,7 @@ struct textures
     struct collision_texture *boss;
     struct collision_texture *objects[NUM_OBJECTS];
     struct collision_texture *asteroid;
+    struct collision_texture *rotating_enemy[NUM_ROTATING_FRAMES];
     SDL_Texture *aura;
 };
 
@@ -60,6 +62,14 @@ struct input
     struct controller c;
 };
 
+
+union texture
+{
+    struct collision_texture *texture;
+    struct collision_texture *textures[NUM_ROTATING_FRAMES];
+};
+
+
 struct list
 {
     SDL_Rect pos_src;
@@ -71,7 +81,9 @@ struct list
     Uint32 last_time_hurt;
     enum object_type type;
     char enemy_type;
-    struct collision_texture *texture;
+    int rotating;
+    int curr_texture;
+    union texture texture;
     struct list *next;
 };
 

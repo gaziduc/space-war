@@ -16,7 +16,9 @@ void set_boss_attributes(struct list *new, SDL_Rect *pos, struct window *window)
     new->max_health = new->health;
     new->last_time_hurt = 0;
 
-    new->texture = window->img->boss;
+    new->rotating = 0;
+    new->curr_texture = 0;
+    new->texture.texture = window->img->boss;
 }
 
 

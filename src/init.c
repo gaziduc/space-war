@@ -11,6 +11,8 @@
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL2_rotozoom.h>
+
 
 static struct window *init_window(int width, int height)
 {
@@ -62,6 +64,22 @@ static void load_textures(struct window *window)
     window->img->objects[SHIELD] = load_texture_collision("data/shield.png", window);
     window->img->aura = load_texture("data/aura.png", window);
     window->img->asteroid = load_texture_collision("data/asteroid.png", window);
+
+    SDL_Surface *original = IMG_Load("data/rotating_enemy.png");
+    if (!original)
+        error("Could not load surface", IMG_GetError(), window->window);
+
+    window->img->rotating_enemy[0] = get_texture_collision(original, window);
+
+    for (size_t i = 1; i < NUM_ROTATING_FRAMES; i++)
+    {
+        SDL_Surface *temp = rotozoomSurface(original, i * 2, 1.0, SMOOTHING_ON);
+        window->img->rotating_enemy[i] = get_texture_collision(temp, window);
+
+        SDL_FreeSurface(temp);
+    }
+
+    SDL_FreeSurface(original);
 }
 
 

@@ -11,6 +11,15 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 
+static int is_rotating(char enemy_type)
+{
+    if (enemy_type == 'C')
+        return 1;
+
+    return 0;
+}
+
+
 void set_enemy_attributes(struct list *new, SDL_Rect *pos,
                           struct window *window, char enemy_type)
 {
@@ -23,18 +32,28 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
     switch (enemy_type)
     {
         case 'A':
-            new->texture = window->img->enemy;
+            new->texture.texture = window->img->enemy;
             break;
 
         case 'B':
-            new->texture = window->img->asteroid;
+            new->texture.texture = window->img->asteroid;
             break;
+
+        case 'C':
+            for (size_t i = 0; i < NUM_ROTATING_FRAMES; i++)
+                new->texture.textures[i] = window->img->rotating_enemy[i];
+            break;
+
 
         default:
             break;
     }
 
-    init_position(window->w, pos->y, window, new->texture->texture, &new->pos_dst);
+    new->rotating = is_rotating(enemy_type);
+    new->curr_texture = 0;
+    init_position(window->w, pos->y, window,
+                  new->rotating ? new->texture.textures[0]->texture : new->texture.texture->texture,
+                  &new->pos_dst);
 }
 
 
@@ -55,6 +74,9 @@ void create_enemies(struct window *window)
                 break;
             case 'B':
                 SDL_QueryTexture(window->img->asteroid->texture, NULL, NULL, NULL, &h);
+                break;
+            case 'C':
+                SDL_QueryTexture(window->img->rotating_enemy[0]->texture, NULL, NULL, NULL, &h);
                 break;
 
             case '0':
@@ -83,11 +105,12 @@ void create_enemies(struct window *window)
 
 static int is_shooting(char enemy_type)
 {
-    if (enemy_type == 'A')
+    if (enemy_type == 'A' || enemy_type == 'C')
         return 1;
 
     return 0;
 }
+
 
 void move_enemies(struct window *window, SDL_Rect *ship_pos)
 {
@@ -99,6 +122,10 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
         // Move enemy
         temp->pos_dst.x -= temp->speed.x;
         temp->framecount++;
+
+        if (is_rotating(temp->enemy_type))
+            temp->curr_texture = (temp->curr_texture + 1) % NUM_ROTATING_FRAMES;
+
 
         int shoot = is_shooting(temp->enemy_type);
 
@@ -137,11 +164,29 @@ void render_enemies(struct window *window)
     while (temp)
     {
         // Display enemy trail
-        if (is_shooting(temp->enemy_type))
+        if (is_shooting(temp->enemy_type) && !temp->rotating)
             render_trail(window, &temp->pos_dst, 1);
 
         // Display enemy
-        SDL_RenderCopy(window->renderer, temp->texture->texture, NULL, &temp->pos_dst);
+        if (temp->rotating)
+        {
+            int w = 0;
+            int h = 0;
+
+            SDL_QueryTexture(temp->texture.textures[temp->curr_texture]->texture, NULL, NULL, &w, &h);
+
+            SDL_Rect pos = { .x = temp->pos_dst.x + temp->pos_dst.w / 2 - w / 2,
+                             .y = temp->pos_dst.y + temp->pos_dst.h / 2 - h / 2,
+                             .w = w,
+                             .h = h
+                           };
+
+            SDL_RenderCopy(window->renderer,
+                           temp->texture.textures[temp->curr_texture]->texture,                                                                     NULL, &pos);
+        }
+        else
+            SDL_RenderCopy(window->renderer,
+                           temp->texture.texture->texture,                                                                                          NULL, &temp->pos_dst);
 
         // Go to next enemy
         temp = temp->next;

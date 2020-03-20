@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
-
 void init_background(struct window *window)
 {
     window->stars = xmalloc(sizeof(struct point), window->window);
@@ -14,10 +13,12 @@ void init_background(struct window *window)
     for (int c = 0; c < 8 * window->h; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
+
         new->x = rand() % window->w;
         new->y = rand() % window->h;
         new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
+
         if (new->z > 4)
             new->opacity /= 2;
 
@@ -55,10 +56,12 @@ void move_background(struct window *window, unsigned long framecount)
     for (int c = 0; c < rand() % 6; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
+
         new->x = window->w - 1;
         new->y = rand() % window->h;
         new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
+
         if (new->z > 4)
             new->opacity /= 2;
 

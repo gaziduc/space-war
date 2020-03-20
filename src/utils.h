@@ -9,6 +9,8 @@
 
 SDL_Texture *load_texture(const char *path, struct window *window);
 
+struct collision_texture *get_texture_collision(SDL_Surface *surface, struct window *window);
+
 struct collision_texture *load_texture_collision(const char *path, struct window *window);
 
 void init_position(int x, int y, struct window *window, SDL_Texture *texture,

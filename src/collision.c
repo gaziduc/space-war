@@ -55,10 +55,38 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
         int deleted_enemy = 0;
 
+        // Get current enemy texture (correct animation frame)
+        struct collision_texture *temp = NULL;
+        SDL_Rect *temp_pos = NULL;
+        int to_free = 0;
+
+
+        if (temp_enemy->rotating)
+        {
+            temp = temp_enemy->texture.textures[temp_enemy->curr_texture];
+
+            int w = 0;
+            int h = 0;
+            SDL_QueryTexture(temp->texture, NULL, NULL, &w, &h);
+
+            temp_pos = xmalloc(sizeof(SDL_Rect), window->window);
+            to_free = 1;
+
+            temp_pos->x = temp_enemy->pos_dst.x + temp_enemy->pos_dst.w / 2 - w / 2;
+            temp_pos->y = temp_enemy->pos_dst.y + temp_enemy->pos_dst.h / 2 - h / 2;
+            temp_pos->w = w;
+            temp_pos->h = h;
+        }
+        else
+        {
+            temp = temp_enemy->texture.texture;
+            temp_pos = &temp_enemy->pos_dst;
+        }
+
         while (temp_shot)
         {
             // If collision shot <-> enemy
-            if (collision(&temp_enemy->pos_dst, temp_enemy->texture,
+            if (collision(temp_pos, temp,
                           &temp_shot->pos_dst, window->img->shot))
             {
                 // Decrease enemy health
@@ -67,7 +95,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
                 // Add an explosion
                 list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                                temp_enemy->texture->texture, NULL, 0, 0);
+                                temp->texture, NULL, 0, 0);
 
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -107,12 +135,12 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 
         // If collision ship <-> enemy
         if (window->health > 0 && !deleted_enemy
-            && collision(&temp_enemy->pos_dst, temp_enemy->texture,
+            && collision(temp_pos, temp,
                          pos, window->img->ship))
         {
             // Add an explosion
             list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
-                            temp_enemy->texture->texture, NULL, 0, 0);
+                            temp->texture, NULL, 0, 0);
 
             Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -155,7 +183,6 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 // Force feedback
                 if (window->settings->is_force_feedback && window->in->c.haptic)
                     SDL_HapticRumblePlay(window->in->c.haptic, 0.75, 750);
-
             }
         }
 
@@ -165,6 +192,9 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
             prev_enemy = temp_enemy;
             temp_enemy = temp_enemy->next;
         }
+
+        if (to_free)
+            free(temp_pos);
     }
 
 
@@ -220,7 +250,7 @@ void check_collisions_objects(struct window *window, SDL_Rect *pos)
     {
         if (window->health > 0 &&
             collision(pos, window->img->ship,
-                      &temp->pos_dst, temp->texture))
+                      &temp->pos_dst, temp->texture.texture))
         {
             // Play sound
             Mix_PlayChannel(-1, window->sounds->power_up, 0);

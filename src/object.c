@@ -7,9 +7,10 @@
 void set_object_attributes(struct list *new, enum object_type type,
                            struct window *window, struct collision_texture *collision)
 {
-    new->texture = collision;
+    new->texture.texture = collision;
+    new->rotating = 0;
 
-    init_position(window->w, POS_CENTERED, window, new->texture->texture, &new->pos_dst);
+    init_position(window->w, POS_CENTERED, window, new->texture.texture->texture, &new->pos_dst);
 
     new->type = type;
     new->framecount = 0;
@@ -63,7 +64,7 @@ void render_objects(struct window *window)
     while (temp)
     {
         // Display object
-        SDL_RenderCopy(window->renderer, temp->texture->texture, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &temp->pos_dst);
 
         // Go to next object
         temp = temp->next;

@@ -24,13 +24,8 @@ SDL_Texture *load_texture(const char *path, struct window *window)
 }
 
 
-struct collision_texture *load_texture_collision(const char *path, struct window *window)
+struct collision_texture *get_texture_collision(SDL_Surface *surface, struct window *window)
 {
-    SDL_Surface *surface = IMG_Load(path);
-
-    if (!surface)
-        error("Could not load images", IMG_GetError(), window->window);
-
     struct collision_texture *collision = xmalloc(sizeof(struct collision_texture), window->window);
 
     collision->w = surface->w;
@@ -63,9 +58,22 @@ struct collision_texture *load_texture_collision(const char *path, struct window
     if (!collision->texture)
         error("Could not load images", SDL_GetError(), window->window);
 
+    return collision;
+}
+
+
+struct collision_texture *load_texture_collision(const char *path, struct window *window)
+{
+    SDL_Surface *surface = IMG_Load(path);
+
+    if (!surface)
+        error("Could not load images", IMG_GetError(), window->window);
+
+    struct collision_texture *result = get_texture_collision(surface, window);
+
     SDL_FreeSurface(surface);
 
-    return collision;
+    return result;
 }
 
 
