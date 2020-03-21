@@ -19,7 +19,6 @@ static int is_rotating(char enemy_type)
     return 0;
 }
 
-
 void set_enemy_attributes(struct list *new, SDL_Rect *pos,
                           struct window *window, char enemy_type)
 {
@@ -126,10 +125,12 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
         if (is_rotating(temp->enemy_type))
             temp->curr_texture = (temp->curr_texture + 1) % NUM_ROTATING_FRAMES;
 
-
         int shoot = is_shooting(temp->enemy_type);
 
-        if (shoot && temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
+        if (temp->enemy_type == 'A' && temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0, 0);
+
+        if (temp->enemy_type == 'C' && temp->framecount % 8 == 0)
             list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0, 0);
 
         // Prevent out of bounds by deleting the enemy if not on screen
@@ -182,11 +183,13 @@ void render_enemies(struct window *window)
                            };
 
             SDL_RenderCopy(window->renderer,
-                           temp->texture.textures[temp->curr_texture]->texture,                                                                     NULL, &pos);
+                           temp->texture.textures[temp->curr_texture]->texture,
+                           NULL, &pos);
         }
         else
             SDL_RenderCopy(window->renderer,
-                           temp->texture.texture->texture,                                                                                          NULL, &temp->pos_dst);
+                           temp->texture.texture->texture,
+                           NULL, &temp->pos_dst);
 
         // Go to next enemy
         temp = temp->next;
@@ -235,7 +238,7 @@ void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst, struct windo
                                SDL_Rect *ship_pos)
 {
     // Setting shot initial position
-    new->pos_dst.x = pos_dst->x;
+    new->pos_dst.x = pos_dst->x + pos_dst->w / 2;
     new->pos_dst.y = pos_dst->y + pos_dst->h / 2;
 
     SDL_QueryTexture(window->img->enemy_shot->texture, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);

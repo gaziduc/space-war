@@ -73,7 +73,7 @@ static void load_textures(struct window *window)
 
     for (size_t i = 1; i < NUM_ROTATING_FRAMES; i++)
     {
-        SDL_Surface *temp = rotozoomSurface(original, i * 2, 1.0, SMOOTHING_ON);
+        SDL_Surface *temp = rotozoomSurface(original, i * 2.0, 1.0, SMOOTHING_ON);
         window->img->rotating_enemy[i] = get_texture_collision(temp, window);
 
         SDL_FreeSurface(temp);

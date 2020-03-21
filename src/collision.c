@@ -60,7 +60,6 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
         SDL_Rect *temp_pos = NULL;
         int to_free = 0;
 
-
         if (temp_enemy->rotating)
         {
             temp = temp_enemy->texture.textures[temp_enemy->curr_texture];
@@ -83,6 +82,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
             temp_pos = &temp_enemy->pos_dst;
         }
 
+
         while (temp_shot)
         {
             // If collision shot <-> enemy
@@ -94,7 +94,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 temp_enemy->last_time_hurt = SDL_GetTicks();
 
                 // Add an explosion
-                list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
+                list_push_front(temp_pos, window, EXPLOSION_LIST,
                                 temp->texture, NULL, 0, 0);
 
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
@@ -108,7 +108,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 if (temp_enemy->health <= 0)
                 {
                     // Add a "+100" text above the dead enemy
-                    list_push_front(&temp_enemy->pos_dst, window, HUD_LIST,
+                    list_push_front(temp_pos, window, HUD_LIST,
                                     NULL, NULL, 0, 0);
 
                     // Delete enemy
@@ -139,7 +139,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                          pos, window->img->ship))
         {
             // Add an explosion
-            list_push_front(&temp_enemy->pos_dst, window, EXPLOSION_LIST,
+            list_push_front(temp_pos, window, EXPLOSION_LIST,
                             temp->texture, NULL, 0, 0);
 
             Mix_PlayChannel(-1, window->sounds->explosion, 0);
@@ -147,7 +147,7 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
             if (type == ENEMY_LIST)
             {
                 // Add a "+100" text above the dead enemy
-                list_push_front(&temp_enemy->pos_dst, window, HUD_LIST,
+                list_push_front(temp_pos, window, HUD_LIST,
                                 NULL, NULL, 0, 0);
 
                 // Delete enemy

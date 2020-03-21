@@ -7,7 +7,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #define NUM_LEVELS 6
-#define NUM_ROTATING_FRAMES 60
+#define NUM_ROTATING_FRAMES 180
 
 enum object_type
 {
