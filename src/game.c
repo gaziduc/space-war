@@ -36,14 +36,14 @@ static void handle_arrow_event(struct window *window, SDL_Rect *pos)
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
         pos->y += SHIP_SPEED;
     else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE)
-        pos->y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY] .value* SHIP_SPEED / 32767;
+        pos->y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32767;
 
 
     // Left
     if (window->in->key[SDL_SCANCODE_LEFT]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP])
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT])
         pos->x -= SHIP_SPEED;
-    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value<= -DEAD_ZONE)
+    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE)
         pos->x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32768;
 
 
