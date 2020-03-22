@@ -15,6 +15,7 @@
 #include "background.h"
 #include "level.h"
 #include "object.h"
+#include "pause.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
@@ -270,7 +271,9 @@ void play_game(struct window *window, int mission_num, int difficulty)
             // Get and handle events
             update_events(window->in, window);
             handle_quit_event(window, 1);
-            escape = handle_escape_event(window);
+            if (handle_escape_event(window))
+                escape = pause(window);
+
             handle_arrow_event(window, &pos);
             handle_shot_event(window, &pos);
             handle_bomb_event(window);
@@ -336,7 +339,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             {
                 free_background(window->stars);
 
-                success(window, mission_num, difficulty);
+                success(window, is_arcade ? NUM_LEVELS + 1 : mission_num, difficulty);
                 escape = 1;
             }
         }
@@ -347,7 +350,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (is_arcade)
                 mission_num = 1;
 
-            escape = failure(window);
+            escape = failure(window, is_arcade ? NUM_LEVELS + 1 : mission_num);
             if (!escape)
             {
                 retry = 1;

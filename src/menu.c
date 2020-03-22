@@ -41,7 +41,6 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
                         150, 570 + (i - 1) * 100);
-
     }
 }
 

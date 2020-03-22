@@ -10,18 +10,29 @@
 #include <SDL2/SDL2_framerate.h>
 
 
-static void render_selected_level_title(struct window *window, const char *s, Uint32 alpha)
+static void render_selected_level_title(struct window *window, const char *s, Uint32 alpha, int score)
 {
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     SDL_Texture *texture = get_text_texture(window, window->fonts->zero4b_30_small,
                                             s, orange);
-
     SDL_Rect pos = { .x = 1300, .y = 150, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos.w, &pos.h);
     pos.x -= pos.w / 2;
-
     SDL_RenderCopy(window->renderer, texture, NULL, &pos);
+    SDL_DestroyTexture(texture);
+
+
+    SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
+
+    // Render score
+    char str[50] = { 0 };
+    sprintf(str, "Best: %d", score);
+    texture = get_text_texture(window, window->fonts->zero4b_30_small, str, yellow);
+    SDL_Rect pos_score = { .x = 1300, .y = 250, .w = 0, .h = 0 };
+    SDL_QueryTexture(texture, NULL, NULL, &pos_score.w, &pos_score.h);
+    pos_score.x -= pos_score.w / 2;
+    SDL_RenderCopy(window->renderer, texture, NULL, &pos_score);
     SDL_DestroyTexture(texture);
 }
 
@@ -176,7 +187,8 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
             render_text(window, window->fonts->zero4b_30_small, s, green, 150, y);
     }
 
-    render_selected_level_title(window, s_list[selected_level - 1], alpha);
+    render_selected_level_title(window, s_list[selected_level - 1],
+                                alpha, window->save->score[selected_level - 1]);
 }
 
 

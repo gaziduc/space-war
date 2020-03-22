@@ -136,6 +136,7 @@ struct settings
 struct save
 {
     int progress[NUM_LEVELS + 1];
+    int score[NUM_LEVELS + 1];
 };
 
 struct window

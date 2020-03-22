@@ -19,14 +19,20 @@ void read_save(struct window *window)
     {
         // Set progress to 0
         for (int i = 0; i < NUM_LEVELS + 1; i++)
+        {
             window->save->progress[i] = 0;
+            window->save->score[i] = 0;
+        }
 
         return;
     }
 
     // Read progress
     for (int i = 0; i < NUM_LEVELS + 1; i++)
+    {
         fread(&window->save->progress[i], sizeof(window->save->progress[i]), 1, f);
+        fread(&window->save->score[i], sizeof(window->save->score[i]), 1, f);
+    }
 
     fclose(f);
 }
@@ -39,7 +45,10 @@ void write_save(struct window *window, struct save *save)
         error("save.bin", "Could not open/create save file", window->window);
 
     for (int i = 0; i < NUM_LEVELS + 1; i++)
+    {
         fwrite(&save->progress[i], sizeof(save->progress[i]), 1, f);
+        fwrite(&save->score[i], sizeof(save->score[i]), 1, f);
+    }
 
     fclose(f);
 }

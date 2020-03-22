@@ -7,7 +7,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 
-static void render_success_texts(struct window *window, Uint32 begin)
+static void render_success_texts(struct window *window, Uint32 begin, int is_best)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -54,6 +54,13 @@ static void render_success_texts(struct window *window, Uint32 begin)
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 150, 620);
 
+    if (is_best)
+    {
+        SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
+        render_text(window, window->fonts->zero4b_30_small, "NEW BEST!", yellow, 1000, 620);
+    }
+
+
     // Enter to continue
     render_text(window, window->fonts->zero4b_30_small, "-> CONTINUE",
                 green, 150, 810);
@@ -66,9 +73,17 @@ void success(struct window *window, const int level_num, const int difficulty)
     if (window->save->progress[level_num - 1] < difficulty)
         window->save->progress[level_num - 1] = difficulty;
 
+    int final_score = window->score + window->health + window->num_bombs * 100 + window->bonus;
+    int is_best = 0;
+
+    if (window->save->score[level_num - 1] < final_score)
+    {
+        window->save->score[level_num - 1] = final_score;
+        is_best = 1;
+    }
+
     // Save
     write_save(window, window->save);
-
 
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
@@ -89,7 +104,7 @@ void success(struct window *window, const int level_num, const int difficulty)
         SDL_RenderClear(window->renderer);
 
         render_stars(window);
-        render_success_texts(window, begin);
+        render_success_texts(window, begin, is_best);
         SDL_RenderPresent(window->renderer);
 
         SDL_framerateDelay(window->fps);
@@ -97,7 +112,7 @@ void success(struct window *window, const int level_num, const int difficulty)
 }
 
 
-static void render_failure_texts(struct window *window, Uint32 begin, int selected)
+static void render_failure_texts(struct window *window, Uint32 begin, int selected, int is_best)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -119,6 +134,13 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 150, 450);
 
+    if (is_best)
+    {
+        SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
+        render_text(window, window->fonts->zero4b_30_small, "NEW BEST!", yellow, 150, 550);
+    }
+
+
 
     char *s_list[2] = { "-> RETRY", "-> BACK" };
     SDL_Color blue = { 0, 255, 255, alpha };
@@ -137,11 +159,18 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
 }
 
 
-int failure(struct window *window)
+int failure(struct window *window, int level_num)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
-    int selected = 1;
+    int selected = 1;;
+    int is_best = 0;
+
+    if (window->save->score[level_num - 1] < window->score)
+    {
+        window->save->score[level_num - 1] = window->score;
+        is_best = 1;
+    }
 
     load_music(window, "data/failure.ogg", 1);
 
@@ -165,7 +194,7 @@ int failure(struct window *window)
         SDL_RenderClear(window->renderer);
 
         render_stars(window);
-        render_failure_texts(window, begin, selected);
+        render_failure_texts(window, begin, selected, is_best);
         SDL_RenderPresent(window->renderer);
 
         SDL_framerateDelay(window->fps);
