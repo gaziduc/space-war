@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include <SDL2/SDL.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
 
 
 static int is_rotating(char enemy_type)
@@ -50,7 +49,7 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
 
     new->rotating = is_rotating(enemy_type);
     new->curr_texture = 0;
-    init_position(window->w, pos->y, window,
+    init_position(DEFAULT_W, pos->y,
                   new->rotating ? new->texture.textures[0]->texture : new->texture.texture->texture,
                   &new->pos_dst);
 }
@@ -87,7 +86,12 @@ void create_enemies(struct window *window)
                 break;
         }
 
-        SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].line.enemy_path.pos_y - h / 2, .w = 0, .h = 0 };
+        SDL_Rect pos = { .x = 0,
+                         .y = window->paths->data[window->paths->index].line.enemy_path.pos_y
+                              - h / 2,
+                         .w = 0,
+                         .h = 0
+                       };
 
         char type = window->paths->data[window->paths->index].line.enemy_path.enemy_type;
 
@@ -182,14 +186,26 @@ void render_enemies(struct window *window)
                              .h = h
                            };
 
+            resize_pos_for_resolution(window, &pos);
+
             SDL_RenderCopy(window->renderer,
                            temp->texture.textures[temp->curr_texture]->texture,
                            NULL, &pos);
         }
         else
+        {
+            SDL_Rect pos = { .x = temp->pos_dst.x,
+                             .y = temp->pos_dst.y,
+                             .w = temp->pos_dst.w,
+                             .h = temp->pos_dst.h
+                           };
+
+            resize_pos_for_resolution(window, &pos);
+
             SDL_RenderCopy(window->renderer,
                            temp->texture.texture->texture,
-                           NULL, &temp->pos_dst);
+                           NULL, &pos);
+        }
 
         // Go to next enemy
         temp = temp->next;
@@ -202,19 +218,29 @@ void render_enemies(struct window *window)
 
 void render_enemy_health(struct window *window, struct list *enemy)
 {
-    boxRGBA(window->renderer,
-            enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50,
-            enemy->pos_dst.y - 25,
-            enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health,
-            enemy->pos_dst.y - 20,
-            0, 255, 0, 192);
+    SDL_Rect pos = { .x = enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50,
+                     .y = enemy->pos_dst.y - 25,
+                     .w = (100 * enemy->health) / enemy->max_health,
+                     .h = 5
+                   };
 
-    boxRGBA(window->renderer,
-            enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health,
-            enemy->pos_dst.y - 25,
-            enemy->pos_dst.x + enemy->pos_dst.w / 2 + 50,
-            enemy->pos_dst.y - 20,
-            255, 0, 0, 192);
+    int old_w = pos.w;
+
+    resize_pos_for_resolution(window, &pos);
+
+    SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, 192); // green
+    SDL_RenderFillRect(window->renderer, &pos);
+
+
+    pos.x = enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50 + (100 * enemy->health) / enemy->max_health;
+    pos.y = enemy->pos_dst.y - 25; // Mandatory because of the resize_pos_for_resolution
+    pos.w = 100 - old_w;
+    pos.h = 5; // Mandatory because of the resize_pos_for_resolution
+
+    resize_pos_for_resolution(window, &pos);
+
+    SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, 192); // red
+    SDL_RenderFillRect(window->renderer, &pos);
 }
 
 
@@ -269,7 +295,7 @@ void move_enemy_shots(struct window *window)
         // Prevent out of bounds by deleting the shot if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0
             || temp->pos_dst.y + temp->pos_dst.h <= 0
-            || temp->pos_dst.y >= window->h)
+            || temp->pos_dst.y >= DEFAULT_H)
         {
             struct list *to_delete = temp;
             prev->next = temp->next;
@@ -293,8 +319,16 @@ void render_enemy_shots(struct window *window)
 
     while (temp)
     {
+        SDL_Rect pos = { .x = temp->pos_dst.x,
+                         .y = temp->pos_dst.y,
+                         .w = temp->pos_dst.w,
+                         .h = temp->pos_dst.h
+        };
+
+        resize_pos_for_resolution(window, &pos);
+
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->enemy_shot->texture, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->enemy_shot->texture, NULL, &pos);
 
         // Go to next shot
         temp = temp->next;

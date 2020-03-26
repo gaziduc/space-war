@@ -10,7 +10,7 @@ void set_object_attributes(struct list *new, enum object_type type,
     new->texture.texture = collision;
     new->rotating = 0;
 
-    init_position(window->w, POS_CENTERED, window, new->texture.texture->texture, &new->pos_dst);
+    init_position(window->w, POS_CENTERED, new->texture.texture->texture, &new->pos_dst);
 
     new->type = type;
     new->framecount = 0;
@@ -63,8 +63,16 @@ void render_objects(struct window *window)
 
     while (temp)
     {
+        SDL_Rect pos = { .x = temp->pos_dst.x,
+                         .y = temp->pos_dst.y,
+                         .w = temp->pos_dst.w,
+                         .h = temp->pos_dst.h
+                       };
+
+        resize_pos_for_resolution(window, &pos);
+
         // Display object
-        SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &pos);
 
         // Go to next object
         temp = temp->next;
@@ -85,6 +93,8 @@ void render_shield_aura(struct window *window, SDL_Rect *ship_pos)
                         .w = w,
                         .h = h
                        };
+
+        resize_pos_for_resolution(window, &pos);
 
         SDL_RenderCopy(window->renderer, window->img->aura, NULL, &pos);
     }

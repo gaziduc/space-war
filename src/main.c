@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     (void) argv;
 
     // Init SDL2, window, renderer and load textures, events, ...
-    struct window *window = init_all(1920, 1080);
+    struct window *window = init_all();
 
     // Menu loop
     menu(window);

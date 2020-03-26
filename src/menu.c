@@ -20,15 +20,11 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Rect pos = { .x = 150, .y = 150, .w = 0, .h = 0 };
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
 
     // Render title
-    SDL_Texture *title = get_text_texture(window, window->fonts->zero4b_30, "SPACE WAR", blue);
-    SDL_QueryTexture(title, NULL, NULL, &pos.w, &pos.h);
-    SDL_RenderCopy(window->renderer, title, NULL, &pos);
-    SDL_DestroyTexture(title);
+    render_text(window, window->fonts->zero4b_30, "SPACE WAR", blue, 150, 150);
 
     // Render items
     char *s_list[NUM_ITEMS] = { "-> PLAY", "-> SETTINGS", "-> CREDITS", "-> QUIT" };
@@ -50,7 +46,7 @@ void render_stars(struct window *window)
     for (;;)
     {
         struct return_point rp;
-        int return_code = process_point(window->universe, &rp);
+        int return_code = process_point(window->universe, &rp, window);
 
         if (return_code == 0)
             break;

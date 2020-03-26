@@ -55,6 +55,9 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
                          .y = UP_PADDING + line * CREDITS_CHAR_H,
                          .w = CREDITS_CHAR_W,
                          .h = CREDITS_CHAR_H };
+
+        resize_pos_for_resolution(window, &pos);
+
         SDL_RenderFillRect(window->renderer, &pos);
     }
 

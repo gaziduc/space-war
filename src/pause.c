@@ -15,15 +15,11 @@ static void render_pause_texts(struct window *window, Uint32 begin, int selected
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Rect pos = { .x = 150, .y = 150, .w = 0, .h = 0 };
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
 
     // Render title
-    SDL_Texture *title = get_text_texture(window, window->fonts->zero4b_30, "PAUSE", blue);
-    SDL_QueryTexture(title, NULL, NULL, &pos.w, &pos.h);
-    SDL_RenderCopy(window->renderer, title, NULL, &pos);
-    SDL_DestroyTexture(title);
+    render_text(window, window->fonts->zero4b_30, "PAUSE", blue, 150, 150);
 
     // Render items
     char *s_list[NUM_CHOICES_PAUSE] = { "-> RESUME", "-> SETTINGS", "-> ESCAPE" };

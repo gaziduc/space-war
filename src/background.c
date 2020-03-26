@@ -10,12 +10,12 @@ void init_background(struct window *window)
     window->stars->next = NULL;
 
     // Create some initial points
-    for (int c = 0; c < 8 * window->h; c++)
+    for (int c = 0; c < 4 * DEFAULT_H; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
 
-        new->x = rand() % window->w;
-        new->y = rand() % window->h;
+        new->x = rand() % DEFAULT_W;
+        new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
 
@@ -29,8 +29,8 @@ void init_background(struct window *window)
 
 void move_background(struct window *window, unsigned long framecount)
 {
-    struct point *last = window->stars;
     struct point *p = window->stars->next;
+    struct point *last = window->stars;
 
     while (p)
     {
@@ -53,12 +53,12 @@ void move_background(struct window *window, unsigned long framecount)
     }
 
     // Create some points
-    for (int c = 0; c < rand() % 6; c++)
+    for (int c = 0; c < rand() % 3; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window);
 
-        new->x = window->w - 1;
-        new->y = rand() % window->h;
+        new->x = DEFAULT_W - 1;
+        new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
 
@@ -77,8 +77,14 @@ void render_background(struct window *window)
 
     while (p)
     {
-        SDL_SetRenderDrawColor(window->renderer, p->opacity, p->opacity, p->opacity, p->opacity);
-        SDL_RenderDrawPoint(window->renderer, p->x, p->y);
+        SDL_SetRenderDrawColor(window->renderer, p->opacity,
+                               p->opacity, p->opacity, p->opacity);
+
+        SDL_Rect pos = { .x = p->x, .y = p->y, .w = 3, .h = 3 };
+
+        resize_pos_for_resolution(window, &pos);
+
+        SDL_RenderDrawPoint(window->renderer, pos.x, pos.y);
 
         p = p->next;
     }

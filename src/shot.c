@@ -1,5 +1,6 @@
 #include "init.h"
 #include "game.h"
+#include "utils.h"
 #include <SDL2/SDL.h>
 
 void set_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *window)
@@ -28,7 +29,7 @@ void move_shots(struct window *window)
         temp->pos_dst.x += SHOT_SPEED;
 
         // Prevent out of bounds by deleting the shot if not on screen
-        if (temp->pos_dst.x >= window->w)
+        if (temp->pos_dst.x >= DEFAULT_W)
         {
             struct list *to_delete = temp;
             prev->next = temp->next;
@@ -53,8 +54,16 @@ void render_shots(struct window *window)
 
     while (temp)
     {
+        SDL_Rect pos = { .x = temp->pos_dst.x,
+                         .y = temp->pos_dst.y,
+                         .w = temp->pos_dst.w,
+                         .h = temp->pos_dst.h
+        };
+
+        resize_pos_for_resolution(window, &pos);
+
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->shot->texture, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->shot->texture, NULL, &pos);
 
         // Go to next shot
         temp = temp->next;

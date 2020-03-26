@@ -6,7 +6,6 @@
 #include "menu.h"
 #include <stdio.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL2_gfxPrimitives.h>
 
 
 static void render_life(struct window *window)
@@ -21,19 +20,50 @@ static void render_life(struct window *window)
 
     // Render green part
     if (anim_health_low > 0)
-        boxRGBA(window->renderer, 10, 10, 10 + anim_health_low, 40, 0, 255, 0, 192);
+    {
+        SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, 192);
+
+        SDL_Rect pos = { .x = 10,
+                         .y = 10,
+                         .w = anim_health_low,
+                         .h = 30
+                       };
+
+        resize_pos_for_resolution(window, &pos);
+        SDL_RenderFillRect(window->renderer, &pos);
+    }
 
     int anim_health_high = window->animated_health_high;
 
     // Render orange part
     if (anim_health_high > anim_health_low)
-        boxRGBA(window->renderer, 10 + anim_health_low, 10, 10 + anim_health_high, 40,
-                255, 128, 0, 192);
+    {
+        SDL_SetRenderDrawColor(window->renderer, 255, 128, 0, 192);
+
+        SDL_Rect pos = { .x = 10 + anim_health_low,
+                         .y = 10,
+                         .w = anim_health_high - anim_health_low,
+                         .h = 30
+                       };
+
+        resize_pos_for_resolution(window, &pos);
+        SDL_RenderFillRect(window->renderer, &pos);
+    }
 
     // Render red part
     if (anim_health_high < window->max_health)
-        boxRGBA(window->renderer, 10 + anim_health_high, 10, 10 + window->max_health, 40,
-                255, 0, 0, 192);
+    {
+        SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, 192);
+
+        SDL_Rect pos = { .x = 10 + anim_health_high,
+                         .y = 10,
+                         .w = window->max_health - anim_health_high,
+                         .h = 30
+                       };
+
+        resize_pos_for_resolution(window, &pos);
+        SDL_RenderFillRect(window->renderer, &pos);
+    }
 
     // If ship took a health potion
     if (anim_health_low < health || anim_health_high < health)
@@ -52,12 +82,8 @@ static void render_life(struct window *window)
         sprintf(s, "+%d SHIP(S)", window->lives - 1);
 
         SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
-        SDL_Texture *texture = get_text_texture(window, window->fonts->pixel, s, color);
 
-        SDL_Rect pos_dst = { .x = 240, .y = 13, .w = 0, .h = 0 };
-        SDL_QueryTexture(texture, NULL, NULL, &pos_dst.w, &pos_dst.h);
-        SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
-        SDL_DestroyTexture(texture);
+        render_text(window, window->fonts->pixel, s, color, 240, 13);
     }
 }
 
@@ -67,12 +93,8 @@ static void render_score(struct window *window)
     sprintf(s, "SCORE %d", window->score);
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
-    SDL_Texture *texture = get_text_texture(window, window->fonts->pixel, s, color);
 
-    SDL_Rect pos_dst = { .x = 12, .y = 50, .w = 0, .h = 0 };
-    SDL_QueryTexture(texture, NULL, NULL, &pos_dst.w, &pos_dst.h);
-    SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
-    SDL_DestroyTexture(texture);
+    render_text(window, window->fonts->pixel, s, color, 10, 50);
 }
 
 static void render_bombs(struct window *window)
@@ -81,12 +103,8 @@ static void render_bombs(struct window *window)
     sprintf(s, "BOMBS %d", window->num_bombs);
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
-    SDL_Texture *texture = get_text_texture(window, window->fonts->pixel, s, color);
 
-    SDL_Rect pos_dst = { .x = 12, .y = 102, .w = 0, .h = 0 };
-    SDL_QueryTexture(texture, NULL, NULL, &pos_dst.w, &pos_dst.h);
-    SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
-    SDL_DestroyTexture(texture);
+    render_text(window, window->fonts->pixel, s, color, 10, 110);
 }
 
 
@@ -101,7 +119,7 @@ static void render_ammo(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
 
-    render_text(window, window->fonts->pixel, s, color, 12, 76);
+    render_text(window, window->fonts->pixel, s, color, 10, 80);
 }
 
 void render_hud(struct window *window)

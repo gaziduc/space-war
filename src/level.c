@@ -19,6 +19,9 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
     SDL_Rect pos = { .x = 1300, .y = 150, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos.w, &pos.h);
     pos.x -= pos.w / 2;
+
+    resize_pos_for_resolution(window, &pos);
+
     SDL_RenderCopy(window->renderer, texture, NULL, &pos);
     SDL_DestroyTexture(texture);
 
@@ -32,6 +35,9 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
     SDL_Rect pos_score = { .x = 1300, .y = 250, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos_score.w, &pos_score.h);
     pos_score.x -= pos_score.w / 2;
+
+    resize_pos_for_resolution(window, &pos_score);
+
     SDL_RenderCopy(window->renderer, texture, NULL, &pos_score);
     SDL_DestroyTexture(texture);
 }

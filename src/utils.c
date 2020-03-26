@@ -77,18 +77,17 @@ struct collision_texture *load_texture_collision(const char *path, struct window
 }
 
 
-void init_position(int x, int y, struct window *window, SDL_Texture *texture,
-                   SDL_Rect *pos)
+void init_position(int x, int y, SDL_Texture *texture, SDL_Rect *pos)
 {
     SDL_QueryTexture(texture, NULL, NULL, &pos->w, &pos->h);
 
     if (x == POS_CENTERED)
-        pos->x = window->w / 2 - pos->w / 2;
+        pos->x = DEFAULT_W / 2 - pos->w / 2;
     else
         pos->x = x;
 
     if (y == POS_CENTERED)
-        pos->y = window->h / 2 - pos->h / 2;
+        pos->y = DEFAULT_H / 2 - pos->h / 2;
     else
         pos->y = y;
 }
@@ -164,12 +163,15 @@ void render_text(struct window *window, TTF_Font *font, const char *text, SDL_Co
     SDL_QueryTexture(texture, NULL, NULL, &w, &h);
 
     if (x == POS_CENTERED)
-        x = window->w / 2 - w / 2;
+        x = DEFAULT_W / 2 - w / 2;
 
     if (y == POS_CENTERED)
-        y = window->h / 2 - h / 2;
+        y = DEFAULT_H / 2 - h / 2;
 
     SDL_Rect pos_dst = { .x = x, .y = y, .w = w, .h = h };
+
+    resize_pos_for_resolution(window, &pos_dst);
+
     SDL_RenderCopy(window->renderer, texture, NULL, &pos_dst);
 
     SDL_DestroyTexture(texture);
@@ -196,4 +198,13 @@ Mix_Chunk *load_sound(struct window *window, const char *filename)
         error("Could not load sound", Mix_GetError(), window->window);
 
     return sound;
+}
+
+
+void resize_pos_for_resolution(struct window *window, SDL_Rect *pos)
+{
+     pos->x = (pos->x * window->w) / DEFAULT_W;
+     pos->y = (pos->y * window->h) / DEFAULT_H;
+     pos->w = (pos->w * window->w) / DEFAULT_W;
+     pos->h = (pos->h * window->h) / DEFAULT_H;
 }

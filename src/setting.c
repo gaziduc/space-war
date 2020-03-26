@@ -32,6 +32,8 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
     sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
     sprintf(s_list[3], "Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
+    sprintf(s_list[4], "< Resolution: %dx%d >", window->w, window->h);
+
 
     // Render items
     for (int i = 1; i <= NUM_SETTINGS; i++)
@@ -58,6 +60,7 @@ static void write_settings(struct window *window)
     fprintf(f, "music_volume=%d\n", window->settings->music_volume);
     fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
     fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
+    fprintf(f, "resolution=%dx%d\n", window->w, window->h);
 
     // Close file
     fclose(f);
@@ -77,6 +80,21 @@ void load_settings(struct window *window)
         window->settings->sfx_volume = MIX_MAX_VOLUME;
         window->settings->is_force_feedback = 1;
 
+        SDL_DisplayMode dm;
+        if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+            error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window);
+
+        if (dm.w >= DEFAULT_W && dm.h >= DEFAULT_H)
+        {
+            window->w = DEFAULT_W;
+            window->h = DEFAULT_H;
+        }
+        else
+        {
+            window->w = 1280;
+            window->h = 720;
+        }
+
         return;
     }
 
@@ -85,6 +103,7 @@ void load_settings(struct window *window)
     fscanf(f, "music_volume=%d\n", &window->settings->music_volume);
     fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
     fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
+    fscanf(f, "resolution=%dx%d\n", &window->w, &window->h);
 
     // Close file
     fclose(f);
@@ -122,6 +141,13 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
+            case 5:
+                window->w = 1280;
+                window->h = 720;
+                SDL_SetWindowSize(window->window, window->w, window->h);
+                write_settings(window);
+                break;
+
             default:
                 break;
         }
@@ -154,6 +180,13 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                     Mix_PlayChannel(-1, window->sounds->select, 0);
                     write_settings(window);
                 }
+                break;
+
+            case 5:
+                window->w = 1920;
+                window->h = 1080;
+                SDL_SetWindowSize(window->window, window->w, window->h);
+                write_settings(window);
                 break;
 
             default:

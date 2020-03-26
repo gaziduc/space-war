@@ -8,7 +8,7 @@
 
 void set_boss_attributes(struct list *new, SDL_Rect *pos, struct window *window)
 {
-    init_position(window->w, pos->y, window, window->img->boss->texture, &new->pos_dst);
+    init_position(window->w, pos->y, window->img->boss->texture, &new->pos_dst);
 
     new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
     new->speed.y = window->paths->data[window->paths->index].line.enemy_path.speed_x;
@@ -33,7 +33,10 @@ void create_boss(struct window *window)
         int h = 0;
         SDL_QueryTexture(window->img->boss->texture, NULL, NULL, NULL, &h);
 
-        SDL_Rect pos = { .x = 0, .y = window->paths->data[window->paths->index].line.enemy_path.pos_y - h / 2, .w = 0, .h = 0 };
+        SDL_Rect pos = { .x = 0,
+                         .y = window->paths->data[window->paths->index].line.enemy_path.pos_y - h / 2,
+                         .w = 0,
+                         .h = 0 };
 
         list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0, 0);
 
@@ -50,14 +53,14 @@ void move_boss(struct window *window, SDL_Rect *ship_pos)
     while (temp)
     {
         // move boss
-        if (temp->pos_dst.x + temp->pos_dst.w + 60 > window->w)
+        if (temp->pos_dst.x + temp->pos_dst.w + 60 > DEFAULT_W)
             temp->pos_dst.x -= temp->speed.x;
         else
         {
             temp->pos_dst.y += temp->speed.y;
 
             // If vertical out of bounds, change vertical speed
-            if (temp->pos_dst.y < 60 || temp->pos_dst.y + temp->pos_dst.h > window->h - 60)
+            if (temp->pos_dst.y < 60 || temp->pos_dst.y + temp->pos_dst.h > DEFAULT_H - 60)
                 temp->speed.y = -temp->speed.y;
         }
 
@@ -77,6 +80,14 @@ void render_boss(struct window *window)
 
     while (temp)
     {
+        SDL_Rect pos = { .x = temp->pos_dst.x,
+                         .y = temp->pos_dst.y,
+                         .w = temp->pos_dst.w,
+                         .h = temp->pos_dst.h
+                       };
+
+        resize_pos_for_resolution(window, &pos);
+
         SDL_RenderCopy(window->renderer, window->img->boss->texture, NULL, &temp->pos_dst);
 
         // Go to next boss

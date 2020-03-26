@@ -4,14 +4,10 @@
 #include <stdlib.h>
 
 
-void new_universe(struct universe **u, int width, int height, int depth, struct window *window)
+void new_universe(struct universe **u, int depth, struct window *window)
 {
     *u = xmalloc(sizeof(struct universe), window->window);
-
-    (*u)->width = width;
-    (*u)->height = height;
     (*u)->depth = depth;
-
     (*u)->iterator = NULL;
     (*u)->points = NULL;
 }
@@ -20,8 +16,8 @@ void new_point(struct universe *u, struct window *window)
 {
     struct points *p_ptr = xmalloc(sizeof(struct points), window->window);
 
-    p_ptr->x = (rand() % u->width - u->width / 2) * u->depth;
-    p_ptr->y = (rand() % u->height - u->height / 2) * u->depth;
+    p_ptr->x = (rand() % window->w - window->w / 2) * u->depth;
+    p_ptr->y = (rand() % window->h - window->h / 2) * u->depth;
     p_ptr->z = u->depth;
 
     p_ptr->next = u->points;
@@ -69,7 +65,7 @@ void free_universe(struct universe *u)
 }
 
 
-int process_point(struct universe *u, struct return_point *rp)
+int process_point(struct universe *u, struct return_point *rp, struct window *window)
 {
     if (u->iterator == NULL)
     {
@@ -93,7 +89,7 @@ int process_point(struct universe *u, struct return_point *rp)
         int x = u->iterator->x / u->iterator->z;
         int y = u->iterator->y / u->iterator->z;
 
-        if (abs(x) >= u->width / 2 || abs(y) >= u->height / 2)
+        if (abs(x) >= window->w / 2 || abs(y) >= window->h / 2)
         {
             // Delete point that is off screen
             struct points *tmp = u->iterator;

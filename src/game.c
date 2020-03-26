@@ -58,13 +58,13 @@ static void handle_arrow_event(struct window *window, SDL_Rect *pos)
     // Prevent out of bounds
     if (pos->y < 0)
         pos->y = 0;
-    else if (pos->y > window->h - pos->h)
-        pos->y = window->h - pos->h;
+    else if (pos->y > DEFAULT_H - pos->h)
+        pos->y = DEFAULT_H - pos->h;
 
     if (pos->x < 0)
         pos->x = 0;
-    else if (pos->x > window->w - pos->w)
-        pos->x = window->w - pos->w;
+    else if (pos->x > DEFAULT_W - pos->w)
+        pos->x = DEFAULT_W - pos->w;
 }
 
 
@@ -136,6 +136,8 @@ void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
     else
         pos_dst_trail.x -= 5;
 
+    resize_pos_for_resolution(window, &pos_dst_trail);
+
     SDL_RenderCopyEx(window->renderer, window->img->trail, NULL, &pos_dst_trail,
                      0, NULL, flip);
 }
@@ -158,7 +160,7 @@ static int respawn(struct window *window, SDL_Rect *pos)
                 window->health = window->max_health;
 
                 window->respawn_frame = 0;
-                init_position(120, POS_CENTERED, window, window->img->ship->texture, pos);
+                init_position(120, POS_CENTERED, window->img->ship->texture, pos);
 
                 window->lives--;
             }
@@ -226,6 +228,20 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 }
 
 
+static void render_ship(struct window *window, SDL_Rect *temp_pos)
+{
+    SDL_Rect pos = { .x = temp_pos->x,
+                     .y = temp_pos->y,
+                     .w = temp_pos->w,
+                     .h = temp_pos->h
+                   };
+
+    resize_pos_for_resolution(window, &pos);
+
+    SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
+}
+
+
 void play_game(struct window *window, int mission_num, int difficulty)
 {
     int is_arcade = 0;
@@ -255,7 +271,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             load_music(window, "data/madness.ogg", 1);
             init_background(window);
 
-            init_position(120, POS_CENTERED, window, window->img->ship->texture, &pos);
+            init_position(120, POS_CENTERED, window->img->ship->texture, &pos);
 
             retry = 0;
         }
@@ -306,7 +322,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (window->health > 0)
             {
                 render_shield_aura(window, &pos);
-                SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
+                render_ship(window, &pos);
             }
             render_explosions(window);
             render_hud_texts(window);

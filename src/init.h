@@ -8,6 +8,8 @@
 
 #define NUM_LEVELS 6
 #define NUM_ROTATING_FRAMES 180
+#define DEFAULT_W 1920
+#define DEFAULT_H 1080
 
 enum object_type
 {
@@ -176,6 +178,6 @@ struct window
 
 void load_music(struct window *window, const char *filename, int must_free);
 
-struct window *init_all(int width, int height);
+struct window *init_all(void);
 
 #endif /* !INIT_H */

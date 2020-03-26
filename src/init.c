@@ -14,7 +14,7 @@
 #include <SDL2/SDL2_rotozoom.h>
 
 
-static struct window *init_window(int width, int height)
+static struct window *init_window(void)
 {
     struct window *window = xcalloc(1, sizeof(struct window), NULL);
 
@@ -23,16 +23,13 @@ static struct window *init_window(int width, int height)
     window->window = SDL_CreateWindow("Space War",
                                       SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED,
-                                      width,
-                                      height,
+                                      window->w,
+                                      window->h,
                                       window->settings->is_fullscreen ? SDL_WINDOW_FULLSCREEN
                                                                       : 0);
 
     if (!window->window)
         error("Could not create window", SDL_GetError(), NULL);
-
-    window->w = width;
-    window->h = height;
 
     window->renderer = SDL_CreateRenderer(window->window, -1,
 #ifdef _WIN32
@@ -87,7 +84,7 @@ static void load_fonts(struct window *window)
 {
     window->fonts = xmalloc(sizeof(struct fonts), window->window);
 
-    window->fonts->pixel = load_font(window, "data/pixel.ttf", 26);
+    window->fonts->pixel = load_font(window, "data/pixel.ttf", 30);
     window->fonts->pixel_large = load_font(window, "data/pixel.ttf", 37);
     window->fonts->zero4b_30 = load_font(window, "data/04b_30.ttf", 120);
     window->fonts->zero4b_30_small = load_font(window, "data/04b_30.ttf", 60);
@@ -118,14 +115,17 @@ static void load_sounds(struct window *window)
     window->sounds->play = load_sound(window, "data/play.wav");
 }
 
-struct window *init_all(int width, int height)
+struct window *init_all(void)
 {
     // Init SDL2
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0)
         error("Could not load SDL2", SDL_GetError(), NULL);
 
     // Create window and renderer
-    struct window *window = init_window(width, height);
+    struct window *window = init_window();
+
+    // Enable blending (alpha)
+    SDL_SetRenderDrawBlendMode(window->renderer, SDL_BLENDMODE_BLEND);
 
     // Hide cursor
     SDL_ShowCursor(SDL_DISABLE);
@@ -193,7 +193,7 @@ struct window *init_all(int width, int height)
     load_sounds(window);
 
     // Initialize the stars lib
-    new_universe(&window->universe, window->w, window->h, 256, window);
+    new_universe(&window->universe, 256, window);
 
     // Load save file and progress
     read_save(window);

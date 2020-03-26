@@ -15,14 +15,12 @@ struct points
 
 struct universe
 {
-    int width;
-    int height;
     int depth;
     struct points* points;
     struct points* iterator;
 };
 
-void new_universe(struct universe **u, int width, int height, int depth, struct window *window);
+void new_universe(struct universe **u, int depth, struct window *window);
 
 void new_point(struct universe *universe, struct window *window);
 
@@ -35,6 +33,6 @@ struct return_point
 
 void free_universe(struct universe *u);
 
-int process_point(struct universe *u, struct return_point *rp);
+int process_point(struct universe *u, struct return_point *rp, struct window *window);
 
 #endif /* !STARS_H */

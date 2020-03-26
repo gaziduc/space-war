@@ -1,5 +1,6 @@
 #include "init.h"
 #include "explosion.h"
+#include "utils.h"
 #include <SDL2/SDL.h>
 
 
@@ -66,8 +67,16 @@ void render_explosions(struct window *window)
 
     while (temp)
     {
+        SDL_Rect pos = { .x = temp->pos_dst.x,
+                         .y = temp->pos_dst.y,
+                         .w = temp->pos_dst.w,
+                         .h = temp->pos_dst.h
+                       };
+
+        resize_pos_for_resolution(window, &pos);
+
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->explosion, &temp->pos_src, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->explosion, &temp->pos_src, &pos);
 
         // Go to next shot
         temp = temp->next;
