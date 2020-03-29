@@ -31,7 +31,12 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
                 150, 400);
 
     // Health Bonus
-    sprintf(s, "Health Bonus: %d", window->health);
+    int health_bonus = 0;
+
+    for (int i = 0; i < window->num_players; i++)
+        health_bonus += window->player[i].health;
+
+    sprintf(s, "Health Bonus: %d", health_bonus);
 
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
                 150, 450);
@@ -49,7 +54,7 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
                 150, 550);
 
     // Total
-    sprintf(s, "TOTAL: %d", window->score + window->health + bombs_bonus + window->bonus);
+    sprintf(s, "TOTAL: %d", window->score + health_bonus + bombs_bonus + window->bonus);
 
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 150, 620);
@@ -70,15 +75,18 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
 
 void success(struct window *window, const int level_num, const int difficulty)
 {
-    if (window->save->progress[level_num - 1] < difficulty)
-        window->save->progress[level_num - 1] = difficulty;
+    if (window->save->progress[window->num_players - 1][level_num - 1] < difficulty)
+        window->save->progress[window->num_players - 1][level_num - 1] = difficulty;
 
-    int final_score = window->score + window->health + window->num_bombs * 100 + window->bonus;
+    int final_score = window->score + window->num_bombs * 100 + window->bonus;
+    for (int i = 0; i < window->num_players; i++)
+        final_score += window->player[i].health;
+
     int is_best = 0;
 
-    if (window->save->score[level_num - 1] < final_score)
+    if (window->save->score[window->num_players - 1][level_num - 1] < final_score)
     {
-        window->save->score[level_num - 1] = final_score;
+        window->save->score[window->num_players - 1][level_num - 1] = final_score;
         is_best = 1;
     }
 
@@ -163,12 +171,12 @@ int failure(struct window *window, int level_num)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
-    int selected = 1;;
+    int selected = 1;
     int is_best = 0;
 
-    if (window->save->score[level_num - 1] < window->score)
+    if (window->save->score[window->num_players - 1][level_num - 1] < window->score)
     {
-        window->save->score[level_num - 1] = window->score;
+        window->save->score[window->num_players - 1][level_num - 1] = window->score;
         is_best = 1;
     }
 

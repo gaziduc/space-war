@@ -16,7 +16,7 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
 
     SDL_Texture *texture = get_text_texture(window, window->fonts->zero4b_30_small,
                                             s, orange);
-    SDL_Rect pos = { .x = 1300, .y = 150, .w = 0, .h = 0 };
+    SDL_Rect pos = { .x = 1300, .y = 350, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos.w, &pos.h);
     pos.x -= pos.w / 2;
 
@@ -32,7 +32,7 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
     char str[50] = { 0 };
     sprintf(str, "Best: %d", score);
     texture = get_text_texture(window, window->fonts->zero4b_30_small, str, yellow);
-    SDL_Rect pos_score = { .x = 1300, .y = 250, .w = 0, .h = 0 };
+    SDL_Rect pos_score = { .x = 1300, .y = 450, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos_score.w, &pos_score.h);
     pos_score.x -= pos_score.w / 2;
 
@@ -64,7 +64,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
         int y = 360 + (i - 1) * 80;
         char s[100] = { 0 };
 
-        if (window->save->progress[level - 1] < i)
+        if (window->save->progress[window->num_players - 1][level - 1] < i)
         {
             if (i != selected_difficulty)
                 snprintf(s, strlen(s_list[i - 1] + 3) - 1, s_list[i - 1] + 3);
@@ -119,7 +119,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     if (selected_level == NUM_LEVELS + 1)
         sprintf(s, "Arcade Mode");
     else
-        sprintf(s, "Mission %d - %s", selected_level, str);
+        sprintf(s, "Mission %d.%d - %s", selected_level, window->num_players, str);
 
     while (!escape)
     {
@@ -174,18 +174,21 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
 
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
+    SDL_Color orange = { 255, 128, 0, alpha };
+
+    render_text(window, window->fonts->zero4b_30_small, "MISSION SELECT", orange, 150, 150);
 
     for (int i = 1; i <= NUM_LEVELS + 1; i++)
     {
         char s[50] = { 0 };
 
         if (i != NUM_LEVELS + 1)
-            sprintf(s, "-> Mission %d %.*s", i, window->save->progress[i - 1], "***");
+            sprintf(s, "-> Mission %d.%d %.*s", i, window->num_players, window->save->progress[window->num_players - 1][i - 1], "***");
         else
-            sprintf(s, "-> Arcade Mode %.*s", window->save->progress[i - 1], "***");
+            sprintf(s, "-> Arcade Mode %.*s", window->save->progress[window->num_players - 1][i - 1], "***");
 
 
-        int y = 150 + (i - 1) * 80;
+        int y = 350 + (i - 1) * 80;
 
         if (i != selected_level)
             render_text(window, window->fonts->zero4b_30_small, s + 3, blue, 150, y);
@@ -194,7 +197,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     }
 
     render_selected_level_title(window, s_list[selected_level - 1],
-                                alpha, window->save->score[selected_level - 1]);
+                                alpha, window->save->score[window->num_players - 1][selected_level - 1]);
 }
 
 

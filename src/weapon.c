@@ -4,15 +4,15 @@
 #include "weapon.h"
 #include <SDL2/SDL.h>
 
-void shoot(struct window *window, SDL_Rect *pos)
+void shoot(struct window *window, struct player *player)
 {
-    if (window->ammo == -1 || window->ammo > 0)
+    if (player->ammo == -1 || player->ammo > 0)
     {
-        list_push_front(pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+        list_push_front(&player->pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
         Mix_PlayChannel(-1, window->sounds->shot, 0);
 
-        if (window->ammo > 0)
-            window->ammo--;
+        if (player->ammo > 0)
+            player->ammo--;
     }
 }
 

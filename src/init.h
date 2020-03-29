@@ -10,6 +10,7 @@
 #define NUM_ROTATING_FRAMES 180
 #define DEFAULT_W 1920
 #define DEFAULT_H 1080
+#define MAX_PLAYERS 2
 
 enum object_type
 {
@@ -137,8 +138,23 @@ struct settings
 
 struct save
 {
-    int progress[NUM_LEVELS + 1];
-    int score[NUM_LEVELS + 1];
+    int progress[2][NUM_LEVELS + 1]; // 2 for solo and multi
+    int score[2][NUM_LEVELS + 1]; // same goes here
+};
+
+
+struct player
+{
+    SDL_Rect pos;
+    int lives;
+    int respawn_frame;
+    int shield_time;
+    int ammo;
+    int health;
+    int animated_health_low;
+    int animated_health_high;
+    Uint32 last_shot_time;
+    int is_controller;
 };
 
 struct window
@@ -151,19 +167,12 @@ struct window
     struct input *in;
     FPSmanager *fps;
     struct list *list[NUM_LISTS];
-    Uint32 last_shot_time;
     struct vector *paths;
     Uint32 last_enemy_time;
-    int health;
-    int max_health;
-    int animated_health_low;
-    int animated_health_high;
-    int lives;
     struct fonts *fonts;
     int score;
     Mix_Music *music;
     struct sounds *sounds;
-    int respawn_frame;
     int is_wave_title;
     Uint32 wave_title_time;
     int num_bombs;
@@ -171,9 +180,10 @@ struct window
     struct point *stars;
     int bonus;
     struct settings *settings;
-    int shield_time;
-    int ammo;
+    int max_health;
     struct save *save;
+    int num_players;
+    struct player player[MAX_PLAYERS];
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

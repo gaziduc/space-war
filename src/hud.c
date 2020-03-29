@@ -8,13 +8,13 @@
 #include <SDL2/SDL_ttf.h>
 
 
-static void render_life(struct window *window)
+static void render_life(struct window *window, struct player *player, int player_num)
 {
-    int anim_health_low = window->animated_health_low;
+    int anim_health_low = player->animated_health_low;
     if (anim_health_low < 0)
         anim_health_low = 0;
 
-    int health = window->health;
+    int health = player->health;
     if (health < 0)
         health = 0;
 
@@ -23,7 +23,7 @@ static void render_life(struct window *window)
     {
         SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, 192);
 
-        SDL_Rect pos = { .x = 10,
+        SDL_Rect pos = { .x = 10 + player_num * 220,
                          .y = 10,
                          .w = anim_health_low,
                          .h = 30
@@ -33,14 +33,14 @@ static void render_life(struct window *window)
         SDL_RenderFillRect(window->renderer, &pos);
     }
 
-    int anim_health_high = window->animated_health_high;
+    int anim_health_high = player->animated_health_high;
 
     // Render orange part
     if (anim_health_high > anim_health_low)
     {
         SDL_SetRenderDrawColor(window->renderer, 255, 128, 0, 192);
 
-        SDL_Rect pos = { .x = 10 + anim_health_low,
+        SDL_Rect pos = { .x = 10 + anim_health_low + player_num * 220,
                          .y = 10,
                          .w = anim_health_high - anim_health_low,
                          .h = 30
@@ -55,7 +55,7 @@ static void render_life(struct window *window)
     {
         SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, 192);
 
-        SDL_Rect pos = { .x = 10 + anim_health_high,
+        SDL_Rect pos = { .x = 10 + anim_health_high + player_num * 220,
                          .y = 10,
                          .w = window->max_health - anim_health_high,
                          .h = 30
@@ -68,18 +68,19 @@ static void render_life(struct window *window)
     // If ship took a health potion
     if (anim_health_low < health || anim_health_high < health)
     {
-        window->animated_health_low = health;
-        window->animated_health_high = health;
+        player->animated_health_low = health;
+        player->animated_health_high = health;
     }
     else if (anim_health_low > health)
-        window->animated_health_low -= 2;
+        player->animated_health_low -= 2;
     else if (anim_health_low < anim_health_high)
-        window->animated_health_high--;
+        player->animated_health_high--;
 
-    if (window->lives > 1)
+    // Not used in the game
+    if (player->lives > 1)
     {
         char s[50] = { 0 };
-        sprintf(s, "+%d SHIP(S)", window->lives - 1);
+        sprintf(s, "+%d SHIP(S)", player->lives - 1);
 
         SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
 
@@ -94,7 +95,7 @@ static void render_score(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
 
-    render_text(window, window->fonts->pixel, s, color, 10, 50);
+    render_text(window, window->fonts->pixel, s, color, 10, 80);
 }
 
 static void render_bombs(struct window *window)
@@ -104,30 +105,34 @@ static void render_bombs(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
 
-    render_text(window, window->fonts->pixel, s, color, 10, 110);
+    render_text(window, window->fonts->pixel, s, color, 10, 50);
 }
 
 
-static void render_ammo(struct window *window)
+static void render_ammo(struct window *window, struct player *player, int player_num)
 {
     char s[50] = { 0 };
 
-    if (window->ammo > 0)
-        sprintf(s, "AMMO  %d", window->ammo);
+    if (player->ammo > 0)
+        sprintf(s, "AMMO  %d", player->ammo);
     else
         sprintf(s, "AMMO  999+");
 
-    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
+    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
-    render_text(window, window->fonts->pixel, s, color, 10, 80);
+    render_text(window, window->fonts->pixel, s, color, 20 + player_num * 220, 10);
 }
 
 void render_hud(struct window *window)
 {
-    render_life(window);
     render_score(window);
     render_bombs(window);
-    render_ammo(window);
+
+    for (int i = 0; i < window->num_players; i++)
+    {
+        render_life(window, &window->player[i], i);
+        render_ammo(window, &window->player[i], i);
+    }
 }
 
 

@@ -12,6 +12,6 @@ void move_objects(struct window *window);
 
 void render_objects(struct window *window);
 
-void render_shield_aura(struct window *window, SDL_Rect *ship_pos);
+void render_shield_aura(struct window *window, struct player *player);
 
 #endif /* !OBJECT_H */

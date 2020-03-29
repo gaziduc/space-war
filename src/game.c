@@ -21,94 +21,131 @@
 #include <SDL2/SDL2_framerate.h>
 
 
-static void handle_arrow_event(struct window *window, SDL_Rect *pos)
+static void handle_arrow_event(struct window *window, struct player *player)
 {
     /* Move ship */
-    // Up
-    if (window->in->key[SDL_SCANCODE_UP]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP])
-        pos->y -= SHIP_SPEED;
-    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE)
-        pos->y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32768;
 
-    // Down
-    if (window->in->key[SDL_SCANCODE_DOWN]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
-        pos->y += SHIP_SPEED;
-    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE)
-        pos->y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32767;
+    if (player->is_controller)
+    {
+        // Up
+        if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP])
+            player->pos.y -= SHIP_SPEED;
+        else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE)
+            player->pos.y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32768;
 
 
-    // Left
-    if (window->in->key[SDL_SCANCODE_LEFT]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT])
-        pos->x -= SHIP_SPEED;
-    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE)
-        pos->x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32768;
+        // Down
+        if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
+            player->pos.y += SHIP_SPEED;
+        else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE)
+            player->pos.y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32767;
 
 
-    // Right
-    if (window->in->key[SDL_SCANCODE_RIGHT]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT])
-        pos->x += SHIP_SPEED;
-    else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE)
-        pos->x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32767;
+        // Left
+        if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT])
+            player->pos.x -= SHIP_SPEED;
+        else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE)
+            player->pos.x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32768;
+
+
+        // Right
+        if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT])
+            player->pos.x += SHIP_SPEED;
+        else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE)
+            player->pos.x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32767;
+    }
+    else
+    {
+        if (window->in->key[SDL_SCANCODE_UP])
+            player->pos.y -= SHIP_SPEED;
+        if (window->in->key[SDL_SCANCODE_DOWN])
+            player->pos.y += SHIP_SPEED;
+        if (window->in->key[SDL_SCANCODE_LEFT])
+            player->pos.x -= SHIP_SPEED;
+        if (window->in->key[SDL_SCANCODE_RIGHT])
+            player->pos.x += SHIP_SPEED;
+    }
 
 
     // Prevent out of bounds
-    if (pos->y < 0)
-        pos->y = 0;
-    else if (pos->y > DEFAULT_H - pos->h)
-        pos->y = DEFAULT_H - pos->h;
+    if (player->pos.y < 0)
+        player->pos.y = 0;
+    else if (player->pos.y > DEFAULT_H - player->pos.h)
+        player->pos.y = DEFAULT_H - player->pos.h;
 
-    if (pos->x < 0)
-        pos->x = 0;
-    else if (pos->x > DEFAULT_W - pos->w)
-        pos->x = DEFAULT_W - pos->w;
+    if (player->pos.x < 0)
+        player->pos.x = 0;
+    else if (player->pos.x > DEFAULT_W - player->pos.w)
+        player->pos.x = DEFAULT_W - player->pos.w;
 }
 
 
-static void handle_shot_event(struct window *window, SDL_Rect *pos)
+static void try_to_shoot(struct window *window, struct player *player)
 {
-    if (window->health > 0
-        && (window->in->key[SDL_SCANCODE_SPACE]
-            || window->in->c.axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE))
-    {
-        Uint32 current_time = SDL_GetTicks();
+    Uint32 current_time = SDL_GetTicks();
 
-        // If enough time between now and the last shot
-        if (current_time - window->last_shot_time >= DELAY_BETWEEN_SHOTS)
+    // If enough time between now and the last shot
+    if (current_time - player->last_shot_time >= DELAY_BETWEEN_SHOTS)
+    {
+        // Shot
+        shoot(window, player);
+        player->last_shot_time = current_time;
+    }
+}
+
+
+static void handle_shot_event(struct window *window, struct player *player)
+{
+    if (player->health > 0)
+    {
+        if (player->is_controller)
         {
-            // Shot
-            shoot(window, pos);
-            window->last_shot_time = current_time;
+            if (window->in->c.axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE)
+                try_to_shoot(window, player);
+        }
+        else
+        {
+            if (window->in->key[SDL_SCANCODE_SPACE])
+                try_to_shoot(window, player);
         }
     }
 }
 
 
-static void handle_bomb_event(struct window *window)
+static void handle_bomb_event(struct window *window, struct player *player)
 {
-    if (window->in->key[SDL_SCANCODE_C]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_B])
+    if (player->health > 0 && window->num_bombs > 0)
     {
-        window->in->key[SDL_SCANCODE_C] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_B] = 0;
-
-        if (window->health > 0 && window->num_bombs > 0)
+        if (player->is_controller)
         {
-            // Bomb: erase all visible enemies
-            bomb(window);
-            window->num_bombs--;
+            if (window->in->c.button[SDL_CONTROLLER_BUTTON_B])
+            {
+                window->in->c.button[SDL_CONTROLLER_BUTTON_B] = 0;
+
+                // Bomb: erase all visible enemies
+                bomb(window);
+                window->num_bombs--;
+            }
+        }
+        else
+        {
+            if (window->in->key[SDL_SCANCODE_C])
+            {
+                window->in->key[SDL_SCANCODE_C] = 0;
+
+                // Bomb: erase all visible enemies
+                bomb(window);
+                window->num_bombs--;
+            }
         }
     }
 }
 
 
-void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
+void render_trail(struct window *window, struct player *player, SDL_Rect *pos, int is_enemy)
 {
     // If ship is dead, don't display trail
-    if (!is_enemy && window->health <= 0)
+    if (!is_enemy && player->health <= 0)
         return;
 
     SDL_Rect pos_dst_trail;
@@ -143,26 +180,26 @@ void render_trail(struct window *window, SDL_Rect *pos, int is_enemy)
 }
 
 
-static int respawn(struct window *window, SDL_Rect *pos)
+static int respawn(struct window *window, struct player *player)
 {
     // If already dead (e.g. a enemy managed to pass to the left of the screen)
-    if (window->lives <= 0)
+    if (player->lives <= 0)
         return 1;
 
-    if (window->health <= 0)
+    if (player->health <= 0)
     {
-        window->respawn_frame++;
+        player->respawn_frame++;
 
-        if (window->respawn_frame >= 120)
+        if (player->respawn_frame >= 90)
         {
-            if (window->lives > 1)
+            if (player->lives > 1)
             {
-                window->health = window->max_health;
+                player->health = window->max_health;
 
-                window->respawn_frame = 0;
-                init_position(120, POS_CENTERED, window->img->ship->texture, pos);
+                player->respawn_frame = 0;
+                init_position(120, POS_CENTERED, window->img->ship->texture, &player->pos);
 
-                window->lives--;
+                player->lives--;
             }
             else
                 return 1;
@@ -178,37 +215,56 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
     for (enum list_type i = 0; i < NUM_LISTS; i++)
         clear_list(window->list[i]);
 
-    window->last_enemy_time = 0;
-
     if (all_reset)
         window->score = 0;
 
-    window->respawn_frame = 0;
+    window->last_enemy_time = 0;
     window->is_wave_title = 0;
     window->wave_title_time = 0;
+
+    for (int i = 0; i < window->num_players; i++)
+        window->player[i].respawn_frame = 0;
 
     switch (difficulty)
     {
         case EASY:
             if (all_reset)
-                window->health = MAX_HEALTH_EASY;
+            {
+                for (int i = 0; i < window->num_players; i++)
+                {
+                    window->player[i].health = MAX_HEALTH_EASY;
+                    window->player[i].ammo = -1; // -1 means infinite
+                }
+            }
             window->num_bombs = 2;
             window->bonus = 0;
-            window->ammo = -1; // -1 means infinite
             break;
+
         case HARD:
             if (all_reset)
-                window->health = MAX_HEALTH_HARD;
+            {
+                for (int i = 0; i < window->num_players; i++)
+                {
+                    window->player[i].health = MAX_HEALTH_HARD;
+                    window->player[i].ammo = -1;
+                }
+            }
             window->num_bombs = 1;
             window->bonus = 1500;
-            window->ammo = -1;
             break;
+
         case REALLY_HARD:
             if (all_reset)
-                window->health = MAX_HEALTH_REALLY_HARD;
+            {
+                for (int i = 0; i < window->num_players; i++)
+                {
+                    window->player[i].health = MAX_HEALTH_REALLY_HARD;
+                    window->player[i].ammo = 200;
+
+                }
+            }
             window->num_bombs = 1;
             window->bonus = 3000;
-            window->ammo = 200;
             break;
 
         default:
@@ -218,13 +274,20 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 
     if (all_reset)
     {
-        window->max_health = window->health;
-        window->animated_health_low = window->health;
-        window->animated_health_high = window->health;
+        window->max_health = window->player[0].health;
+
+        for (int i = 0; i < window->num_players; i++)
+        {
+            window->player[i].animated_health_low = window->player[i].health;
+            window->player[i].animated_health_high = window->player[i].health;
+        }
     }
 
-    window->lives = 1;
-    window->shield_time = -SHIELD_TIME;
+    for (int i = 0; i < window->num_players; i++)
+    {
+        window->player[i].lives = 1;
+        window->player[i].shield_time = -SHIELD_TIME;
+    }
 }
 
 
@@ -260,7 +323,6 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
     int escape = 0;
     int retry = 1;
-    SDL_Rect pos;
 
     while (!escape)
     {
@@ -271,7 +333,13 @@ void play_game(struct window *window, int mission_num, int difficulty)
             load_music(window, "data/madness.ogg", 1);
             init_background(window);
 
-            init_position(120, POS_CENTERED, window->img->ship->texture, &pos);
+            if (window->num_players == 1)
+                init_position(120, POS_CENTERED, window->img->ship->texture, &window->player[0].pos);
+            else
+            {
+                for (int i = 0; i < window->num_players; i++)
+                    init_position(120, 250 + i * 500, window->img->ship->texture, &window->player[i].pos);
+            }
 
             retry = 0;
         }
@@ -290,39 +358,51 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (handle_escape_event(window))
                 escape = pause(window);
 
-            handle_arrow_event(window, &pos);
-            handle_shot_event(window, &pos);
-            handle_bomb_event(window);
+            for (int i = 0; i < window->num_players; i++)
+            {
+                handle_arrow_event(window, &window->player[i]);
+                handle_shot_event(window, &window->player[i]);
+                handle_bomb_event(window, &window->player[i]);
+            }
 
             // Move elements and background
             move_shots(window);
-            move_enemies(window, &pos);
+            move_enemies(window);
             move_explosions(window);
             move_enemy_shots(window);
             move_objects(window);
             move_hud_texts(window);
             move_background(window, framecount);
 
-            // Check collisions
-            check_collisions(window, &pos);
+            for (int i = 0; i < window->num_players; i++)
+            {
+                // Check collisions
+                check_collisions(window, &window->player[i]);
 
-            // If dead, wait some frames and respawn
-            dead = respawn(window, &pos);
+                // If dead, wait some frames and respawn
+                dead = respawn(window, &window->player[i]);
+                if (dead)
+                    break;
+            }
 
             // Display textures
             SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
             SDL_RenderClear(window->renderer);
             render_background(window);
             render_objects(window);
-            render_trail(window, &pos, 0);
+            for (int i = 0; i < window->num_players; i++)
+                render_trail(window, &window->player[i], &window->player[i].pos, 0);
             render_enemies_health(window);
             render_shots(window);
             render_enemy_shots(window);
             render_enemies(window);
-            if (window->health > 0)
+            for (int i = 0; i < window->num_players; i++)
             {
-                render_shield_aura(window, &pos);
-                render_ship(window, &pos);
+                if (window->player[i].health > 0)
+                {
+                    render_shield_aura(window, &window->player[i]);
+                    render_ship(window, &window->player[i].pos);
+                }
             }
             render_explosions(window);
             render_hud_texts(window);
@@ -336,8 +416,6 @@ void play_game(struct window *window, int mission_num, int difficulty)
             // Wait a frame
             SDL_framerateDelay(window->fps);
             framecount++;
-
-
         }
 
 

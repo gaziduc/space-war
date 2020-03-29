@@ -33,6 +33,8 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
     sprintf(s_list[3], "Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
     sprintf(s_list[4], "< Resolution: %dx%d >", window->w, window->h);
+    sprintf(s_list[5], "Player 1: %s", window->player[0].is_controller ? "Controller" : "Keyboard");
+    sprintf(s_list[6], "Player 2: %s", window->player[1].is_controller ? "Controller" : "Keyboard");
 
 
     // Render items
@@ -61,6 +63,8 @@ static void write_settings(struct window *window)
     fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
     fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
     fprintf(f, "resolution=%dx%d\n", window->w, window->h);
+    fprintf(f, "input_type_player_1=%d\n", window->player[0].is_controller);
+    fprintf(f, "input_type_player_2=%d\n", window->player[1].is_controller);
 
     // Close file
     fclose(f);
@@ -95,6 +99,9 @@ void load_settings(struct window *window)
             window->h = 720;
         }
 
+        window->player[0].is_controller = 0;
+        window->player[1].is_controller = 1;
+
         return;
     }
 
@@ -104,6 +111,8 @@ void load_settings(struct window *window)
     fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
     fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
     fscanf(f, "resolution=%dx%d\n", &window->w, &window->h);
+    fscanf(f, "input_type_player_1=%d\n", &window->player[0].is_controller);
+    fscanf(f, "input_type_player_2=%d\n", &window->player[1].is_controller);
 
     // Close file
     fclose(f);
@@ -211,21 +220,32 @@ void settings(struct window *window)
 
         if (handle_play_event(window))
         {
-            if (selected_item == 1)
+            switch (selected_item)
             {
-                if (is_fullscreen(window))
-                {
-                    window->settings->is_fullscreen = 0;
-                    SDL_SetWindowFullscreen(window->window, 0);
-                }
-                else
-                {
-                    window->settings->is_fullscreen = 1;
-                    SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
-                }
+
+                case 1:
+                    if (is_fullscreen(window))
+                    {
+                        window->settings->is_fullscreen = 0;
+                        SDL_SetWindowFullscreen(window->window, 0);
+                    }
+                    else
+                    {
+                        window->settings->is_fullscreen = 1;
+                        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
+                    }
+                    break;
+
+                case 4:
+                    window->settings->is_force_feedback = !window->settings->is_force_feedback;
+                    break;
+
+                case 6:
+                case 7:
+                    window->player[0].is_controller = !window->player[0].is_controller;
+                    window->player[1].is_controller = !window->player[1].is_controller;
+                    break;
             }
-            else if (selected_item == 4)
-                window->settings->is_force_feedback = !window->settings->is_force_feedback;
 
             write_settings(window);
         }

@@ -166,7 +166,9 @@ struct window *init_all(void)
         init_list(window, i);
 
     // We can now shot
-    window->last_shot_time = 0;
+    for (int i = 0; i < window->num_players; i++)
+        window->player[i].last_shot_time = 0;
+
     window->paths = NULL;
 
     // Init SDL2_tff and load fonts

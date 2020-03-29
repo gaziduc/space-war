@@ -79,17 +79,17 @@ void render_objects(struct window *window)
     }
 }
 
-void render_shield_aura(struct window *window, SDL_Rect *ship_pos)
+void render_shield_aura(struct window *window, struct player *player)
 {
-    if (SDL_GetTicks() - window->shield_time < SHIELD_TIME)
+    if (SDL_GetTicks() - player->shield_time < SHIELD_TIME)
     {
         int w = 0;
         int h = 0;
         SDL_QueryTexture(window->img->aura, NULL, NULL, &w, &h);
 
         SDL_Rect pos = {
-                        .x = ship_pos->x + ship_pos->w / 2 - w / 2,
-                        .y = ship_pos->y + ship_pos->h / 2 - h / 2,
+                        .x = player->pos.x + player->pos.w / 2 - w / 2,
+                        .y = player->pos.y + player->pos.h / 2 - h / 2,
                         .w = w,
                         .h = h
                        };

@@ -115,10 +115,12 @@ static int is_shooting(char enemy_type)
 }
 
 
-void move_enemies(struct window *window, SDL_Rect *ship_pos)
+void move_enemies(struct window *window)
 {
     struct list *temp = window->list[ENEMY_LIST]->next;
     struct list *prev = window->list[ENEMY_LIST];
+
+    struct player *rand_player = &window->player[rand() % window->num_players];
 
     while (temp)
     {
@@ -132,10 +134,10 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
         int shoot = is_shooting(temp->enemy_type);
 
         if (temp->enemy_type == 'A' && temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0, 0);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &rand_player->pos, 0, 0);
 
         if (temp->enemy_type == 'C' && temp->framecount % 8 == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0, 0);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &rand_player->pos, 0, 0);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)
@@ -144,8 +146,10 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
             prev->next = temp->next;
             free(to_delete);
 
+            // If enemy passed, mission failed
             if (shoot)
-                window->lives--;
+                for (int i = 0; i < window->num_players; i++)
+                    window->player[i].lives = 0;
 
             // Go to next shot
             temp = prev->next;
@@ -158,7 +162,7 @@ void move_enemies(struct window *window, SDL_Rect *ship_pos)
         }
     }
 
-    move_boss(window, ship_pos);
+    move_boss(window, &rand_player->pos);
 }
 
 
@@ -170,7 +174,7 @@ void render_enemies(struct window *window)
     {
         // Display enemy trail
         if (is_shooting(temp->enemy_type) && !temp->rotating)
-            render_trail(window, &temp->pos_dst, 1);
+            render_trail(window, NULL, &temp->pos_dst, 1);
 
         // Display enemy
         if (temp->rotating)

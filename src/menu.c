@@ -22,9 +22,10 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
 
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
+    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     // Render title
-    render_text(window, window->fonts->zero4b_30, "SPACE WAR", blue, 150, 150);
+    render_text(window, window->fonts->zero4b_30, "SPACE WAR", orange, 150, 150);
 
     // Render items
     char *s_list[NUM_ITEMS] = { "-> PLAY", "-> SETTINGS", "-> CREDITS", "-> QUIT" };
@@ -89,7 +90,7 @@ void menu(struct window *window)
             switch (selected_item)
             {
                 case 1:
-                    select_level(window);
+                    select_num_players(window);
                     break;
                 case 2:
                     settings(window);
@@ -112,6 +113,72 @@ void menu(struct window *window)
         // Process/Draw all the things
         render_stars(window);
         render_menu_texts(window, begin, selected_item);
+        SDL_RenderPresent(window->renderer);
+
+        // Wait a frame
+        SDL_framerateDelay(window->fps);
+    }
+}
+
+static void render_num_players(struct window *window, Uint32 begin, int selected_item)
+{
+    Uint32 alpha = SDL_GetTicks() - begin;
+
+    if (alpha > TITLE_ALPHA_MAX)
+        alpha = TITLE_ALPHA_MAX;
+    else if (alpha == 0)
+        alpha = 1;
+
+    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
+    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
+    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+
+    // Render title
+    render_text(window, window->fonts->zero4b_30_small, "SELECT NUM PLAYERS", orange, 150, 150);
+
+    // Render items
+    char *s_list[MAX_PLAYERS] = { "-> 1 Player", "-> 2 Players" };
+
+    for (int i = 1; i <= MAX_PLAYERS; i++)
+    {
+        if (selected_item != i)
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
+                        150, 450 + (i - 1) * 100);
+        else
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
+                        150, 450 + (i - 1) * 100);
+    }
+
+}
+
+
+void select_num_players(struct window *window)
+{
+    int escape = 0;
+    window->num_players = 1;
+    Uint32 begin = SDL_GetTicks();
+
+    while (!escape)
+    {
+        // Get and handle events
+        update_events(window->in, window);
+        handle_quit_event(window, 0);
+        handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS);
+        escape = handle_escape_event(window);
+
+        if (handle_play_event(window))
+        {
+            select_level(window);
+            begin = SDL_GetTicks();
+        }
+
+        // Display black background
+        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(window->renderer);
+
+        // Process/Draw all the things
+        render_stars(window);
+        render_num_players(window, begin, window->num_players);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

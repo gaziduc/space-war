@@ -11,7 +11,7 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
 
 void create_enemies(struct window *window);
 
-void move_enemies(struct window *window, SDL_Rect *ship_pos);
+void move_enemies(struct window *window);
 
 void render_enemies(struct window *window);
 

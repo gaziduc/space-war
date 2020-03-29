@@ -17,9 +17,10 @@ static void render_pause_texts(struct window *window, Uint32 begin, int selected
 
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
+    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     // Render title
-    render_text(window, window->fonts->zero4b_30, "PAUSE", blue, 150, 150);
+    render_text(window, window->fonts->zero4b_30, "PAUSE", orange, 150, 150);
 
     // Render items
     char *s_list[NUM_CHOICES_PAUSE] = { "-> RESUME", "-> SETTINGS", "-> ESCAPE" };
@@ -95,8 +96,10 @@ int pause(struct window *window)
     Uint32 delay = SDL_GetTicks() - first_begin;
 
     window->last_enemy_time += delay;
-    window->last_shot_time += delay;
     window->wave_title_time += delay;
+
+    for (int i = 0; i < window->num_players; i++)
+        window->player[i].last_shot_time += delay;
 
     SDL_DestroyTexture(bg);
     return escape - 1;

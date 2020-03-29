@@ -42,7 +42,7 @@ static int collision(SDL_Rect *pos1, struct collision_texture *t1,
 }
 
 
-static void check_collisions_list(struct window *window, SDL_Rect *pos,
+static void check_collisions_list(struct window *window, struct player *player,
                                   enum list_type type)
 {
     struct list *temp_enemy = window->list[type]->next;
@@ -134,9 +134,9 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
         }
 
         // If collision ship <-> enemy
-        if (window->health > 0 && !deleted_enemy
+        if (player->health > 0 && !deleted_enemy
             && collision(temp_pos, temp,
-                         pos, window->img->ship))
+                         &player->pos, window->img->ship))
         {
             // Add an explosion
             list_push_front(temp_pos, window, EXPLOSION_LIST,
@@ -162,10 +162,10 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 window->score += SCORE_TO_INCREASE;
 
                 // Decrease health
-                if (SDL_GetTicks() - window->shield_time < SHIELD_TIME) // If shield
-                    window->shield_time = 0;
+                if (SDL_GetTicks() - window->player[0].shield_time < SHIELD_TIME) // If shield
+                    player->shield_time = 0;
                 else
-                    window->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
+                    player->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
 
                 // Force feedback
                 if (window->settings->is_force_feedback && window->in->c.haptic)
@@ -174,11 +174,11 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
             else /* if (type == BOSS_LIST) */
             {
                 // Add an explosion
-                list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
                                 NULL, 0, 0);
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
-                window->health = 0;
+                player->health = 0;
 
                 // Force feedback
                 if (window->settings->is_force_feedback && window->in->c.haptic)
@@ -206,8 +206,8 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
         while (temp_enemy_shot)
         {
             // If collision ship <-> enemy shot
-            if (window->health > 0 &&
-                collision(pos, window->img->ship,
+            if (player->health > 0 &&
+                collision(&player->pos, window->img->ship,
                           &temp_enemy_shot->pos_dst, window->img->enemy_shot))
             {
                 // Delete enemy shot
@@ -216,15 +216,15 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
                 temp_enemy_shot = temp_enemy_shot->next;
                 free(enemy_shot_to_delete);
 
-                if (SDL_GetTicks() - window->shield_time >= SHIELD_TIME)
+                if (SDL_GetTicks() - player->shield_time >= SHIELD_TIME)
                 {
                     // Add an explosion
-                    list_push_front(pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                    list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
                                     NULL, 0, 0);
 
                     Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
-                    window->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+                    player->health -= HEALTH_TO_DECREASE_WHEN_HURT;
 
                     // force feedback
                     if (window->settings->is_force_feedback && window->in->c.haptic)
@@ -241,15 +241,15 @@ static void check_collisions_list(struct window *window, SDL_Rect *pos,
 }
 
 
-void check_collisions_objects(struct window *window, SDL_Rect *pos)
+void check_collisions_objects(struct window *window, struct player *player)
 {
     struct list *temp = window->list[OBJECT_LIST]->next;
     struct list *prev = window->list[OBJECT_LIST];
 
     while (temp)
     {
-        if (window->health > 0 &&
-            collision(pos, window->img->ship,
+        if (player->health > 0 &&
+            collision(&player->pos, window->img->ship,
                       &temp->pos_dst, temp->texture.texture))
         {
             // Play sound
@@ -263,13 +263,13 @@ void check_collisions_objects(struct window *window, SDL_Rect *pos)
             switch (temp->type)
             {
                 case HEALTH: // Increase health
-                    window->health += 30;
-                    if (window->health > window->max_health)
-                        window->health = window->max_health;
+                    player->health += 30;
+                    if (player->health > window->max_health)
+                        player->health = window->max_health;
                     break;
 
                 case SHIELD: // Activate  shield
-                    window->shield_time = SDL_GetTicks();
+                    player->shield_time = SDL_GetTicks();
                     break;
 
                 default:
@@ -293,9 +293,9 @@ void check_collisions_objects(struct window *window, SDL_Rect *pos)
 }
 
 
-void check_collisions(struct window *window, SDL_Rect *pos)
+void check_collisions(struct window *window, struct player *player)
 {
-    check_collisions_list(window, pos, ENEMY_LIST);
-    check_collisions_list(window, pos, BOSS_LIST);
-    check_collisions_objects(window, pos);
+    check_collisions_list(window, player, ENEMY_LIST);
+    check_collisions_list(window, player, BOSS_LIST);
+    check_collisions_objects(window, player);
 }
