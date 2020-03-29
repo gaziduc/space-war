@@ -31,13 +31,7 @@ static struct window *init_window(void)
     if (!window->window)
         error("Could not create window", SDL_GetError(), NULL);
 
-    window->renderer = SDL_CreateRenderer(window->window, -1,
-#ifdef _WIN32
-        SDL_RENDERER_SOFTWARE
-#else
-        SDL_RENDERER_PRESENTVSYNC
-#endif
-    );
+    window->renderer = SDL_CreateRenderer(window->window, -1, SDL_RENDERER_PRESENTVSYNC);
 
     if (!window->renderer)
         error("Could not create renderer", SDL_GetError(), NULL);
