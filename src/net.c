@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "net.h"
 #include "level.h"
+#include "game.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 #include <SDL2/SDL_net.h>
@@ -13,6 +14,10 @@ char buf[40]; // 40 = Max IPv6 len + 1
 int is_connecting;
 int is_connected;
 char err[256];
+int level_num;
+int level_difficulty;
+int selecting;
+int selected;
 
 
 static void render_create_or_join_texts(struct window *window, Uint32 begin, int selected_item)
@@ -313,6 +318,38 @@ static void handle_backspace_event(struct window *window, char *buf)
     }
 }
 
+int is_correct_ip(char *str)
+{
+    // Check if IP != 0.0.0.0
+    int is_null_ip = 1;
+    for (size_t i = 0; str[i]; i++)
+        if (str[i] != '0' && str[i] != '.')
+            is_null_ip = 0;
+
+    if (is_null_ip)
+        return 0;
+
+    // Check if IP != 255.255.255.255
+    size_t i = 0;
+    int num_numbers = 0;
+
+    while (str[i])
+    {
+        if (atoi(str + i) != 255)
+            return 1;
+
+        while (str[i] && str[i] != '.')
+            i++;
+
+        if (str[i])
+            i++;
+
+        num_numbers++;
+    }
+
+    return num_numbers != 4;
+}
+
 
 void connect_to_server(struct window *window)
 {
@@ -321,6 +358,10 @@ void connect_to_server(struct window *window)
 
     memset(buf, '\0', sizeof(buf));
     memset(err, '\0', sizeof(err));
+    level_num = 0;
+    level_difficulty = 0;
+    selected = 0;
+    selecting = 0;
 
     SDL_StartTextInput();
 
@@ -380,8 +421,37 @@ void connect_to_server(struct window *window)
         if (buf[0])
             render_text(window, window->fonts->pixel, buf, white, 150, 350);
 
+        if (!is_connecting && !is_connected)
+            render_text(window, window->fonts->pixel, "_", white, 150 + strlen(buf) * 18, 350);
+
         if (is_connecting)
-            render_text(window, window->fonts->pixel, "Connecting...", green, 150, 470);
+            render_text(window, window->fonts->pixel, "Connecting... Please wait...", green, 150, 470);
+
+        if (is_connected)
+        {
+            if (!selected && !selecting)
+            {
+                SDL_CreateThread(waiting_thread, "waiting_thread", window);
+                selecting = 1;
+            }
+            else if (!selected && selecting)
+            {
+                render_text(window, window->fonts->pixel,
+                         "Connected! Waiting for the other to choose mission...",
+                         green, 150, 470);
+
+                selected = 0;
+            }
+            else // if selected
+            {
+                play_game(window, level_num, level_difficulty);
+                selecting = 1;
+                selected = 0;
+            }
+        }
+
+
+
         else if (err[0])
             render_text(window, window->fonts->pixel, err, red, 150, 470);
 
@@ -396,6 +466,34 @@ void connect_to_server(struct window *window)
 }
 
 
+void send_state(struct player *player, struct window *window, char is_shooting, char has_shield)
+{
+    char data[8] = { 0 }; // 8 = 3 * sizeof(Uin16) + 2 * sizeof(char)
+
+    SDLNet_Write16((Uint16) player->pos.x, data);
+    SDLNet_Write16((Uint16) player->pos.y, data + 2);
+    SDLNet_Write16((Uint16) player->health, data + 4);
+    data[6] = is_shooting;
+    data[7] = has_shield;
+
+    SDLNet_TCP_Send(window->client, data, sizeof(data));
+}
+
+
+void recv_state(struct window *window, struct state *state)
+{
+    char data[8] = { 0 }; // 8 = 3 * sizeof(Uin16) + 2 * sizeof(char)
+
+    SDLNet_TCP_Recv(window->client, data, sizeof(data));
+
+    state->pos_x = SDLNet_Read16(data);
+    state->pos_y = SDLNet_Read16(data + 2);
+    state->health = SDLNet_Read16(data + 4);
+    state->is_shooting = data[6];
+    state->has_shield = data[7];
+}
+
+
 int connecting_thread(void *data)
 {
     is_connecting = 1;
@@ -403,18 +501,37 @@ int connecting_thread(void *data)
     struct window *window = data;
     IPaddress ip;
 
-    if (SDLNet_ResolveHost(&ip, buf, 4321) == 0)
+    if (is_correct_ip(buf))
     {
-        window->client = SDLNet_TCP_Open(&ip);
+        if (SDLNet_ResolveHost(&ip, buf, 4321) == 0)
+        {
+            window->client = SDLNet_TCP_Open(&ip);
 
-        if (window->client)
-            is_connected = 1;
+            if (window->client)
+                is_connected = 1;
+            else
+                strcpy(err, SDLNet_GetError());
+        }
         else
             strcpy(err, SDLNet_GetError());
     }
     else
-        strcpy(err, SDLNet_GetError());
+        strcpy(err, "Invalid IP");
 
     is_connecting = 0;
+    return 0;
+}
+
+
+int waiting_thread(void *data)
+{
+    struct window *window = data;
+    char data_received[2] = { 0 };
+
+    SDLNet_TCP_Recv(window->client, data_received, sizeof(data_received));
+    level_num = data_received[0];
+    level_difficulty = data_received[1];
+    selected = 1;
+
     return 0;
 }

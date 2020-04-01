@@ -113,7 +113,7 @@ static void render_ammo(struct window *window, struct player *player, int player
 {
     char s[50] = { 0 };
 
-    if (player->ammo > 0)
+    if (player->ammo >= 0)
         sprintf(s, "AMMO  %d", player->ammo);
     else
         sprintf(s, "AMMO  999+");

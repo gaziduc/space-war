@@ -148,6 +148,9 @@ void credits(struct window *window)
     if (add_letters(window, screen, "|     SDL2_GFX     |\n", &line, &col, 50, 0, begin))
         return;
 
+    if (add_letters(window, screen, "|     SDL2_NET     |\n", &line, &col, 50, 0, begin))
+        return;
+
     if (add_letters(window, screen, h_line, &line, &col, 50, 0, begin))
         return;
 

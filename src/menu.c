@@ -171,11 +171,11 @@ void select_num_players(struct window *window)
         {
             if (window->num_players == MAX_PLAYERS + 1)
             {
-                window->num_players = MAX_PLAYERS; // 2
+                window->num_players = 1;
                 window->is_lan = 1;
                 create_or_join(window);
 
-                // To selected to correct menu choice
+                // To select to correct menu choice
                 window->num_players = MAX_PLAYERS + 1;
             }
             else

@@ -129,6 +129,12 @@ static void level_difficulty(struct window *window, int selected_level, const ch
 
         if (handle_play_event(window))
         {
+            if (window->is_lan)
+            {
+                char data[2] = { selected_level, selected_difficulty };
+                SDLNet_TCP_Send(window->client, data, sizeof(data));
+            }
+
             play_game(window, selected_level, selected_difficulty);
             begin = SDL_GetTicks();
         }

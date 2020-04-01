@@ -16,6 +16,7 @@
 #include "level.h"
 #include "object.h"
 #include "pause.h"
+#include "net.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
@@ -229,40 +230,36 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
     {
         case EASY:
             if (all_reset)
-            {
                 for (int i = 0; i < window->num_players; i++)
-                {
                     window->player[i].health = MAX_HEALTH_EASY;
-                    window->player[i].ammo = -1; // -1 means infinite
-                }
-            }
+
+            for (int i = 0; i < window->num_players; i++)
+                window->player[i].ammo = -1;
+
             window->num_bombs = 2;
             window->bonus = 0;
             break;
 
         case HARD:
             if (all_reset)
-            {
                 for (int i = 0; i < window->num_players; i++)
-                {
                     window->player[i].health = MAX_HEALTH_HARD;
-                    window->player[i].ammo = -1;
-                }
-            }
+
+            for (int i = 0; i < window->num_players; i++)
+                window->player[i].ammo = -1;
+
             window->num_bombs = 1;
             window->bonus = 1500;
             break;
 
         case REALLY_HARD:
             if (all_reset)
-            {
                 for (int i = 0; i < window->num_players; i++)
-                {
                     window->player[i].health = MAX_HEALTH_REALLY_HARD;
-                    window->player[i].ammo = 200;
 
-                }
-            }
+            for (int i = 0; i < window->num_players; i++)
+                window->player[i].ammo = 200;
+
             window->num_bombs = 1;
             window->bonus = 3000;
             break;
@@ -403,6 +400,27 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     render_shield_aura(window, &window->player[i]);
                     render_ship(window, &window->player[i].pos);
                 }
+            }
+            // Render other player in LAN
+            if (window->is_lan)
+            {
+                send_state(&window->player[0], window, 0, 0);
+
+                struct state state;
+                recv_state(window, &state);
+
+                if (state.health > 0)
+                {
+                    SDL_Rect pos = { .x = state.pos_x,
+                                     .y = state.pos_y,
+                                     .w = window->player[0].pos.w,
+                                     .h = window->player[0].pos.h
+                                   };
+
+                    render_ship(window, &pos);
+                }
+
+
             }
             render_explosions(window);
             render_hud_texts(window);

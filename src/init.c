@@ -188,6 +188,10 @@ struct window *init_all(void)
 
     load_sounds(window);
 
+    // Init SDL2_net
+    if (SDLNet_Init() == -1)
+        error("Could not initialize SDL2_net", SDLNet_GetError(), window->window);
+
     // Initialize the stars lib
     new_universe(&window->universe, 256, window);
 
