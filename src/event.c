@@ -7,6 +7,7 @@
 void update_events(struct input *in, struct window *window)
 {
     in->quit = 0;
+    memset(in->text, '\0', sizeof(in->text));
     SDL_Event event;
 
     // Reset axis state
@@ -20,6 +21,21 @@ void update_events(struct input *in, struct window *window)
         // Quit event
         case SDL_QUIT:
             in->quit = 1;
+            break;
+
+        // Text input events
+        case SDL_TEXTINPUT:
+            ; // Ugly but avoid error
+            size_t curr_len = strlen(in->text);
+            size_t to_add_len = strlen(event.text.text);
+            for (size_t i = curr_len; i < sizeof(in->text) - 1; i++)
+            {
+                if (i - curr_len >= to_add_len)
+                    break;
+
+                in->text[i] = event.text.text[i - curr_len];
+            }
+            /* Last char is already at '\0' */
             break;
 
         // Keyboard events

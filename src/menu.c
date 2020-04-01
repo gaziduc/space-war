@@ -7,6 +7,7 @@
 #include "level.h"
 #include "setting.h"
 #include "credits.h"
+#include "net.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -134,12 +135,12 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     // Render title
-    render_text(window, window->fonts->zero4b_30_small, "SELECT NUM PLAYERS", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, "SELECT MODE", orange, 150, 150);
 
     // Render items
-    char *s_list[MAX_PLAYERS] = { "-> 1 Player", "-> 2 Players" };
+    char *s_list[MAX_PLAYERS + 1] = { "-> 1 Player", "-> 2 Players (Local)", "-> 2 Players (LAN)" };
 
-    for (int i = 1; i <= MAX_PLAYERS; i++)
+    for (int i = 1; i <= MAX_PLAYERS + 1; i++)
     {
         if (selected_item != i)
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
@@ -163,12 +164,26 @@ void select_num_players(struct window *window)
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS);
+        handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS + 1);
         escape = handle_escape_event(window);
 
         if (handle_play_event(window))
         {
-            select_level(window);
+            if (window->num_players == MAX_PLAYERS + 1)
+            {
+                window->num_players = MAX_PLAYERS; // 2
+                window->is_lan = 1;
+                create_or_join(window);
+
+                // To selected to correct menu choice
+                window->num_players = MAX_PLAYERS + 1;
+            }
+            else
+            {
+                window->is_lan = 0;
+                select_level(window);
+            }
+
             begin = SDL_GetTicks();
         }
 

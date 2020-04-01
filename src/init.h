@@ -5,6 +5,7 @@
 #include <SDL2/SDL2_framerate.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_net.h>
 
 #define NUM_LEVELS 6
 #define NUM_ROTATING_FRAMES 180
@@ -63,6 +64,7 @@ struct input
     char quit;
     char key[SDL_NUM_SCANCODES];
     struct controller c;
+    char text[8];
 };
 
 
@@ -184,6 +186,9 @@ struct window
     struct save *save;
     int num_players;
     struct player player[MAX_PLAYERS];
+    int is_lan;
+    TCPsocket server;
+    TCPsocket client;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

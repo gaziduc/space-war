@@ -5,12 +5,12 @@
 #include <SDL2/SDL.h>
 
 void set_object_attributes(struct list *new, enum object_type type,
-                           struct window *window, struct collision_texture *collision)
+                           struct collision_texture *collision)
 {
     new->texture.texture = collision;
     new->rotating = 0;
 
-    init_position(window->w, POS_CENTERED, new->texture.texture->texture, &new->pos_dst);
+    init_position(DEFAULT_W, POS_CENTERED, new->texture.texture->texture, &new->pos_dst);
 
     new->type = type;
     new->framecount = 0;

@@ -8,7 +8,7 @@
 
 void set_boss_attributes(struct list *new, SDL_Rect *pos, struct window *window)
 {
-    init_position(window->w, pos->y, window->img->boss->texture, &new->pos_dst);
+    init_position(DEFAULT_W, pos->y, window->img->boss->texture, &new->pos_dst);
 
     new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
     new->speed.y = window->paths->data[window->paths->index].line.enemy_path.speed_x;
@@ -88,7 +88,7 @@ void render_boss(struct window *window)
 
         resize_pos_for_resolution(window, &pos);
 
-        SDL_RenderCopy(window->renderer, window->img->boss->texture, NULL, &temp->pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->boss->texture, NULL, &pos);
 
         // Go to next boss
         temp = temp->next;
