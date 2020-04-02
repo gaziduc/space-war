@@ -81,7 +81,7 @@ static void handle_arrow_event(struct window *window, struct player *player)
 }
 
 
-static void try_to_shoot(struct window *window, struct player *player)
+static int try_to_shoot(struct window *window, struct player *player)
 {
     Uint32 current_time = SDL_GetTicks();
 
@@ -89,31 +89,35 @@ static void try_to_shoot(struct window *window, struct player *player)
     if (current_time - player->last_shot_time >= DELAY_BETWEEN_SHOTS)
     {
         // Shot
-        shoot(window, player);
         player->last_shot_time = current_time;
+        return shoot(window, player);
     }
+
+    return 0;
 }
 
 
-static void handle_shot_event(struct window *window, struct player *player)
+static int handle_shot_event(struct window *window, struct player *player)
 {
     if (player->health > 0)
     {
         if (player->is_controller)
         {
             if (window->in->c.axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE)
-                try_to_shoot(window, player);
+                return try_to_shoot(window, player);
         }
         else
         {
             if (window->in->key[SDL_SCANCODE_SPACE])
-                try_to_shoot(window, player);
+                return try_to_shoot(window, player);
         }
     }
+
+    return 0;
 }
 
 
-static void handle_bomb_event(struct window *window, struct player *player)
+static int handle_bomb_event(struct window *window, struct player *player)
 {
     if (player->health > 0 && window->num_bombs > 0)
     {
@@ -126,6 +130,7 @@ static void handle_bomb_event(struct window *window, struct player *player)
                 // Bomb: erase all visible enemies
                 bomb(window);
                 window->num_bombs--;
+                return 1;
             }
         }
         else
@@ -137,16 +142,20 @@ static void handle_bomb_event(struct window *window, struct player *player)
                 // Bomb: erase all visible enemies
                 bomb(window);
                 window->num_bombs--;
+                return 1;
             }
         }
     }
+
+    return 0;
 }
 
 
-void render_trail(struct window *window, struct player *player, SDL_Rect *pos, int is_enemy)
+void render_trail(struct window *window, struct player *player, SDL_Rect *pos,
+                  int is_lan_player, int is_enemy)
 {
     // If ship is dead, don't display trail
-    if (!is_enemy && player->health <= 0)
+    if (!is_enemy && !is_lan_player && player->health <= 0)
         return;
 
     SDL_Rect pos_dst_trail;
@@ -330,13 +339,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
             load_music(window, "data/madness.ogg", 1);
             init_background(window);
 
-            if (window->num_players == 1)
-                init_position(120, POS_CENTERED, window->img->ship->texture, &window->player[0].pos);
-            else
-            {
-                for (int i = 0; i < window->num_players; i++)
-                    init_position(120, 250 + i * 500, window->img->ship->texture, &window->player[i].pos);
-            }
+            for (int i = 0; i < window->num_players; i++)
+                init_position(120, 250 + i * 500, window->img->ship->texture, &window->player[i].pos);
 
             retry = 0;
         }
@@ -353,13 +357,28 @@ void play_game(struct window *window, int mission_num, int difficulty)
             update_events(window->in, window);
             handle_quit_event(window, 1);
             if (handle_escape_event(window))
-                escape = pause(window);
+            {
+                if (!window->is_lan)
+                    escape = pause(window);
+                else
+                {
+                    // Quit
+                    send_state(&window->player[0], window, 0, 0, 0, 1);
+                    free_background(window->stars);
+                    free_vector(window->paths);
+                    load_music(window, "data/hybris.ogg", 1);
+                    return;
+                }
+            }
+
+            int is_shooting = 0;
+            int is_throwing_bomb = 0;
 
             for (int i = 0; i < window->num_players; i++)
             {
                 handle_arrow_event(window, &window->player[i]);
-                handle_shot_event(window, &window->player[i]);
-                handle_bomb_event(window, &window->player[i]);
+                is_shooting += handle_shot_event(window, &window->player[i]);
+                is_throwing_bomb += handle_bomb_event(window, &window->player[i]);
             }
 
             // Move elements and background
@@ -370,6 +389,43 @@ void play_game(struct window *window, int mission_num, int difficulty)
             move_objects(window);
             move_hud_texts(window);
             move_background(window, framecount);
+
+            // LAN only
+            if (window->is_lan)
+            {
+                send_state(&window->player[0], window, is_shooting, is_throwing_bomb, 0, 0);
+
+                struct state state;
+                recv_state(window, &state);
+
+                if (state.quit)
+                {
+                    // Quit
+                    free_background(window->stars);
+                    free_vector(window->paths);
+                    load_music(window, "data/hybris.ogg", 1);
+                    return;
+                }
+
+                window->player[1].pos.x = state.pos_x;
+                window->player[1].pos.y = state.pos_y;
+                window->player[1].health = state.health;
+                window->player[1].ammo = state.ammo;
+                if (window->player[1].ammo == 1000)
+                    window->player[1].ammo = -1;
+
+                if (state.is_shooting)
+                    shoot(window, &window->player[1]);
+
+                if (state.throw_bomb)
+                {
+                    bomb(window);
+                    window->num_bombs--;
+                }
+
+                if (state.has_shield)
+                    window->player[1].shield_time = SDL_GetTicks();
+            }
 
             for (int i = 0; i < window->num_players; i++)
             {
@@ -388,7 +444,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             render_background(window);
             render_objects(window);
             for (int i = 0; i < window->num_players; i++)
-                render_trail(window, &window->player[i], &window->player[i].pos, 0);
+                render_trail(window, &window->player[i], &window->player[i].pos, 0, 0);
             render_enemies_health(window);
             render_shots(window);
             render_enemy_shots(window);
@@ -401,27 +457,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     render_ship(window, &window->player[i].pos);
                 }
             }
-            // Render other player in LAN
-            if (window->is_lan)
-            {
-                send_state(&window->player[0], window, 0, 0);
 
-                struct state state;
-                recv_state(window, &state);
-
-                if (state.health > 0)
-                {
-                    SDL_Rect pos = { .x = state.pos_x,
-                                     .y = state.pos_y,
-                                     .w = window->player[0].pos.w,
-                                     .h = window->player[0].pos.h
-                                   };
-
-                    render_ship(window, &pos);
-                }
-
-
-            }
             render_explosions(window);
             render_hud_texts(window);
             render_hud(window);

@@ -6,7 +6,7 @@
 
 #define BOMB_DAMAGE 10
 
-void shoot(struct window *window, struct player *player);
+int shoot(struct window *window, struct player *player);
 
 void bomb(struct window *window);
 

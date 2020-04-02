@@ -4,7 +4,7 @@
 #include "weapon.h"
 #include <SDL2/SDL.h>
 
-void shoot(struct window *window, struct player *player)
+int shoot(struct window *window, struct player *player)
 {
     if (player->ammo == -1 || player->ammo > 0)
     {
@@ -13,7 +13,11 @@ void shoot(struct window *window, struct player *player)
 
         if (player->ammo > 0)
             player->ammo--;
+
+        return 1;
     }
+
+    return 0;
 }
 
 

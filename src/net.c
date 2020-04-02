@@ -447,6 +447,7 @@ void connect_to_server(struct window *window)
                 play_game(window, level_num, level_difficulty);
                 selecting = 1;
                 selected = 0;
+                SDL_CreateThread(waiting_thread, "waiting_thread", window);
             }
         }
 
@@ -466,15 +467,25 @@ void connect_to_server(struct window *window)
 }
 
 
-void send_state(struct player *player, struct window *window, char is_shooting, char has_shield)
+void send_state(struct player *player, struct window *window,
+                char is_shooting, char throw_bomb, char has_shield,
+                char quit)
 {
-    char data[8] = { 0 }; // 8 = 3 * sizeof(Uin16) + 2 * sizeof(char)
+    char data[12] = { 0 }; // 12 = 4 * sizeof(Uin16) + 4 * sizeof(char)
 
     SDLNet_Write16((Uint16) player->pos.x, data);
     SDLNet_Write16((Uint16) player->pos.y, data + 2);
     SDLNet_Write16((Uint16) player->health, data + 4);
-    data[6] = is_shooting;
-    data[7] = has_shield;
+
+    if (player->ammo == -1)
+        SDLNet_Write16((Uint16) 1000, data + 6);
+    else
+        SDLNet_Write16((Uint16) player->ammo, data + 6);
+
+    data[8] = is_shooting;
+    data[9] = throw_bomb;
+    data[10] = has_shield;
+    data[11] = quit;
 
     SDLNet_TCP_Send(window->client, data, sizeof(data));
 }
@@ -482,15 +493,18 @@ void send_state(struct player *player, struct window *window, char is_shooting, 
 
 void recv_state(struct window *window, struct state *state)
 {
-    char data[8] = { 0 }; // 8 = 3 * sizeof(Uin16) + 2 * sizeof(char)
+    char data[12] = { 0 }; // 12 = 4 * sizeof(Uin16) + 4 * sizeof(char)
 
     SDLNet_TCP_Recv(window->client, data, sizeof(data));
 
     state->pos_x = SDLNet_Read16(data);
     state->pos_y = SDLNet_Read16(data + 2);
     state->health = SDLNet_Read16(data + 4);
-    state->is_shooting = data[6];
-    state->has_shield = data[7];
+    state->ammo = SDLNet_Read16(data + 6);
+    state->is_shooting = data[8];
+    state->throw_bomb = data[9];
+    state->has_shield = data[10];
+    state->quit = data[11];
 }
 
 
