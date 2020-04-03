@@ -26,6 +26,8 @@ void recv_state(struct window *window, struct state *state);
 
 int connecting_thread(void *data);
 
+int accepting_thread(void *data);
+
 int waiting_thread(void *data);
 
 #endif /* !NET_H */

@@ -5,6 +5,7 @@
 #include "net.h"
 #include "level.h"
 #include "game.h"
+#include "lobby.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 #include <SDL2/SDL_net.h>
@@ -14,13 +15,12 @@ char buf[40]; // 40 = Max IPv6 len + 1
 int is_connecting;
 int is_connected;
 char err[256];
-int level_num;
-int level_difficulty;
-int selecting;
-int selected;
+int accepting;
+int accepted;
 
 
-static void render_create_or_join_texts(struct window *window, Uint32 begin, int selected_item)
+static void render_create_or_join_texts(struct window *window, Uint32 begin,
+                                        int selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -34,7 +34,8 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin, int
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     // Render title
-    render_text(window, window->fonts->zero4b_30_small, "CREATE OR JOIN ?", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, "CREATE OR JOIN ?",
+                orange, 150, 150);
 
     // Render items
     char *s_list[2] = { "-> CREATE", "-> JOIN" };
@@ -99,8 +100,8 @@ void create_or_join(struct window *window)
 }
 
 
-static void render_accept_client_texts(struct window *window, Uint32 begin, int selected_item,
-                                       char *ip_str)
+static void render_accept_client_texts(struct window *window, Uint32 begin,
+                                       int selected_item, char *ip_str)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -141,6 +142,7 @@ static void accept_client(struct window *window, char *ip_str)
     int escape = 0;
     int selected_item = 1;
     Uint32 begin = SDL_GetTicks();
+    char buf[1] = { 0 };
 
     while (!escape)
     {
@@ -149,23 +151,32 @@ static void accept_client(struct window *window, char *ip_str)
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, 2);
         escape = handle_escape_event(window);
+        if (escape)
+        {
+            buf[0] = 2;
+            SDLNet_TCP_Send(window->client, buf, sizeof(buf));
+        }
 
-        if (handle_play_event(window))
+        if (!escape && handle_play_event(window))
         {
             switch (selected_item)
             {
                 case 1: // Accept
+                    buf[0] = 1;
+                    SDLNet_TCP_Send(window->client, buf, sizeof(buf));
                     select_level(window);
-                    break;
+                    return;
 
                 case 2: // Decline
-                    escape = 1;
+                    buf[0] = 2;
+                    SDLNet_TCP_Send(window->client, buf, sizeof(buf));
                     break;
 
                 default:
                     break;
             }
 
+            escape = 1;
             begin = SDL_GetTicks();
         }
 
@@ -351,6 +362,15 @@ int is_correct_ip(char *str)
 }
 
 
+static void reset_global_vars(void)
+{
+    accepting = 0;
+    accepted = 0;
+    is_connecting = 0;
+    is_connected = 0;
+}
+
+
 void connect_to_server(struct window *window)
 {
     int escape = 0;
@@ -358,11 +378,7 @@ void connect_to_server(struct window *window)
 
     memset(buf, '\0', sizeof(buf));
     memset(err, '\0', sizeof(err));
-    level_num = 0;
-    level_difficulty = 0;
-    selected = 0;
-    selecting = 0;
-
+    reset_global_vars();
     SDL_StartTextInput();
 
     while (!escape)
@@ -422,32 +438,32 @@ void connect_to_server(struct window *window)
             render_text(window, window->fonts->pixel, buf, white, 150, 350);
 
         if (!is_connecting && !is_connected)
-            render_text(window, window->fonts->pixel, "_", white, 150 + strlen(buf) * 18, 350);
+            render_text(window, window->fonts->pixel, "_",
+                        white, 150 + strlen(buf) * 18, 350);
 
         if (is_connecting)
-            render_text(window, window->fonts->pixel, "Connecting... Please wait...", green, 150, 470);
+            render_text(window, window->fonts->pixel,
+                        "Connecting... Please wait...", green, 150, 470);
 
         if (is_connected)
         {
-            if (!selected && !selecting)
+            if (!accepted && !accepting)
             {
-                SDL_CreateThread(waiting_thread, "waiting_thread", window);
-                selecting = 1;
+                SDL_CreateThread(accepting_thread, "accepting_thread", window);
+                accepting = 1;
             }
-            else if (!selected && selecting)
+            else if (!accepted && accepting)
             {
                 render_text(window, window->fonts->pixel,
-                         "Connected! Waiting for the other to choose mission...",
-                         green, 150, 470);
-
-                selected = 0;
+                            "Waiting for the other player to accept request...",
+                            green, 150, 470);
             }
-            else // if selected
+            else // if accepted (or declined)
             {
-                play_game(window, level_num, level_difficulty);
-                selecting = 1;
-                selected = 0;
-                SDL_CreateThread(waiting_thread, "waiting_thread", window);
+                if (accepted == 1) // Do not remove == 1
+                    lobby(window);
+
+                reset_global_vars();
             }
         }
 
@@ -537,15 +553,13 @@ int connecting_thread(void *data)
 }
 
 
-int waiting_thread(void *data)
+int accepting_thread(void *data)
 {
     struct window *window = data;
-    char data_received[2] = { 0 };
+    char data_received[1] = { 0 };
 
     SDLNet_TCP_Recv(window->client, data_received, sizeof(data_received));
-    level_num = data_received[0];
-    level_difficulty = data_received[1];
-    selected = 1;
+    accepted = data_received[0];
 
     return 0;
 }

@@ -131,7 +131,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         {
             if (window->is_lan)
             {
-                char data[2] = { selected_level, selected_difficulty };
+                char data[3] = { selected_level, selected_difficulty, 0 };
                 SDLNet_TCP_Send(window->client, data, sizeof(data));
             }
 
@@ -248,5 +248,11 @@ void select_level(struct window *window)
 
         // Wait a frame
         SDL_framerateDelay(window->fps);
+    }
+
+    if (window->is_lan)
+    {
+         char data[3] = { 0, 0, 1 };
+         SDLNet_TCP_Send(window->client, data, sizeof(data));
     }
 }
