@@ -127,10 +127,10 @@ static void render_accept_client_texts(struct window *window, Uint32 begin,
     {
         if (selected_item != i)
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
-                        150, 450 + (i - 1) * 100);
+                        150, 400 + (i - 1) * 100);
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 450 + (i - 1) * 100);
+                        150, 400 + (i - 1) * 100);
     }
 }
 
@@ -461,13 +461,14 @@ void connect_to_server(struct window *window)
             else // if accepted (or declined)
             {
                 if (accepted == 1) // Do not remove == 1
+                {
                     lobby(window);
+                    begin = SDL_GetTicks();
+                }
 
                 reset_global_vars();
             }
         }
-
-
 
         else if (err[0])
             render_text(window, window->fonts->pixel, err, red, 150, 470);
@@ -476,7 +477,6 @@ void connect_to_server(struct window *window)
 
         // Wait a frame
         SDL_framerateDelay(window->fps);
-
     }
 
     SDL_StopTextInput();

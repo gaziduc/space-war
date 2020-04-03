@@ -21,7 +21,7 @@ static void reset_global_vars()
 void lobby(struct window *window)
 {
     int escape = 0;
-    // Uint32 begin = SDL_GetTicks();
+    Uint32 begin = SDL_GetTicks();
     reset_global_vars();
 
     SDL_CreateThread(waiting_thread, "waiting_thread", window);
@@ -51,6 +51,17 @@ void lobby(struct window *window)
 
         // Process/Draw all the things
         render_stars(window);
+        Uint32 alpha = SDL_GetTicks() - begin;
+
+        if (alpha > TITLE_ALPHA_MAX)
+            alpha = TITLE_ALPHA_MAX;
+        else if (alpha == 0)
+            alpha = 1;
+
+        SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+        render_text(window, window->fonts->zero4b_30_small, "WAITING FOR THE SERVER...",
+                    orange, 150, 150);
+
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

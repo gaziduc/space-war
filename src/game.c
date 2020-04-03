@@ -21,6 +21,9 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
+// LAN
+struct state state;
+
 
 static void handle_arrow_event(struct window *window, struct player *player)
 {
@@ -330,6 +333,10 @@ void play_game(struct window *window, int mission_num, int difficulty)
     int escape = 0;
     int retry = 1;
 
+    // Thread for LAN
+    if (window->is_lan)
+        SDL_CreateThread(recv_thread, "recv_thread", window);
+
     while (!escape)
     {
         reset_game_attributes(window, difficulty, retry);
@@ -394,9 +401,6 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (window->is_lan)
             {
                 send_state(&window->player[0], window, is_shooting, is_throwing_bomb, 0, 0);
-
-                struct state state;
-                recv_state(window, &state);
 
                 if (state.quit)
                 {
@@ -513,4 +517,14 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
     free_vector(window->paths);
     load_music(window, "data/hybris.ogg", 1);
+}
+
+int recv_thread(void *data)
+{
+    struct window *window = data;
+
+    while (!state.quit)
+        recv_state(window, &state);
+
+    return 0;
 }
