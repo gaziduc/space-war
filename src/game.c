@@ -23,6 +23,7 @@
 
 // LAN
 struct state state;
+int shots_to_handle;
 
 
 static void handle_arrow_event(struct window *window, struct player *player)
@@ -418,8 +419,11 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 if (window->player[1].ammo == 1000)
                     window->player[1].ammo = -1;
 
-                if (state.is_shooting)
+                if (shots_to_handle)
+                {
                     shoot(window, &window->player[1]);
+                    shots_to_handle = 0;
+                }
 
                 if (state.throw_bomb)
                 {
@@ -526,6 +530,8 @@ int recv_thread(void *data)
     do
     {
         recv_state(window, &state);
+        if (state.is_shooting)
+            shots_to_handle = 1;
     } while (!state.quit);
 
     return 0;
