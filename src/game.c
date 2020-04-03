@@ -523,8 +523,10 @@ int recv_thread(void *data)
 {
     struct window *window = data;
 
-    while (!state.quit)
+    do
+    {
         recv_state(window, &state);
+    } while (!state.quit);
 
     return 0;
 }
