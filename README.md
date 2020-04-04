@@ -16,6 +16,7 @@ sdl2_image
 sdl2_gfx
 sdl2_ttf
 sdl2_mixer
+sdl2_net
 ```
 ## Play only
 Go to the release section: https://github.com/gaziduc/space-war/releases
