@@ -491,7 +491,10 @@ void send_state(struct player *player, struct window *window,
 
     SDLNet_Write16((Uint16) player->pos.x, data);
     SDLNet_Write16((Uint16) player->pos.y, data + 2);
-    SDLNet_Write16((Uint16) player->health, data + 4);
+    if (player->health > 0)
+        SDLNet_Write16((Uint16) player->health, data + 4);
+    else
+        SDLNet_Write16((Uint16) 0, data + 4);
 
     if (player->ammo == -1)
         SDLNet_Write16((Uint16) 1000, data + 6);
