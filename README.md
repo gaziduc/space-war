@@ -19,7 +19,8 @@ sdl2_mixer
 sdl2_net
 ```
 ## Play only
-Go to the release section: https://github.com/gaziduc/space-war/releases
+Go to the web page: https://gamejolt.com/games/space-war/482884
+(or the release section of github: https://github.com/gaziduc/space-war/releases)
 ## Download, build and play:
 ```shell
 git clone https://github.com/gaziduc/space-war.git
