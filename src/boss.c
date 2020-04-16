@@ -46,7 +46,7 @@ void create_boss(struct window *window)
 }
 
 
-void move_boss(struct window *window, SDL_Rect *ship_pos)
+void move_boss(struct window *window)
 {
     struct list *temp = window->list[BOSS_LIST]->next;
 
@@ -67,7 +67,13 @@ void move_boss(struct window *window, SDL_Rect *ship_pos)
         temp->framecount++;
 
         if (temp->framecount % FRAMES_BETWEEN_BOSS_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, ship_pos, 0, 0);
+        {
+            // Selecting on which player to shoot
+            struct player *closest_player = select_player(window, temp);
+
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
+                            &closest_player->pos, 0, 0);
+        }
 
         temp = temp->next;
     }

@@ -115,12 +115,33 @@ static int is_shooting(char enemy_type)
 }
 
 
+struct player* select_player(struct window *window, struct list *temp)
+{
+    if (window->num_players == 1)
+        return &window->player[0];
+    else // if (window->num_players == 2)
+    {
+        int dx1 = abs(temp->pos_dst.x - window->player[0].pos.x);
+        int dy1 = abs(temp->pos_dst.y - window->player[0].pos.y);
+        double d1 = sqrt(dx1 * dx1 + dy1 * dy1);
+
+        int dx2 = abs(temp->pos_dst.x - window->player[1].pos.x);
+        int dy2 = abs(temp->pos_dst.y - window->player[1].pos.y);
+        double d2 = sqrt(dx2 * dx2 + dy2 * dy2);
+
+        if (d1 < d2)
+            return &window->player[0];
+
+        return &window->player[1];
+    }
+}
+
+
+
 void move_enemies(struct window *window)
 {
     struct list *temp = window->list[ENEMY_LIST]->next;
     struct list *prev = window->list[ENEMY_LIST];
-
-    struct player *rand_player = &window->player[rand() % window->num_players];
 
     while (temp)
     {
@@ -133,11 +154,14 @@ void move_enemies(struct window *window)
 
         int shoot = is_shooting(temp->enemy_type);
 
+        // Selecting on which player to shoot
+        struct player *closest_player = select_player(window, temp);
+
         if (temp->enemy_type == 'A' && temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &rand_player->pos, 0, 0);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &closest_player->pos, 0, 0);
 
         if (temp->enemy_type == 'C' && temp->framecount % 8 == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &rand_player->pos, 0, 0);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &closest_player->pos, 0, 0);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)
@@ -162,7 +186,7 @@ void move_enemies(struct window *window)
         }
     }
 
-    move_boss(window, &rand_player->pos);
+    move_boss(window);
 }
 
 
