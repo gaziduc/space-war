@@ -242,7 +242,7 @@ void select_level(struct window *window)
 
         if (handle_play_event(window))
         {
-            if (selected_level == 1 || window->save->progress[window->num_players - 1][selected_level - 1] > 0)
+            if (selected_level == 1 || window->save->progress[window->num_players - 1][selected_level - 2] > 0)
             {
                 level_difficulty(window, selected_level, s_list[selected_level - 1]);
                 begin = SDL_GetTicks();
