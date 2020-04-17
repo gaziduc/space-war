@@ -41,6 +41,7 @@ struct textures
     struct collision_texture *asteroid;
     struct collision_texture *rotating_enemy[NUM_ROTATING_FRAMES];
     SDL_Texture *aura;
+    struct collision_texture *drone;
 };
 
 

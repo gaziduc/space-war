@@ -56,6 +56,7 @@ static void load_textures(struct window *window)
     window->img->aura = load_texture("data/aura.png", window);
     window->img->asteroid = load_texture_collision("data/asteroid.png", window);
 
+    // Load/create rotating enemy animation
     SDL_Surface *original = IMG_Load("data/rotating_enemy.png");
     if (!original)
         error("Could not load surface", IMG_GetError(), window->window);
@@ -71,6 +72,8 @@ static void load_textures(struct window *window)
     }
 
     SDL_FreeSurface(original);
+
+    window->img->drone = load_texture_collision("data/drone.png", window);
 }
 
 

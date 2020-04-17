@@ -34,6 +34,8 @@ static void free_textures(struct window *window)
     for (size_t i = 0; i < NUM_ROTATING_FRAMES; i++)
         free_collision_texture(window->img->rotating_enemy[i]);
 
+    free_collision_texture(window->img->drone);
+
     free(window->img);
 }
 

@@ -42,6 +42,11 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
                 new->texture.textures[i] = window->img->rotating_enemy[i];
             break;
 
+        case 'D':
+            new->texture.texture = window->img->drone;
+            // Set vertical speed
+            new->speed.y = new->speed.x;
+            break;
 
         default:
             break;
@@ -50,7 +55,8 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
     new->rotating = is_rotating(enemy_type);
     new->curr_texture = 0;
     init_position(DEFAULT_W, pos->y,
-                  new->rotating ? new->texture.textures[0]->texture : new->texture.texture->texture,
+                  new->rotating ? new->texture.textures[0]->texture
+                                : new->texture.texture->texture,
                   &new->pos_dst);
 }
 
@@ -75,6 +81,9 @@ void create_enemies(struct window *window)
                 break;
             case 'C':
                 SDL_QueryTexture(window->img->rotating_enemy[0]->texture, NULL, NULL, NULL, &h);
+                break;
+            case 'D':
+                SDL_QueryTexture(window->img->drone->texture, NULL, NULL, NULL, &h);
                 break;
 
             case '0':
@@ -108,7 +117,7 @@ void create_enemies(struct window *window)
 
 static int is_shooting(char enemy_type)
 {
-    if (enemy_type == 'A' || enemy_type == 'C')
+    if (enemy_type == 'A' || enemy_type == 'C' || enemy_type == 'D')
         return 1;
 
     return 0;
@@ -147,6 +156,16 @@ void move_enemies(struct window *window)
     {
         // Move enemy
         temp->pos_dst.x -= temp->speed.x;
+
+        // If drone
+        if (temp->enemy_type == 'D')
+        {
+            temp->pos_dst.y += temp->speed.y;
+            // If vertical out of bounds, change vertical speed
+            if (temp->pos_dst.y < 20 || temp->pos_dst.y + temp->pos_dst.h > DEFAULT_H - 20)
+                temp->speed.y = -temp->speed.y;
+        }
+
         temp->framecount++;
 
         if (is_rotating(temp->enemy_type))
@@ -158,10 +177,16 @@ void move_enemies(struct window *window)
         struct player *closest_player = select_player(window, temp);
 
         if (temp->enemy_type == 'A' && temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &closest_player->pos, 0, 0);
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
+                            &closest_player->pos, 0, 0);
 
-        if (temp->enemy_type == 'C' && temp->framecount % 8 == 0)
-            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL, &closest_player->pos, 0, 0);
+        if (temp->enemy_type == 'C' && temp->framecount % FRAMES_BETWEEN_ROTATING_ENEMY_SHOTS == 0)
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
+                            &closest_player->pos, 0, 0);
+
+        if (temp->enemy_type == 'D' && temp->framecount % FRAMES_BETWEEN_DRONE_SHOTS == 0)
+            list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
+                            &closest_player->pos, 0, 0);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)
