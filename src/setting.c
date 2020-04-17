@@ -154,6 +154,9 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 window->w = 1280;
                 window->h = 720;
                 SDL_SetWindowSize(window->window, window->w, window->h);
+                SDL_SetWindowPosition(window->window,
+                                      SDL_WINDOWPOS_CENTERED,
+                                      SDL_WINDOWPOS_CENTERED);
                 write_settings(window);
                 break;
 
@@ -195,6 +198,9 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 window->w = 1920;
                 window->h = 1080;
                 SDL_SetWindowSize(window->window, window->w, window->h);
+                SDL_SetWindowPosition(window->window,
+                                      SDL_WINDOWPOS_CENTERED,
+                                      SDL_WINDOWPOS_CENTERED);
                 write_settings(window);
                 break;
 
@@ -228,6 +234,9 @@ void settings(struct window *window)
                     {
                         window->settings->is_fullscreen = 0;
                         SDL_SetWindowFullscreen(window->window, 0);
+                        SDL_SetWindowPosition(window->window,
+                                              SDL_WINDOWPOS_CENTERED,
+                                              SDL_WINDOWPOS_CENTERED);
                     }
                     else
                     {

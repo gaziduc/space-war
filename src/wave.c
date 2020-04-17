@@ -29,7 +29,7 @@ static void render_title(struct window *window, Uint8 alpha)
 void render_wave_title(struct window *window)
 {
     // While there are still enemies, wait
-    if (window->list[ENEMY_LIST]->next != NULL)
+    if (window->list[ENEMY_LIST]->next || window->list[BOSS_LIST]->next)
         return;
 
     Uint32 ticks = SDL_GetTicks();

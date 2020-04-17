@@ -16,7 +16,7 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
 
     SDL_Texture *texture = get_text_texture(window, window->fonts->zero4b_30_small,
                                             s, orange);
-    SDL_Rect pos = { .x = 1300, .y = 350, .w = 0, .h = 0 };
+    SDL_Rect pos = { .x = 1300, .y = 320, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos.w, &pos.h);
     pos.x -= pos.w / 2;
 
@@ -32,7 +32,7 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
     char str[50] = { 0 };
     sprintf(str, "Best: %d", score);
     texture = get_text_texture(window, window->fonts->zero4b_30_small, str, yellow);
-    SDL_Rect pos_score = { .x = 1300, .y = 450, .w = 0, .h = 0 };
+    SDL_Rect pos_score = { .x = 1300, .y = 420, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos_score.w, &pos_score.h);
     pos_score.x -= pos_score.w / 2;
 
@@ -181,6 +181,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
     SDL_Color orange = { 255, 128, 0, alpha };
+    SDL_Color grey = { 128, 128, 128, alpha };
 
     render_text(window, window->fonts->zero4b_30_small, "MISSION SELECT", orange, 150, 150);
 
@@ -194,12 +195,22 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
             sprintf(s, "-> Arcade Mode %.*s", window->save->progress[window->num_players - 1][i - 1], "***");
 
 
-        int y = 350 + (i - 1) * 80;
+        int y = 320 + (i - 1) * 60;
 
         if (i != selected_level)
-            render_text(window, window->fonts->zero4b_30_small, s + 3, blue, 150, y);
+        {
+            if (i == 1 || window->save->progress[window->num_players - 1][i - 2] > 0)
+                render_text(window, window->fonts->zero4b_30_extra_small, s + 3, blue, 150, y);
+            else
+                render_text(window, window->fonts->zero4b_30_extra_small, s + 3, grey, 150, y);
+        }
         else
-            render_text(window, window->fonts->zero4b_30_small, s, green, 150, y);
+        {
+            if (i == 1 || window->save->progress[window->num_players - 1][i - 2] > 0)
+                render_text(window, window->fonts->zero4b_30_extra_small, s, green, 150, y);
+            else
+                render_text(window, window->fonts->zero4b_30_extra_small, s, grey, 150, y);
+        }
     }
 
     render_selected_level_title(window, s_list[selected_level - 1],
@@ -219,6 +230,7 @@ void select_level(struct window *window)
                                  "New Universe",
                                  "Spatial Army",
                                  "Bosses",
+                                 "New Planet",
                                  "Arcade Mode"
                                };
 
@@ -230,8 +242,11 @@ void select_level(struct window *window)
 
         if (handle_play_event(window))
         {
-            level_difficulty(window, selected_level, s_list[selected_level - 1]);
-            begin = SDL_GetTicks();
+            if (selected_level == 1 || window->save->progress[window->num_players - 1][selected_level - 1] > 0)
+            {
+                level_difficulty(window, selected_level, s_list[selected_level - 1]);
+                begin = SDL_GetTicks();
+            }
         }
 
         handle_select_arrow_event(window, &selected_level, NUM_LEVELS + 1);

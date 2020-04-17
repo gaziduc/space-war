@@ -6,9 +6,21 @@
 # 0: boss
 # D: drone
 
-$ Mission_1
+@ G
 
-$ Wave_1
+$ .
+$ ..
+$ ...
+$ It_looks_like_I'm_not_alone
+$ .
+$ ..
+$ ...
+$ Oh,_a_new_galaxy!
+$ ...
+$ Hum...
+$ The_detector_sees_enemies!!!
+$ Let's_kill_them!
+
 1000 540 2 4 A
 4000 140 2 4 A
 0 540 2 4 A
@@ -22,7 +34,6 @@ $ Wave_1
 
 $ Wave_2
 1000 540 2 5 D
-2000 540 2 5 D
 2000 540 2 5 D
 2000 540 2 5 D
 2000 540 2 5 D

@@ -252,37 +252,46 @@ void check_collisions_objects(struct window *window, struct player *player)
             collision(&player->pos, window->img->ship,
                       &temp->pos_dst, temp->texture.texture))
         {
-            // Play sound
-            Mix_PlayChannel(-1, window->sounds->power_up, 0);
-
-            // force feedback
-            if (window->settings->is_force_feedback && window->in->c.haptic)
-                SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
-
-
-            switch (temp->type)
+            // If planet or galaxy, go to next
+            if (temp->type == PLANET || temp->type == GALAXY)
             {
-                case HEALTH: // Increase health
-                    player->health += 30;
-                    if (player->health > window->max_health)
-                        player->health = window->max_health;
-                    break;
-
-                case SHIELD: // Activate  shield
-                    player->shield_time = SDL_GetTicks();
-                    break;
-
-                default:
-                    error("Unknown object", "Unknown object type", window->window);
-                    break;
+                prev = temp;
+                temp = temp->next;
             }
+            else
+            {
+                // Play sound
+                Mix_PlayChannel(-1, window->sounds->power_up, 0);
 
-            // Delete object
-            struct list *to_delete = temp;
-            temp = temp->next;
-            free(to_delete);
+                // force feedback
+                if (window->settings->is_force_feedback && window->in->c.haptic)
+                    SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
 
-            prev->next = temp;
+
+                switch (temp->type)
+                {
+                    case HEALTH: // Increase health
+                        player->health += 30;
+                        if (player->health > window->max_health)
+                            player->health = window->max_health;
+                        break;
+
+                    case SHIELD: // Activate  shield
+                        player->shield_time = SDL_GetTicks();
+                        break;
+
+                    default:
+                        error("Unknown object", "Unknown object type", window->window);
+                        break;
+                }
+
+                // Delete object
+                struct list *to_delete = temp;
+                temp = temp->next;
+                free(to_delete);
+
+                prev->next = temp;
+            }
         }
         else
         {

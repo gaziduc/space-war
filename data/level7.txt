@@ -1,0 +1,26 @@
+# Usage:
+# $ wave_name
+# @ object_type
+# num_ms_to_appear pos_y speed health enemy_type
+
+# Enemy_type usage:
+# A: standard
+# B: asteroid
+# 0: boss
+
+$ Mission_7
+
+$ Boss
+1000 320 5 40 0
+0 540 5 40 0
+0 760 5 40 0
+
+$ Good_Job
+@ P
+$ .
+$ ..
+$ ...
+$ Hum...
+$ ...
+$ A_new_planet!
+$ Let's_go_kill_everyone!

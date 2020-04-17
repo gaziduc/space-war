@@ -7,7 +7,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_net.h>
 
-#define NUM_LEVELS 6
+#define NUM_LEVELS 7
 #define NUM_ROTATING_FRAMES 180
 #define DEFAULT_W 1920
 #define DEFAULT_H 1080
@@ -17,6 +17,8 @@ enum object_type
 {
     HEALTH = 0,
     SHIELD,
+    PLANET,
+    GALAXY,
     NUM_OBJECTS
 };
 

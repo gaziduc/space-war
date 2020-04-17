@@ -45,11 +45,21 @@ static void set_object_type(struct window *window, const char *filename, FILE *f
             p->line.type = SHIELD;
             break;
 
+        case 'P':
+            p->line.type = PLANET;
+            break;
+
+        case 'G':
+            p->line.type = GALAXY;
+            break;
+
         default:
             error(filename, "Could not load file because it is corrupted.", window->window);
             break;
     }
 }
+
+
 
 struct vector *load_paths(struct window *window, char *filename)
 {
@@ -77,7 +87,7 @@ struct vector *load_paths(struct window *window, char *filename)
 
         struct path p;
 
-        if (c == '$')
+        if (c == '$') // Wave title
         {
             int scan = set_path_title(f, &p);
 
@@ -89,13 +99,13 @@ struct vector *load_paths(struct window *window, char *filename)
             else
                 replace_underscores(p.line.title);
         }
-        else if (c == '@')
+        else if (c == '@') // objects
         {
             set_object_type(window, filename, f, &p);
         }
         else
         {
-            // If line[0] wasn't a '#', '@', '\n' or a '$', re-read it as part of a number
+            // If line[0] wasn't a '#', '@', '/', '\n' or a '$', re-read it as part of a number
             fseek(f, -1, SEEK_CUR);
 
             p.type = ENEMY;
@@ -130,8 +140,7 @@ int execute_path_action(struct window *window)
     {
         enum path_line_type type = window->paths->data[window->paths->index].type;
 
-        if (type == ENEMY && SDL_GetTicks() - window->last_enemy_time
-            >= window->paths->data[window->paths->index].line.enemy_path.time_to_wait)
+        if (type == ENEMY)
             create_enemies(window);
         else if (type == OBJECT)
             create_object(window, window->paths->data[window->paths->index].line.type);

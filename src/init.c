@@ -53,6 +53,8 @@ static void load_textures(struct window *window)
     window->img->boss = load_texture_collision("data/boss.png", window);
     window->img->objects[HEALTH] = load_texture_collision("data/health.png", window);
     window->img->objects[SHIELD] = load_texture_collision("data/shield.png", window);
+    window->img->objects[PLANET] = load_texture_collision("data/planet.png", window);
+    window->img->objects[GALAXY] = load_texture_collision("data/galaxy.png", window);
     window->img->aura = load_texture("data/aura.png", window);
     window->img->asteroid = load_texture_collision("data/asteroid.png", window);
 

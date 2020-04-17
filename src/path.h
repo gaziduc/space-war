@@ -11,7 +11,7 @@ enum path_line_type
 {
     TITLE = 0,
     ENEMY,
-    OBJECT
+    OBJECT,
 };
 
 struct enemy_path

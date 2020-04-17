@@ -315,6 +315,25 @@ static void render_ship(struct window *window, SDL_Rect *temp_pos)
 }
 
 
+static void load_correct_music(struct window *window, int mission_num, int is_arcade)
+{
+    if (is_arcade)
+    {
+        if (mission_num == 1)
+            load_music(window, "data/pirates.ogg", 1);
+        else if (mission_num == 7)
+            load_music(window, "data/planet.ogg", 1);
+    }
+    else
+    {
+        if (mission_num < 7)
+            load_music(window, "data/pirates.ogg", 1);
+        else
+            load_music(window, "data/planet.ogg", 1);
+    }
+}
+
+
 void play_game(struct window *window, int mission_num, int difficulty)
 {
     int is_arcade = 0;
@@ -344,7 +363,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
         if (retry)
         {
-            load_music(window, "data/madness.ogg", 1);
+            load_correct_music(window, mission_num, is_arcade);
             init_background(window);
 
             for (int i = 0; i < window->num_players; i++)
@@ -447,7 +466,10 @@ void play_game(struct window *window, int mission_num, int difficulty)
             }
 
             // Display textures
-            SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+            if (mission_num <= 6)
+                SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+            else
+                SDL_SetRenderDrawColor(window->renderer, 192, 128, 0, 255);
             SDL_RenderClear(window->renderer);
             render_background(window);
             render_objects(window);
@@ -490,6 +512,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 mission_num++;
                 sprintf(s, "data/level%d.txt", mission_num);
                 window->paths = load_paths(window, s);
+
+                load_correct_music(window, mission_num, is_arcade);
             }
             else
             {
