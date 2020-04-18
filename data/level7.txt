@@ -14,3 +14,8 @@ $ A_gaseous_planet?
 1000 320 5 40 0
 0 540 5 40 0
 0 760 5 40 0
+
+$ ...
+$ Detector_sees_no_more_enemy
+$ ...
+$ Thanks_for_playing!
