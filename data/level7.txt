@@ -7,13 +7,38 @@
 # A: standard
 # B: asteroid
 # 0: boss
+# 1: final boss
 
 $ Hum...
 $ A_gaseous_planet?
 
+$ Wave_1
+
 1000 320 5 40 0
 0 540 5 40 0
 0 760 5 40 0
+5000 540 3 2 D
+5000 540 3 2 D
+5000 540 3 2 D
+5000 540 3 2 D
+5000 540 3 2 D
+
+$ Wave_2
+
+1000 340 3 4 C
+0 740 3 4 C
+4000 340 3 4 C
+0 740 3 4 C
+4000 140 2 6 B
+0 340 2 6 B
+0 540 2 6 B
+0 740 2 6 B
+0 940 2 6 B
+4000 540 3 5 C
+
+$ Final_Boss
+
+1000 540 2 70 1
 
 $ ...
 $ Detector_sees_no_more_enemy

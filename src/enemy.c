@@ -89,6 +89,9 @@ void create_enemies(struct window *window)
             case '0':
                 SDL_QueryTexture(window->img->boss->texture, NULL, NULL, NULL, &h);
                 break;
+            case '1':
+                SDL_QueryTexture(window->img->final_boss->texture, NULL, NULL, NULL, &h);
+                break;
 
             default:
                 error("Error in paths file", "Unknown enemy type", window->window);

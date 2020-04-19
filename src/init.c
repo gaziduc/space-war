@@ -76,6 +76,7 @@ static void load_textures(struct window *window)
     SDL_FreeSurface(original);
 
     window->img->drone = load_texture_collision("data/drone.png", window);
+    window->img->final_boss = load_texture_collision("data/final_boss.png", window);
 }
 
 
