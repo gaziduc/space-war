@@ -73,13 +73,14 @@ void lobby(struct window *window)
 int waiting_thread(void *data)
 {
     struct window *window = data;
-    char data_received[3] = { 0 };
+    char data_received[4] = { 0 };
 
     SDLNet_TCP_Recv(window->client, data_received, sizeof(data_received));
 
     level_num = data_received[0];
     level_difficulty = data_received[1];
-    quit = data_received[2];
+    window->weapon = data_received[2];
+    quit = data_received[3];
 
     selected = 1;
 

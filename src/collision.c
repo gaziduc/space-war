@@ -3,6 +3,7 @@
 #include "collision.h"
 #include "utils.h"
 #include "object.h"
+#include "weapon.h"
 
 static int collision_aabb(SDL_Rect *pos1, SDL_Rect *pos2)
 {
@@ -87,10 +88,10 @@ static void check_collisions_list(struct window *window, struct player *player,
         {
             // If collision shot <-> enemy
             if (collision(temp_pos, temp,
-                          &temp_shot->pos_dst, window->img->shot))
+                          &temp_shot->pos_dst, window->img->shot[window->weapon]))
             {
                 // Decrease enemy health
-                temp_enemy->health--;
+                temp_enemy->health -= get_weapon_damage(window->weapon);
                 temp_enemy->last_time_hurt = SDL_GetTicks();
 
                 // Add an explosion

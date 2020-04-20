@@ -90,7 +90,7 @@ static int try_to_shoot(struct window *window, struct player *player)
     Uint32 current_time = SDL_GetTicks();
 
     // If enough time between now and the last shot
-    if (current_time - player->last_shot_time >= DELAY_BETWEEN_SHOTS)
+    if (current_time - player->last_shot_time >= (Uint32) (1000 / get_weapon_shots_per_second(window->weapon)))
     {
         // Shot
         player->last_shot_time = current_time;

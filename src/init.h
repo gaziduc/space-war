@@ -33,7 +33,7 @@ struct collision_texture
 struct textures
 {
     struct collision_texture *ship;
-    struct collision_texture *shot;
+    struct collision_texture *shot[3];
     struct collision_texture *enemy;
     SDL_Texture *explosion;
     SDL_Texture *trail;
@@ -193,6 +193,7 @@ struct window
     int is_lan;
     TCPsocket server;
     TCPsocket client;
+    int weapon;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

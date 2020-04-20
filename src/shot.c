@@ -1,6 +1,7 @@
 #include "init.h"
 #include "game.h"
 #include "utils.h"
+#include "weapon.h"
 #include <SDL2/SDL.h>
 
 void set_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *window)
@@ -12,7 +13,9 @@ void set_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *window)
     new->pos_dst.x = pos_dst->x + w;
     new->pos_dst.y = pos_dst->y + h / 2;
 
-    SDL_QueryTexture(window->img->shot->texture, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
+    SDL_QueryTexture(window->img->shot[window->weapon]->texture, NULL, NULL,
+                     &new->pos_dst.w, &new->pos_dst.h);
+
     new->pos_dst.x -= new->pos_dst.w;
     new->pos_dst.y -= new->pos_dst.h / 2;
 }
@@ -26,7 +29,7 @@ void move_shots(struct window *window)
     while (temp)
     {
         // Move shot
-        temp->pos_dst.x += SHOT_SPEED;
+        temp->pos_dst.x += get_weapon_speed(window->weapon);
 
         // Prevent out of bounds by deleting the shot if not on screen
         if (temp->pos_dst.x >= DEFAULT_W)
@@ -58,12 +61,12 @@ void render_shots(struct window *window)
                          .y = temp->pos_dst.y,
                          .w = temp->pos_dst.w,
                          .h = temp->pos_dst.h
-        };
+                       };
 
         resize_pos_for_resolution(window, &pos);
 
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->shot->texture, NULL, &pos);
+        SDL_RenderCopy(window->renderer, window->img->shot[window->weapon]->texture, NULL, &pos);
 
         // Go to next shot
         temp = temp->next;

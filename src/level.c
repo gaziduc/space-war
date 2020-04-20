@@ -4,6 +4,7 @@
 #include "menu.h"
 #include "utils.h"
 #include "level.h"
+#include "weapon.h"
 #include <stdio.h>
 #include <string.h>
 #include <SDL2/SDL.h>
@@ -129,13 +130,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
 
         if (handle_play_event(window))
         {
-            if (window->is_lan)
-            {
-                char data[3] = { selected_level, selected_difficulty, 0 };
-                SDLNet_TCP_Send(window->client, data, sizeof(data));
-            }
-
-            play_game(window, selected_level, selected_difficulty);
+            choose_weapons(window, selected_level, selected_difficulty);
             begin = SDL_GetTicks();
         }
 
@@ -267,7 +262,7 @@ void select_level(struct window *window)
 
     if (window->is_lan)
     {
-         char data[3] = { 0, 0, 1 };
+         char data[4] = { 0, 0, 0, 1 };
          SDLNet_TCP_Send(window->client, data, sizeof(data));
     }
 }

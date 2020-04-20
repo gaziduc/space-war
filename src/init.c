@@ -45,7 +45,9 @@ static void load_textures(struct window *window)
     window->img = xmalloc(sizeof(struct textures), window->window);
 
     window->img->ship = load_texture_collision("data/ship.png", window);
-    window->img->shot = load_texture_collision("data/shot.bmp", window);
+    window->img->shot[0] = load_texture_collision("data/shot0.bmp", window);
+    window->img->shot[1] = load_texture_collision("data/shot1.bmp", window);
+    window->img->shot[2] = load_texture_collision("data/shot2.bmp", window);
     window->img->enemy = load_texture_collision("data/enemy.png", window);
     window->img->explosion = load_texture("data/explosion.png", window);
     window->img->trail = load_texture("data/trail.png", window);
