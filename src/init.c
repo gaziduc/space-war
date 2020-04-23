@@ -134,7 +134,7 @@ struct window *init_all(void)
     SDL_ShowCursor(SDL_DISABLE);
 
     // Init SDL2_image
-    int img_flags = IMG_INIT_JPG | IMG_INIT_PNG;
+    int img_flags = IMG_INIT_PNG;
     int img_initted = IMG_Init(img_flags);
     if ((img_initted & img_flags) != img_flags)
         error("Could not load SDL2_image", IMG_GetError(), window->window);
