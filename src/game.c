@@ -397,7 +397,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     send_state(&window->player[0], window, 0, 0, 0, 1);
                     free_background(window->stars);
                     free_vector(window->paths);
-                    load_music(window, "data/hybris.ogg", 1);
+                    load_music(window, "data/endgame.ogg", 1);
                     return;
                 }
             }
@@ -431,7 +431,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     // Quit
                     free_background(window->stars);
                     free_vector(window->paths);
-                    load_music(window, "data/hybris.ogg", 1);
+                    load_music(window, "data/endgame.ogg", 1);
                     return;
                 }
 
@@ -548,7 +548,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
     }
 
     free_vector(window->paths);
-    load_music(window, "data/hybris.ogg", 1);
+    load_music(window, "data/endgame.ogg", 1);
 }
 
 int recv_thread(void *data)

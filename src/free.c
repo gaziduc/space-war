@@ -59,6 +59,7 @@ static void free_fonts(struct window *window)
     TTF_CloseFont(window->fonts->zero4b_30);
     TTF_CloseFont(window->fonts->zero4b_30_small);
     TTF_CloseFont(window->fonts->zero4b_30_extra_small);
+    TTF_CloseFont(window->fonts->calibri);
     free(window->fonts);
 }
 

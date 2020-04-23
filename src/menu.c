@@ -73,7 +73,7 @@ void render_stars(struct window *window)
 
 void menu(struct window *window)
 {
-    load_music(window, "data/hybris.ogg", 0);
+    load_music(window, "data/endgame.ogg", 1);
 
     int escape = 0;
     int selected_item = 1;

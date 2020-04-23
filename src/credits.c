@@ -8,7 +8,7 @@
 
 
 static int render_screen(struct window *window, char screen[][CREDITS_COLS],
-                          size_t line, size_t col, Uint32 begin)
+                          size_t line, size_t col, Uint32 begin, int is_in_menu)
 {
     static SDL_Color green = { 0, 255, 0, TITLE_ALPHA_MAX };
 
@@ -23,8 +23,9 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
     SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
     SDL_RenderClear(window->renderer);
 
-    // Render stars
-    render_stars(window);
+    // Render stars if we are in a menu
+    if (is_in_menu)
+        render_stars(window);
 
     // Render letters
     for (int i = 0; i < CREDITS_LINES; i++)
@@ -69,9 +70,9 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
 
 
 
-static int add_letters(struct window *window, char screen[][CREDITS_COLS], char *letters,
+int add_letters(struct window *window, char screen[][CREDITS_COLS], char *letters,
                         size_t *line, size_t *col, Uint32 time_between_two_letters,
-                        Uint32 time_end, Uint32 begin)
+                        Uint32 time_end, Uint32 begin, int is_in_menu)
 {
     size_t i = 0;
 
@@ -80,7 +81,7 @@ static int add_letters(struct window *window, char screen[][CREDITS_COLS], char 
         Uint32 curr = SDL_GetTicks();
         while (SDL_GetTicks() - curr < time_between_two_letters)
         {
-            if (render_screen(window, screen, *line, *col, begin))
+            if (render_screen(window, screen, *line, *col, begin, is_in_menu))
                 return 1;
         }
 
@@ -102,7 +103,7 @@ static int add_letters(struct window *window, char screen[][CREDITS_COLS], char 
 
     while (SDL_GetTicks() - curr < time_end)
     {
-        if (render_screen(window, screen, *line, *col, begin))
+        if (render_screen(window, screen, *line, *col, begin, is_in_menu))
             return 1;
     }
 
@@ -121,39 +122,16 @@ void credits(struct window *window)
     size_t line = 0;
     size_t col = 0;
 
-    if (add_letters(window, screen, msg, &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, h_line, &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "|  LIBRARIES USED  |\n", &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, h_line, &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "|       SDL2       |\n", &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "|    SDL2_IMAGE    |\n", &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "|     SDL2_TTF     |\n", &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "|    SDL2_MIXER    |\n", &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "|     SDL2_GFX     |\n", &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "|     SDL2_NET     |\n", &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, h_line, &line, &col, 50, 0, begin))
-        return;
-
-    if (add_letters(window, screen, "\n\n\nTHANKS FOR PLAYING!", &line, &col, 50, 42000, begin))
-        return;
+    ADD_LETTERS(window, screen, msg, &line, &col, 50, 0, begin, 1);
+    ADD_LETTERS(window, screen, h_line, &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|  LIBRARIES USED  |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, h_line, &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|       SDL2       |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|    SDL2_IMAGE    |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|     SDL2_TTF     |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|    SDL2_MIXER    |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|     SDL2_GFX     |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|     SDL2_NET     |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, h_line, &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "\n\n\nTHANKS FOR PLAYING!", &line, &col, 50, 42000, begin, 1)
 }
