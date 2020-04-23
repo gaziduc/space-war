@@ -84,9 +84,10 @@ void intro(struct window *window)
     ADD_LETTERS(window, screen, "12th of March 2061:\n\n", &line, &col, 100, 0, begin, 0);
     ADD_LETTERS(window, screen, "On the 11th, the Earth has been destroyed by\n", &line, &col, 100, 0, begin, 0);
     ADD_LETTERS(window, screen, "a giant nuclear explosion. As an astronaut,\n", &line, &col, 100, 0, begin, 0);
-    ADD_LETTERS(window, screen, "I was not on the Earth this day.\n", &line, &col, 100, 0, begin, 0);
-    ADD_LETTERS(window, screen, "In this ship are the last humans alive.\n\n", &line, &col, 100, 0, begin, 0);
+    ADD_LETTERS(window, screen, "I was not on the Earth this day.\n\n", &line, &col, 100, 0, begin, 0);
+    ADD_LETTERS(window, screen, "In this ship are the last humans alive.\n", &line, &col, 100, 0, begin, 0);
     ADD_LETTERS(window, screen, "Since there is no more Earth, we don't know\n", &line, &col, 100, 0, begin, 0);
-    ADD_LETTERS(window, screen, "where to go...\n", &line, &col, 100, 42000, begin, 0);
-
+    ADD_LETTERS(window, screen, "where to go...\n\n", &line, &col, 100, 0, begin, 0);
+    ADD_LETTERS(window, screen, "\n\n\n\n\n\n\n\n\n\n\n", &line, &col, 100, 0, begin, 0);
+    ADD_LETTERS(window, screen, "Press ENTER to play", &line, &col, 100, 42000, begin, 0);
 }
