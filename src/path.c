@@ -53,6 +53,10 @@ static void set_object_type(struct window *window, const char *filename, FILE *f
             p->line.type = GALAXY;
             break;
 
+        case 'M':
+            p->line.type = MISSILE_AROUND;
+            break;
+
         default:
             error(filename, "Could not load file because it is corrupted.", window->window);
             break;

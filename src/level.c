@@ -226,6 +226,7 @@ void select_level(struct window *window)
                                  "Spatial Army",
                                  "Bosses",
                                  "New Planet",
+                                 "The End",
                                  "Arcade Mode"
                                };
 

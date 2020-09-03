@@ -226,18 +226,26 @@ static int respawn(struct window *window, struct player *player)
 
 void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 {
-    for (enum list_type i = 0; i < NUM_LISTS; i++)
-        clear_list(window->list[i]);
-
     if (all_reset)
+    {
+        for (enum list_type i = 0; i < NUM_LISTS; i++)
+            clear_list(window->list[i]);
+
         window->score = 0;
+    }
 
     window->last_enemy_time = 0;
     window->is_wave_title = 0;
     window->wave_title_time = 0;
 
     for (int i = 0; i < window->num_players; i++)
+    {
         window->player[i].respawn_frame = 0;
+
+        if (all_reset)
+            for (int i = 0; i < window->num_players; i++)
+                window->player[i].missile_around = 0;
+    }
 
     switch (difficulty)
     {

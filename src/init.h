@@ -7,7 +7,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_net.h>
 
-#define NUM_LEVELS 7
+#define NUM_LEVELS 8
 #define NUM_ROTATING_FRAMES 180
 #define DEFAULT_W 1920
 #define DEFAULT_H 1080
@@ -19,6 +19,7 @@ enum object_type
     SHIELD,
     PLANET,
     GALAXY,
+    MISSILE_AROUND,
     NUM_OBJECTS
 };
 
@@ -162,6 +163,7 @@ struct player
     int animated_health_high;
     Uint32 last_shot_time;
     int is_controller;
+    int missile_around;
 };
 
 struct window

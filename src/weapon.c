@@ -12,11 +12,36 @@ int shoot(struct window *window, struct player *player)
 {
     if (player->ammo == -1 || player->ammo > 0)
     {
-        list_push_front(&player->pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
-        Mix_PlayChannel(-1, window->sounds->shot, 0);
+        if (player->missile_around)
+        {
+            SDL_Rect missile_pos = player->pos;
 
-        if (player->ammo > 0)
-            player->ammo--;
+            missile_pos.y += 15;
+            list_push_front(&missile_pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+            Mix_PlayChannel(-1, window->sounds->shot, 0);
+
+            if (player->ammo > 0)
+                player->ammo--;
+
+            if (player->ammo == -1 || player->ammo > 0)
+            {
+                missile_pos.y = player->pos.y - 15;
+                list_push_front(&missile_pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+                Mix_PlayChannel(-1, window->sounds->shot, 0);
+
+                if (player->ammo > 0)
+                    player->ammo--;
+            }
+        }
+        else
+        {
+            list_push_front(&player->pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+
+            Mix_PlayChannel(-1, window->sounds->shot, 0);
+
+            if (player->ammo > 0)
+                player->ammo--;
+        }
 
         return 1;
     }

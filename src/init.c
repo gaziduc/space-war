@@ -57,6 +57,7 @@ static void load_textures(struct window *window)
     window->img->objects[SHIELD] = load_texture_collision("data/shield.png", window);
     window->img->objects[PLANET] = load_texture_collision("data/planet.png", window);
     window->img->objects[GALAXY] = load_texture_collision("data/galaxy.png", window);
+    window->img->objects[MISSILE_AROUND] = load_texture_collision("data/missile.bmp", window);
     window->img->aura = load_texture("data/aura.png", window);
     window->img->asteroid = load_texture_collision("data/asteroid.png", window);
 
@@ -187,7 +188,7 @@ struct window *init_all(void)
         error("Could not load SDL2_mixer", Mix_GetError(), window->window);
 
     // Load music with volume settings
-    Mix_AllocateChannels(16);
+    Mix_AllocateChannels(32);
 
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
         error("Could not initialize SDL2_mixer", Mix_GetError(), window->window);

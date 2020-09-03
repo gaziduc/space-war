@@ -1,0 +1,51 @@
+# Usage:
+# $ wave_name
+# @ object_type
+# num_ms_to_appear pos_y speed health enemy_type
+
+# Object_type usage:
+# @ S: shield
+# @ G: galaxy (non-interactible)
+# @ P: planet (non-interactible)
+# @ H: health
+# @ M: double-missile
+
+# Enemy_type usage:
+# A: standard
+# B: asteroid
+# C: rotating enemy
+# D: drone
+# 0: boss
+# 1: final boss
+
+
+$ Mission_8
+
+$ Wave_1
+
+@ M
+6000 240 2 8 A
+0 840 2 8 A
+3000 540 2 8 A
+
+$ Wave_2
+
+1000 340 3 4 C
+0 740 3 4 C
+4000 340 3 4 C
+0 740 3 4 C
+4000 140 2 6 B
+0 340 2 6 B
+0 540 2 6 B
+0 740 2 6 B
+0 940 2 6 B
+4000 540 3 5 C
+
+$ Final_Boss
+
+1000 540 2 150 1
+
+$ ...
+$ Detector_sees_no_more_enemy
+$ ...
+$ Thanks_for_playing!

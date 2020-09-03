@@ -281,6 +281,10 @@ void check_collisions_objects(struct window *window, struct player *player)
                         player->shield_time = SDL_GetTicks();
                         break;
 
+                    case MISSILE_AROUND:
+                        player->missile_around = 1;
+                        break;
+
                     default:
                         error("Unknown object", "Unknown object type", window->window);
                         break;
