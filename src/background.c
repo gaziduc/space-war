@@ -18,6 +18,7 @@ void init_background(struct window *window)
         new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
+        new->size = (rand() % 2) + 1;
 
         if (new->z > 4)
             new->opacity /= 2;
@@ -38,7 +39,7 @@ void move_background(struct window *window, unsigned long framecount)
             p->x--;
 
         // Delete point
-        if (p->x < 0)
+        if (p->x + p->size - 1 < 0)
         {
             struct point *to_delete = p;
             last->next = p->next;
@@ -61,6 +62,7 @@ void move_background(struct window *window, unsigned long framecount)
         new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 2;
         new->opacity = rand() % 256;
+        new->size = (rand() % 2) + 1;
 
         if (new->z > 4)
             new->opacity /= 2;
@@ -84,7 +86,14 @@ void render_background(struct window *window)
 
         resize_pos_for_resolution(window, &pos);
 
-        SDL_RenderDrawPoint(window->renderer, pos.x, pos.y);
+        if (p->size > 1)
+        {
+            pos.w = p->size;
+            pos.h = p->size;
+            SDL_RenderDrawRect(window->renderer, &pos);
+        }
+        else
+            SDL_RenderDrawPoint(window->renderer, pos.x, pos.y);
 
         p = p->next;
     }

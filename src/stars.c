@@ -19,6 +19,7 @@ void new_point(struct universe *u, struct window *window)
     p_ptr->x = (rand() % window->w - window->w / 2) * u->depth;
     p_ptr->y = (rand() % window->h - window->h / 2) * u->depth;
     p_ptr->z = u->depth;
+    p_ptr->size = (rand() % 2) + 1;
 
     p_ptr->next = u->points;
     u->points = p_ptr;
@@ -108,10 +109,13 @@ int process_point(struct universe *u, struct return_point *rp, struct window *wi
                 m = OPACITY_MAX;
 
             u->iterator->z--;
-            u->iterator = u->iterator->next;
+
             rp->x = x;
             rp->y = y;
             rp->opacity = m;
+            rp->size = u->iterator->size;
+
+            u->iterator = u->iterator->next;
 
             if (u->iterator == NULL)
                 return 0;

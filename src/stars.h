@@ -10,6 +10,7 @@ struct points
     int x;
     int y;
     int z;
+    int size;
     struct points *next;
 };
 
@@ -29,6 +30,7 @@ struct return_point
     int x;
     int y;
     int opacity;
+    int size;
 };
 
 void free_universe(struct universe *u);

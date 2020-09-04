@@ -7,6 +7,7 @@ struct point
     int y;
     int z;
     int opacity;
+    int size;
     struct point *next;
 };
 

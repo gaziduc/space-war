@@ -61,8 +61,18 @@ void render_stars(struct window *window)
                                    255 * rp.opacity / OPACITY_MAX,
                                    255 * rp.opacity / OPACITY_MAX);
 
-            SDL_RenderDrawPoint(window->renderer, rp.x + window->w / 2 - 1,
-                                                  -rp.y + window->h / 2 - 1);
+            if (rp.size > 1)
+            {
+                SDL_Rect pos = { .x = rp.x + window->w / 2 - 1,
+                                 .y = -rp.y + window->h / 2 - 1,
+                                 .w = rp.size,
+                                 .h = rp.size
+                               };
+
+                SDL_RenderDrawRect(window->renderer, &pos);
+            }
+            else
+                SDL_RenderDrawPoint(window->renderer, rp.x + window->w / 2 - 1, -rp.y + window->h / 2 - 1);
         }
     }
 
