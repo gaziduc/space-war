@@ -1,1 +1,29 @@
 1 ICON "icon/icon.ico"
+
+#include "../src/version.h"
+#include <windows.h>
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VERSION_WIN
+PRODUCTVERSION  VERSION_WIN
+FILETYPE        VFT_APP
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName",      "David 'Gazi' Ghiassi\0" // Do not remove \0
+            VALUE "FileDescription",  DESCRIPTION_STR
+            VALUE "FileVersion",      VERSION_STR
+            VALUE "InternalName",     "Space War\0"
+            VALUE "OriginalFilename", "space-war.exe\0"
+            VALUE "ProductName",      "Space War\0"
+            VALUE "ProductVersion",   VERSION_STR
+        END
+    END
+
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
