@@ -8,6 +8,7 @@
 #include "setting.h"
 #include "credits.h"
 #include "net.h"
+#include "version.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -24,6 +25,7 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color white = { .r = 255, .g = 255, .b = 255, .a = alpha };
 
     // Render title
     render_text(window, window->fonts->zero4b_30, "SPACE WAR", orange, 150, 150);
@@ -40,6 +42,8 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
                         150, 570 + (i - 1) * 100);
     }
+
+    render_text(window, window->fonts->zero4b_30_small, VERSION_INGAME, white, 1300, 870);
 }
 
 

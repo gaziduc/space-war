@@ -188,6 +188,7 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
             play_game(window, selected_level, selected_difficulty);
             begin = SDL_GetTicks();
             window->weapon++;
+            return;
         }
 
         escape = handle_escape_event(window);

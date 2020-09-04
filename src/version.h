@@ -10,7 +10,7 @@
     #define str(n)          #n
     #define xstr(n)         str(n)
     #define VERSION_STR     xstr(VERSION_NUM)
-
     #define DESCRIPTION_STR xstr(Space War VERSION_NUM)
+    #define VERSION_INGAME  xstr(VER VERSION_NUM)
 
 #endif // VERSION_H
