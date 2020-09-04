@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "event.h"
 #include "game.h"
+#include <stdio.h>
 #include <SDL2/SDL.h>
 
 int shoot(struct window *window, struct player *player)

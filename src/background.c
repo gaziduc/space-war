@@ -6,13 +6,13 @@
 
 void init_background(struct window *window)
 {
-    window->stars = xmalloc(sizeof(struct point), window->window);
+    window->stars = xmalloc(sizeof(struct point), window->window, window->renderer);
     window->stars->next = NULL;
 
     // Create some initial points
     for (int c = 0; c < 4 * DEFAULT_H; c++)
     {
-        struct point *new = xmalloc(sizeof(struct point), window->window);
+        struct point *new = xmalloc(sizeof(struct point), window->window, window->renderer);
 
         new->x = rand() % DEFAULT_W;
         new->y = rand() % DEFAULT_H;
@@ -56,7 +56,7 @@ void move_background(struct window *window, unsigned long framecount)
     // Create some points
     for (int c = 0; c < rand() % 3; c++)
     {
-        struct point *new = xmalloc(sizeof(struct point), window->window);
+        struct point *new = xmalloc(sizeof(struct point), window->window, window->renderer);
 
         new->x = DEFAULT_W - 1;
         new->y = rand() % DEFAULT_H;

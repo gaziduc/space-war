@@ -6,7 +6,7 @@
 
 void new_universe(struct universe **u, int depth, struct window *window)
 {
-    *u = xmalloc(sizeof(struct universe), window->window);
+    *u = xmalloc(sizeof(struct universe), window->window, window->renderer);
     (*u)->depth = depth;
     (*u)->iterator = NULL;
     (*u)->points = NULL;
@@ -14,7 +14,7 @@ void new_universe(struct universe **u, int depth, struct window *window)
 
 void new_point(struct universe *u, struct window *window)
 {
-    struct points *p_ptr = xmalloc(sizeof(struct points), window->window);
+    struct points *p_ptr = xmalloc(sizeof(struct points), window->window, window->renderer);
 
     p_ptr->x = (rand() % window->w - window->w / 2) * u->depth;
     p_ptr->y = (rand() % window->h - window->h / 2) * u->depth;

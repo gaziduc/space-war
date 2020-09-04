@@ -103,7 +103,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
             break;
 
         default:
-            error("Unknown selected difficulty", "Unknown selected difficulty", window->window);
+            error("Unknown selected difficulty", "Unknown selected difficulty", window->window, window->renderer);
             break;
     }
 }

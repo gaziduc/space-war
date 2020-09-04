@@ -11,12 +11,12 @@ SDL_Texture *load_texture(const char *path, struct window *window)
     SDL_Surface *surface = IMG_Load(path);
 
     if (!surface)
-        error("Could not load images", IMG_GetError(), window->window);
+        error("Could not load images", IMG_GetError(), window->window, window->renderer);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(window->renderer, surface);
 
     if (!texture)
-        error("Could not load images", SDL_GetError(), window->window);
+        error("Could not load images", SDL_GetError(), window->window, window->renderer);
 
     SDL_FreeSurface(surface);
 
@@ -26,11 +26,11 @@ SDL_Texture *load_texture(const char *path, struct window *window)
 
 struct collision_texture *get_texture_collision(SDL_Surface *surface, struct window *window)
 {
-    struct collision_texture *collision = xmalloc(sizeof(struct collision_texture), window->window);
+    struct collision_texture *collision = xmalloc(sizeof(struct collision_texture), window->window, window->renderer);
 
     collision->w = surface->w;
     collision->h = surface->h;
-    collision->collision = xmalloc(surface->w * surface->h * sizeof(short), window->window);
+    collision->collision = xmalloc(surface->w * surface->h * sizeof(short), window->window, window->renderer);
 
     if (SDL_MUSTLOCK(surface))
         SDL_LockSurface(surface);
@@ -56,7 +56,7 @@ struct collision_texture *get_texture_collision(SDL_Surface *surface, struct win
     collision->texture = SDL_CreateTextureFromSurface(window->renderer, surface);
 
     if (!collision->texture)
-        error("Could not load images", SDL_GetError(), window->window);
+        error("Could not load images", SDL_GetError(), window->window, window->renderer);
 
     return collision;
 }
@@ -67,7 +67,7 @@ struct collision_texture *load_texture_collision(const char *path, struct window
     SDL_Surface *surface = IMG_Load(path);
 
     if (!surface)
-        error("Could not load images", IMG_GetError(), window->window);
+        error("Could not load images", IMG_GetError(), window->window, window->renderer);
 
     struct collision_texture *result = get_texture_collision(surface, window);
 
@@ -93,43 +93,46 @@ void init_position(int x, int y, SDL_Texture *texture, SDL_Rect *pos)
 }
 
 
-void error(const char *title, const char *text, SDL_Window *window)
+void error(const char *title, const char *text, SDL_Window *window, SDL_Renderer *renderer)
 {
     if (window)
         SDL_DestroyWindow(window);
+
+    if (renderer)
+        SDL_DestroyRenderer(renderer);
 
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, NULL);
     exit(EXIT_FAILURE);
 }
 
 
-void *xmalloc(size_t size, SDL_Window *window)
+void *xmalloc(size_t size, SDL_Window *window, SDL_Renderer *renderer)
 {
     void *ptr = malloc(size);
 
     if (!ptr)
-        error("malloc failed", "Memory allocation failed.", window);
+        error("malloc failed", "Memory allocation failed.", window, renderer);
 
     return ptr;
 }
 
-void *xcalloc(size_t nmenb, size_t size, SDL_Window *window)
+void *xcalloc(size_t nmenb, size_t size, SDL_Window *window, SDL_Renderer *renderer)
 {
     void *ptr = calloc(nmenb, size);
 
     if (!ptr)
-        error("calloc failed", "Memory allocation failed.", window);
+        error("calloc failed", "Memory allocation failed.", window, renderer);
 
     return ptr;
 }
 
 
-void *xrealloc(void *ptr, size_t size, SDL_Window *window)
+void *xrealloc(void *ptr, size_t size, SDL_Window *window, SDL_Renderer *renderer)
 {
     void *p = realloc(ptr, size);
 
     if (!p)
-        error("realloc failed", "Memory allocation failed.", window);
+        error("realloc failed", "Memory allocation failed.", window, renderer);
 
     return p;
 }
@@ -141,12 +144,12 @@ SDL_Texture *get_text_texture(struct window *window, TTF_Font *font,
     SDL_Surface *surface = TTF_RenderText_Blended(font, text, fg);
 
     if (!surface)
-        error("Could not create text surface", TTF_GetError(), window->window);
+        error("Could not create text surface", TTF_GetError(), window->window, window->renderer);
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(window->renderer, surface);
 
     if (!texture)
-        error("Could not create text texture", SDL_GetError(), window->window);
+        error("Could not create text texture", SDL_GetError(), window->window, window->renderer);
 
     SDL_FreeSurface(surface);
     return texture;
@@ -184,7 +187,7 @@ TTF_Font *load_font(struct window *window, const char *filename,
     TTF_Font *font = TTF_OpenFont(filename, pt_size);
 
     if (!font)
-        error("Could not load font", TTF_GetError(), window->window);
+        error("Could not load font", TTF_GetError(), window->window, window->renderer);
 
     return font;
 }
@@ -195,7 +198,7 @@ Mix_Chunk *load_sound(struct window *window, const char *filename)
     Mix_Chunk *sound = Mix_LoadWAV(filename);
 
     if (!sound)
-        error("Could not load sound", Mix_GetError(), window->window);
+        error("Could not load sound", Mix_GetError(), window->window, window->renderer);
 
     return sound;
 }

@@ -94,7 +94,7 @@ void create_enemies(struct window *window)
                 break;
 
             default:
-                error("Error in paths file", "Unknown enemy type", window->window);
+                error("Error in paths file", "Unknown enemy type", window->window, window->renderer);
                 break;
         }
 

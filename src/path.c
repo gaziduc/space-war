@@ -32,7 +32,7 @@ static void set_object_type(struct window *window, const char *filename, FILE *f
     if (scan != NUM_FIELDS_OBJECT)
     {
         fclose(f);
-        error(filename, "Could not load file because it is corrupted.", window->window);
+        error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
     }
 
     switch (c)
@@ -58,7 +58,7 @@ static void set_object_type(struct window *window, const char *filename, FILE *f
             break;
 
         default:
-            error(filename, "Could not load file because it is corrupted.", window->window);
+            error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
             break;
     }
 }
@@ -70,7 +70,7 @@ struct vector *load_paths(struct window *window, char *filename)
     // Load file
     FILE *f = fopen(filename, "r");
     if (!f)
-        error(filename, "Could not load file.", window->window);
+        error(filename, "Could not load file.", window->window, window->renderer);
 
     struct vector *vector = vector_create(window);
     int c = 0;
@@ -98,7 +98,7 @@ struct vector *load_paths(struct window *window, char *filename)
             if (scan != NUM_FIELDS_TITLE)
             {
                 fclose(f);
-                error(filename, "Could not load file because it is corrupted.", window->window);
+                error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
             }
             else
                 replace_underscores(p.line.title);
@@ -123,7 +123,7 @@ struct vector *load_paths(struct window *window, char *filename)
             if (scan != NUM_FIELDS_ENEMY)
             {
                 fclose(f);
-                error(filename, "Could not load file because it is corrupted.", window->window);
+                error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
             }
         }
 

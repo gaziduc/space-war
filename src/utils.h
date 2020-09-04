@@ -15,13 +15,13 @@ struct collision_texture *load_texture_collision(const char *path, struct window
 
 void init_position(int x, int y, SDL_Texture *texture, SDL_Rect *pos);
 
-void error(const char *title, const char *text, SDL_Window *window);
+void error(const char *title, const char *text, SDL_Window *window, SDL_Renderer *renderer);
 
-void *xmalloc(size_t size, SDL_Window *window);
+void *xmalloc(size_t size, SDL_Window *window, SDL_Renderer *renderer);
 
-void *xcalloc(size_t nmenb, size_t size, SDL_Window *window);
+void *xcalloc(size_t nmenb, size_t size, SDL_Window *window, SDL_Renderer *renderer);
 
-void *xrealloc(void *ptr, size_t size, SDL_Window *window);
+void *xrealloc(void *ptr, size_t size, SDL_Window *window, SDL_Renderer *renderer);
 
 SDL_Texture *get_text_texture(struct window *window, TTF_Font *font,
                               const char *text, SDL_Color fg);

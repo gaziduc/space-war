@@ -6,6 +6,7 @@
 #include "level.h"
 #include "game.h"
 #include "lobby.h"
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 #include <SDL2/SDL_net.h>
@@ -212,7 +213,7 @@ void create_server(struct window *window)
     window->server = SDLNet_TCP_Open(&server_ip);
 
     // Get server IP
-    IPaddress *local_ips = xmalloc(sizeof(IPaddress) * 12, window->window);
+    IPaddress *local_ips = xmalloc(sizeof(IPaddress) * 12, window->window, window->renderer);
     int num_ips = SDLNet_GetLocalAddresses(local_ips, 12);
 
     int escape = 0;

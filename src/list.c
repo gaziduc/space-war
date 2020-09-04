@@ -10,7 +10,7 @@
 void init_list(struct window *window, enum list_type type)
 {
     // Creating list
-    window->list[type] = xmalloc(sizeof(struct list), window->window);
+    window->list[type] = xmalloc(sizeof(struct list), window->window, window->renderer);
 
     // Sentinel = window->list[type], So we don't care about window->list[type]->pos
     // window->list[type]->next is set to NULL because there is nothing in the list
@@ -23,7 +23,7 @@ void list_push_front(SDL_Rect *pos, struct window *window,
                      char enemy_type)
 {
     // Allocating memory for new shot
-    struct list *new = xmalloc(sizeof(struct list), window->window);
+    struct list *new = xmalloc(sizeof(struct list), window->window, window->renderer);
 
     // Setting new->pos depending of arguments (type, ...)
     switch (type)
@@ -51,7 +51,7 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             break;
 
         default:
-            error("Unknown list index", "Could not add an element in list.", window->window);
+            error("Unknown list index", "Could not add an element in list.", window->window, window->renderer);
             break;
     }
 

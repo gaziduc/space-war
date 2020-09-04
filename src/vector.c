@@ -7,12 +7,12 @@
 
 struct vector *vector_create(struct window *window)
 {
-    struct vector *vector = xmalloc(sizeof(struct vector), window->window);
+    struct vector *vector = xmalloc(sizeof(struct vector), window->window, window->renderer);
 
     vector->size = 0;
     vector->capacity = 4;
     vector->index = 0;
-    vector->data = xcalloc(vector->capacity, sizeof(struct path), window->window);
+    vector->data = xcalloc(vector->capacity, sizeof(struct path), window->window, window->renderer);
 
     return vector;
 }
@@ -21,7 +21,7 @@ struct vector *vector_create(struct window *window)
 static struct path *vector_double_capacity(struct vector *vector, struct window *window)
 {
     vector->capacity *= 2;
-    return xrealloc(vector->data, vector->capacity * sizeof(struct path), window->window);
+    return xrealloc(vector->data, vector->capacity * sizeof(struct path), window->window, window->renderer);
 }
 
 

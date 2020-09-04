@@ -286,7 +286,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
             break;
 
         default:
-            error("Unknown difficulty level", "Unknown difficulty level", window->window);
+            error("Unknown difficulty level", "Unknown difficulty level", window->window, window->renderer);
             break;
     }
 

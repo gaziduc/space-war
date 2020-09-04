@@ -69,7 +69,7 @@ static void check_collisions_list(struct window *window, struct player *player,
             int h = 0;
             SDL_QueryTexture(temp->texture, NULL, NULL, &w, &h);
 
-            temp_pos = xmalloc(sizeof(SDL_Rect), window->window);
+            temp_pos = xmalloc(sizeof(SDL_Rect), window->window, window->renderer);
             to_free = 1;
 
             temp_pos->x = temp_enemy->pos_dst.x + temp_enemy->pos_dst.w / 2 - w / 2;
@@ -286,7 +286,7 @@ void check_collisions_objects(struct window *window, struct player *player)
                         break;
 
                     default:
-                        error("Unknown object", "Unknown object type", window->window);
+                        error("Unknown object", "Unknown object type", window->window, window->renderer);
                         break;
                 }
 

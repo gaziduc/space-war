@@ -10,7 +10,7 @@
 void read_save(struct window *window)
 {
     // Allocate memory for progress
-    window->save = xmalloc(sizeof(struct save), window->window);
+    window->save = xmalloc(sizeof(struct save), window->window, window->renderer);
 
     // Open file in binary mode for reading
     FILE *f = fopen("save.bin", "rb");
@@ -48,7 +48,7 @@ void write_save(struct window *window, struct save *save)
 {
     FILE *f = fopen("save.bin", "wb");
     if (!f)
-        error("save.bin", "Could not open/create save file", window->window);
+        error("save.bin", "Could not open/create save file", window->window, window->renderer);
 
     for (int i = 0; i < MAX_PLAYERS; i++)
     {

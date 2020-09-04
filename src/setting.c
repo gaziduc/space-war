@@ -55,7 +55,7 @@ static void write_settings(struct window *window)
     // Open file
     FILE *f = fopen("settings.ini", "w");
     if (!f)
-        error("settings.ini", "Couldn't open settings.txt for writing.", window->window);
+        error("settings.ini", "Couldn't open settings.txt for writing.", window->window, window->renderer);
 
     // Write settings
     fprintf(f, "fullscreen=%d\n", window->settings->is_fullscreen);
@@ -73,7 +73,7 @@ static void write_settings(struct window *window)
 
 void load_settings(struct window *window)
 {
-    window->settings = xmalloc(sizeof(struct settings), window->window);
+    window->settings = xmalloc(sizeof(struct settings), window->window, window->renderer);
 
     // Open file
     FILE *f = fopen("settings.ini", "r");
@@ -86,7 +86,7 @@ void load_settings(struct window *window)
 
         SDL_DisplayMode dm;
         if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
-            error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window);
+            error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
 
         if (dm.w >= DEFAULT_W && dm.h >= DEFAULT_H)
         {
