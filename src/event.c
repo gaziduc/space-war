@@ -212,6 +212,7 @@ int handle_focus_lost_event(struct window *window)
     while (window->in->focus_lost)
     {
         update_events(window->in, window);
+        handle_quit_event(window, 1); // 1 because else handle_quit_event call handle_focus_lost_event
         SDL_framerateDelay(window->fps);
     }
 
