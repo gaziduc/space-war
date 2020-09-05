@@ -17,6 +17,7 @@
 #include "object.h"
 #include "pause.h"
 #include "net.h"
+#include "effect.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
@@ -232,6 +233,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
             clear_list(window->list[i]);
 
         window->score = 0;
+        window->touched_anim = 0;
     }
 
     window->last_enemy_time = 0;
@@ -501,6 +503,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             }
 
             render_explosions(window);
+            render_touched_effect(window);
             render_hud_texts(window);
             render_hud(window);
 

@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "object.h"
 #include "weapon.h"
+#include "effect.h"
 
 static int collision_aabb(SDL_Rect *pos1, SDL_Rect *pos2)
 {
@@ -168,6 +169,8 @@ static void check_collisions_list(struct window *window, struct player *player,
                 else
                     player->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
 
+                window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
+
                 // Force feedback
                 if (window->settings->is_force_feedback && window->in->c.haptic)
                     SDL_HapticRumblePlay(window->in->c.haptic, 0.5, 500);
@@ -180,6 +183,7 @@ static void check_collisions_list(struct window *window, struct player *player,
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
                 player->health = 0;
+                window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
 
                 // Force feedback
                 if (window->settings->is_force_feedback && window->in->c.haptic)
@@ -226,6 +230,7 @@ static void check_collisions_list(struct window *window, struct player *player,
                     Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
                     player->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+                    window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
 
                     // force feedback
                     if (window->settings->is_force_feedback && window->in->c.haptic)

@@ -197,6 +197,7 @@ struct window
     TCPsocket server;
     TCPsocket client;
     int weapon;
+    int touched_anim;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);
