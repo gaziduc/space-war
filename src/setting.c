@@ -62,7 +62,7 @@ static void write_settings(struct window *window)
     fprintf(f, "music_volume=%d\n", window->settings->music_volume);
     fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
     fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
-    fprintf(f, "resolution=%dx%d\n", window->w, window->h);
+    fprintf(f, "resolution_index=%d\n", window->resolution_index);
     fprintf(f, "input_type_player_1=%d\n", window->player[0].is_controller);
     fprintf(f, "input_type_player_2=%d\n", window->player[1].is_controller);
 
@@ -70,6 +70,11 @@ static void write_settings(struct window *window)
     fclose(f);
 }
 
+static void set_resolution_with_index(struct window *window)
+{
+    window->w = window->resolutions[window->resolution_index].x;
+    window->h = window->resolutions[window->resolution_index].y;
+}
 
 void load_settings(struct window *window)
 {
@@ -88,16 +93,16 @@ void load_settings(struct window *window)
         if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
             error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
 
-        if (dm.w >= DEFAULT_W && dm.h >= DEFAULT_H)
+        window->resolution_index = 1;
+        while (window->resolution_index < NUM_RESOLUTIONS
+            && dm.w >= window->resolutions[window->resolution_index].x
+            && dm.h >= window->resolutions[window->resolution_index].y)
         {
-            window->w = DEFAULT_W;
-            window->h = DEFAULT_H;
+            window->resolution_index++;
         }
-        else
-        {
-            window->w = 1280;
-            window->h = 720;
-        }
+
+        window->resolution_index--;
+        set_resolution_with_index(window);
 
         window->player[0].is_controller = 0;
         window->player[1].is_controller = 1;
@@ -110,9 +115,11 @@ void load_settings(struct window *window)
     fscanf(f, "music_volume=%d\n", &window->settings->music_volume);
     fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
     fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
-    fscanf(f, "resolution=%dx%d\n", &window->w, &window->h);
+    fscanf(f, "resolution_index=%d\n", &window->resolution_index);
     fscanf(f, "input_type_player_1=%d\n", &window->player[0].is_controller);
     fscanf(f, "input_type_player_2=%d\n", &window->player[1].is_controller);
+
+    set_resolution_with_index(window);
 
     // Close file
     fclose(f);
@@ -151,13 +158,17 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 break;
 
             case 5:
-                window->w = 1280;
-                window->h = 720;
-                SDL_SetWindowSize(window->window, window->w, window->h);
-                SDL_SetWindowPosition(window->window,
-                                      SDL_WINDOWPOS_CENTERED,
-                                      SDL_WINDOWPOS_CENTERED);
-                write_settings(window);
+                if (window->resolution_index > 0)
+                {
+                    window->resolution_index--;
+                    set_resolution_with_index(window);
+
+                    SDL_SetWindowSize(window->window, window->w, window->h);
+                    SDL_SetWindowPosition(window->window,
+                                          SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED);
+                    write_settings(window);
+                }
                 break;
 
             default:
@@ -195,13 +206,25 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 break;
 
             case 5:
-                window->w = 1920;
-                window->h = 1080;
-                SDL_SetWindowSize(window->window, window->w, window->h);
-                SDL_SetWindowPosition(window->window,
-                                      SDL_WINDOWPOS_CENTERED,
-                                      SDL_WINDOWPOS_CENTERED);
-                write_settings(window);
+                ;
+                SDL_DisplayMode dm;
+                if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+                    error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
+
+                // Check if resolution is supported
+                if (window->resolution_index + 1 < NUM_RESOLUTIONS
+                    && dm.w >= window->resolutions[window->resolution_index + 1].x
+                    && dm.h >= window->resolutions[window->resolution_index + 1].y)
+                {
+                    window->resolution_index++;
+                    set_resolution_with_index(window);
+
+                    SDL_SetWindowSize(window->window, window->w, window->h);
+                    SDL_SetWindowPosition(window->window,
+                                          SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED);
+                    write_settings(window);
+                }
                 break;
 
             default:

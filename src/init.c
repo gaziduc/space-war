@@ -13,10 +13,22 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL2_rotozoom.h>
 
+static void add_resolution(struct window *window, int index, int w, int h)
+{
+    window->resolutions[index].x = w;
+    window->resolutions[index].y = h;
+}
 
 static struct window *init_window(void)
 {
     struct window *window = xcalloc(1, sizeof(struct window), NULL, NULL);
+
+    add_resolution(window, 0, 1280, 720);
+    add_resolution(window, 1, 1366, 768);
+    add_resolution(window, 2, 1600, 900);
+    add_resolution(window, 3, 1920, 1080); // native
+    add_resolution(window, 4, 2560, 1440);
+    add_resolution(window, 5, 3840, 2160);
 
     load_settings(window);
 

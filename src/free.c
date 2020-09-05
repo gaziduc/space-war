@@ -84,8 +84,8 @@ void free_all(struct window *window, int is_in_level)
     for (enum list_type i = 0; i < NUM_LISTS; i++)
         free_list(window->list[i]);
 
-    if (is_in_level)
-        free_vector(window->paths);
+    if (is_in_level && window->paths) // window->paths check is important because is_in_level can be true...
+         free_vector(window->paths);  // ...even if you are not in a level
 
     free_fonts(window);
     Mix_CloseAudio();

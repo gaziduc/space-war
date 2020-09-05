@@ -12,6 +12,7 @@
 #define DEFAULT_W 1920
 #define DEFAULT_H 1080
 #define MAX_PLAYERS 2
+#define NUM_RESOLUTIONS 6
 
 enum object_type
 {
@@ -199,6 +200,8 @@ struct window
     TCPsocket client;
     int weapon;
     int touched_anim;
+    SDL_Point resolutions[NUM_RESOLUTIONS];
+    int resolution_index;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

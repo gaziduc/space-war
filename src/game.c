@@ -409,6 +409,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     send_state(&window->player[0], window, 0, 0, 0, 1);
                     free_background(window->stars);
                     free_vector(window->paths);
+                    window->paths = NULL; // important, see free_all in free.c
                     load_music(window, "data/endgame.ogg", 1);
                     return;
                 }
@@ -443,6 +444,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     // Quit
                     free_background(window->stars);
                     free_vector(window->paths);
+                    window->paths = NULL; // important, see free_all in free.c
                     load_music(window, "data/endgame.ogg", 1);
                     return;
                 }
@@ -525,6 +527,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (is_arcade && mission_num < NUM_LEVELS)
             {
                 free_vector(window->paths);
+                window->paths = NULL; // important, see free_all in free.c
 
                 mission_num++;
                 sprintf(s, "data/level%d.txt", mission_num);
@@ -554,6 +557,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 if (is_arcade)
                 {
                     free_vector(window->paths);
+                    window->paths = NULL; // important, see free_all in free.c
                     window->paths = load_paths(window, "data/level1.txt");
                 }
             }
@@ -561,6 +565,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
     }
 
     free_vector(window->paths);
+    window->paths = NULL; // important, see free_all in free.c
     load_music(window, "data/endgame.ogg", 1);
 }
 
