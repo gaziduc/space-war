@@ -5,4 +5,6 @@
 
 int pause(struct window *window);
 
+void delay_times(struct window *window, Uint32 begin);
+
 #endif /* !PAUSE_H */

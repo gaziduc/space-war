@@ -15,6 +15,7 @@ save.bin
 /CMakeSettings.json
 /obj
 space-war.exe
+space-war-debug.exe
 *.dll
 Space War.cbp
 Space War.depend

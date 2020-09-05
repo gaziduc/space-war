@@ -397,7 +397,9 @@ void play_game(struct window *window, int mission_num, int difficulty)
             // Get and handle events
             update_events(window->in, window);
             handle_quit_event(window, 1);
-            if (handle_escape_event(window))
+            if (handle_focus_lost_event(window))
+               escape = pause(window);
+            else if (handle_escape_event(window))
             {
                 if (!window->is_lan)
                     escape = pause(window);

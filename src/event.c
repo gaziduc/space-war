@@ -1,6 +1,7 @@
 #include "event.h"
 #include "init.h"
 #include "free.h"
+#include "pause.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -92,6 +93,13 @@ void update_events(struct input *in, struct window *window)
             in->c.axis[event.caxis.axis].value = event.caxis.value;
             break;
 
+        case SDL_WINDOWEVENT:
+            if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+                in->focus_lost = 1;
+            else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+                in->focus_lost = 0;
+            break;
+
         default:
             break;
         }
@@ -105,6 +113,10 @@ void handle_quit_event(struct window *window, int is_in_level)
         free_all(window, is_in_level);
         exit(EXIT_SUCCESS);
     }
+
+    /* If is in level, than you have to call handle_focus_lost_event explictly */
+    if (!is_in_level)
+        handle_focus_lost_event(window);
 }
 
 int handle_escape_event(struct window *window)
@@ -188,3 +200,23 @@ void init_controller(struct input *in, Sint32 which)
     if (in->c.haptic)
         SDL_HapticRumbleInit(in->c.haptic);
 }
+
+
+int handle_focus_lost_event(struct window *window)
+{
+    if (!window->in->focus_lost)
+        return 0;
+
+    Uint32 begin = SDL_GetTicks();
+
+    while (window->in->focus_lost)
+    {
+        update_events(window->in, window);
+        SDL_framerateDelay(window->fps);
+    }
+
+    delay_times(window, begin);
+
+    return 1;
+}
+

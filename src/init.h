@@ -67,6 +67,7 @@ struct controller
 struct input
 {
     char quit;
+    char focus_lost;
     char key[SDL_NUM_SCANCODES];
     struct controller c;
     char text[8];

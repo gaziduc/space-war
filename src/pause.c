@@ -93,14 +93,20 @@ int pause(struct window *window)
         SDL_framerateDelay(window->fps);
     }
 
-    Uint32 delay = SDL_GetTicks() - first_begin;
+    delay_times(window, first_begin);
+
+    SDL_DestroyTexture(bg);
+    return escape - 1;
+}
+
+
+void delay_times(struct window *window, Uint32 begin)
+{
+    Uint32 delay = SDL_GetTicks() - begin;
 
     window->last_enemy_time += delay;
     window->wave_title_time += delay;
 
     for (int i = 0; i < window->num_players; i++)
         window->player[i].last_shot_time += delay;
-
-    SDL_DestroyTexture(bg);
-    return escape - 1;
 }
