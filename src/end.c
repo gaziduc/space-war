@@ -102,6 +102,7 @@ void success(struct window *window, const int level_num, const int difficulty)
     while (!escape)
     {
         update_events(window->in, window);
+        handle_quit_event(window, 1);
         escape = handle_play_event(window);
         handle_select_arrow_event(window, &selected, 1);
 
@@ -185,6 +186,7 @@ int failure(struct window *window, int level_num)
     while (!escape)
     {
         update_events(window->in, window);
+        handle_quit_event(window, 1);
         escape = handle_escape_event(window);
         if (handle_play_event(window))
         {
