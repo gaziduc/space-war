@@ -5,7 +5,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 
-#define POS_CENTERED -1
+#define POS_CENTERED -4200
 
 SDL_Texture *load_texture(const char *path, struct window *window);
 
