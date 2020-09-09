@@ -164,6 +164,12 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
                         150, 450 + (i - 1) * 100);
     }
 
+    if (selected_item == 2) // if (selected_item is "2 Players (Local)")
+    {
+        render_text(window, window->fonts->zero4b_30_extra_small, "Controller needed for Player 2", orange,
+                        150, 850);
+    }
+
 }
 
 
