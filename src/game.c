@@ -484,8 +484,10 @@ void play_game(struct window *window, int mission_num, int difficulty)
             }
 
             // Display textures
-            if (mission_num <= 6)
+            if (mission_num <= 3)
                 SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+            else if (mission_num <= 6)
+                SDL_SetRenderDrawColor(window->renderer, 32, 32, 128, 255);
             else
                 SDL_SetRenderDrawColor(window->renderer, 192, 128, 0, 255);
             SDL_RenderClear(window->renderer);
