@@ -39,6 +39,7 @@ static void free_textures(struct window *window)
 
     free_collision_texture(window->img->drone);
     free_collision_texture(window->img->final_boss);
+    free_collision_texture(window->img->wall);
 
     free(window->img);
 }

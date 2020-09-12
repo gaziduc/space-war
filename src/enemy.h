@@ -7,6 +7,7 @@
 #define FRAMES_BETWEEN_ROTATING_ENEMY_SHOTS 8
 #define FRAMES_BETWEEN_DRONE_SHOTS 60
 #define ENEMY_SHOT_SPEED 7
+#define FINAL_BOSS_SHOT_SPEED 14
 
 void set_enemy_attributes(struct list *new, SDL_Rect *pos,
                           struct window *window, char enemy_type);
@@ -24,7 +25,7 @@ void render_enemy_health(struct window *window, struct list *enemy);
 void render_enemies_health(struct window *window);
 
 void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos, struct window *window,
-                               SDL_Rect *ship_pos);
+                               SDL_Rect *ship_pos, char enemy_type);
 
 void move_enemy_shots(struct window *window);
 

@@ -63,7 +63,7 @@ void move_boss(struct window *window)
             struct player *closest_player = select_player(window, temp);
 
             list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
-                            &closest_player->pos, 0, 0);
+                            &closest_player->pos, 0, temp->enemy_type);
         }
 
         temp = temp->next;

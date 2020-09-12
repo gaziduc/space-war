@@ -48,6 +48,10 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
             new->speed.y = new->speed.x;
             break;
 
+        case 'E':
+            new->texture.texture = window->img->wall;
+            break;
+
         default:
             break;
     }
@@ -84,6 +88,9 @@ void create_enemies(struct window *window)
                 break;
             case 'D':
                 SDL_QueryTexture(window->img->drone->texture, NULL, NULL, NULL, &h);
+                break;
+            case 'E':
+                SDL_QueryTexture(window->img->wall->texture, NULL, NULL, NULL, &h);
                 break;
 
             case '0':
@@ -317,7 +324,7 @@ void render_enemies_health(struct window *window)
 }
 
 void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst, struct window *window,
-                               SDL_Rect *ship_pos)
+                               SDL_Rect *ship_pos, char enemy_type)
 {
     // Setting shot initial position
     new->pos_dst.x = pos_dst->x + pos_dst->w / 2;
@@ -332,8 +339,8 @@ void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst, struct windo
     int gap_y = ship_pos->y + ship_pos->h / 2 - (new->pos_dst.y + new->pos_dst.h / 2);
     float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
 
-    new->speed.x = (gap_x * ENEMY_SHOT_SPEED) / gap;
-    new->speed.y = (gap_y * ENEMY_SHOT_SPEED) / gap;
+    new->speed.x = enemy_type == '1' ? (gap_x * FINAL_BOSS_SHOT_SPEED) / gap : (gap_x * ENEMY_SHOT_SPEED) / gap;
+    new->speed.y = enemy_type == '1' ? (gap_y * FINAL_BOSS_SHOT_SPEED) / gap : (gap_y * ENEMY_SHOT_SPEED) / gap;
 }
 
 

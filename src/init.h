@@ -7,7 +7,7 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL_net.h>
 
-#define NUM_LEVELS 8
+#define NUM_LEVELS 9
 #define NUM_ROTATING_FRAMES 180
 #define DEFAULT_W 1920
 #define DEFAULT_H 1080
@@ -47,6 +47,7 @@ struct textures
     SDL_Texture *aura;
     struct collision_texture *drone;
     struct collision_texture *final_boss;
+    struct collision_texture *wall;
 };
 
 

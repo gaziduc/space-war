@@ -38,7 +38,7 @@ void list_push_front(SDL_Rect *pos, struct window *window,
             set_explosion_pos(new, pos, texture);
             break;
         case ENEMY_SHOT_LIST:
-            set_enemy_shot_attributes(new, pos, window, ship_pos);
+            set_enemy_shot_attributes(new, pos, window, ship_pos, enemy_type);
             break;
         case BOSS_LIST:
             set_boss_attributes(new, pos, window, enemy_type);
