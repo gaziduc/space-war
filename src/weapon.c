@@ -84,7 +84,7 @@ void bomb(struct window *window)
 
         // Explosion
         list_push_front(&sentinel->next->pos_dst, window, EXPLOSION_LIST,
-                        window->img->boss->texture, NULL, 0, 0);
+                        sentinel->next->texture.texture->texture, NULL, 0, 0);
         Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
 
