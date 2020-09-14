@@ -22,15 +22,13 @@
 $ Mission_9
 
 $ Wave_1
-
 @ M
 6000 240 2 8 A
 0 840 2 8 A
 3000 540 2 8 A
 
 $ Wave_2
-
-1000 340 3 4 C
+0 340 3 4 C
 0 740 3 4 C
 4000 340 3 4 C
 0 740 3 4 C
@@ -42,10 +40,8 @@ $ Wave_2
 5000 540 3 5 C
 
 $ Final_Boss
-
-1000 540 2 150 1
+0 540 2 150 1
 
 $ ...
 $ Detector_sees_no_more_enemy
-$ ...
 $ Thanks_for_playing!
