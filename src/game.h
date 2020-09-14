@@ -5,7 +5,6 @@
 #include <SDL2/SDL.h>
 
 #define SHIP_SPEED 8
-#define SHOT_SPEED 20
 #define MAX_HEALTH_EASY 200
 #define MAX_HEALTH_HARD 70
 #define MAX_HEALTH_REALLY_HARD  30

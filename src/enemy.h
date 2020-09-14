@@ -6,7 +6,7 @@
 #define FRAMES_BETWEEN_ENEMY_SHOTS 180
 #define FRAMES_BETWEEN_ROTATING_ENEMY_SHOTS 8
 #define FRAMES_BETWEEN_DRONE_SHOTS 60
-#define ENEMY_SHOT_SPEED 7
+#define ENEMY_SHOT_SPEED 8
 #define FINAL_BOSS_SHOT_SPEED 14
 
 void set_enemy_attributes(struct list *new, SDL_Rect *pos,
