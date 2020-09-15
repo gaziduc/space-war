@@ -410,7 +410,10 @@ void connect_to_server(struct window *window)
             /* Last char is already at '\0' */
 
             if (handle_play_event(window))
+            {
+                memset(err, '\0', sizeof(err));
                 SDL_CreateThread(connecting_thread, "connecting_thread", window);
+            }
         }
 
         // Display black background
