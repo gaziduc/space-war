@@ -177,16 +177,11 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
 
         if (handle_play_event(window))
         {
+            // Decrement window->weapon to get a 0 based number
             window->weapon--;
 
-            if (window->is_lan)
-            {
-                char data[4] = { selected_level, selected_difficulty, window->weapon, 0 };
-                SDLNet_TCP_Send(window->client, data, sizeof(data));
-            }
+            ready(window, selected_level, selected_difficulty);
 
-            play_game(window, selected_level, selected_difficulty);
-            begin = SDL_GetTicks();
             window->weapon++;
             return;
         }
