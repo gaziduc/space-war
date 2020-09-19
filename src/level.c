@@ -84,22 +84,22 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
                     i != selected_difficulty ? blue : green, 150, y);
     }
 
-    SDL_Color grey = { 128, 128, 128, alpha };
+    SDL_Color white = { 255, 255, 255, alpha };
 
     switch (selected_difficulty)
     {
         case EASY:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "20 HP - 2 Bombs - 999+ Ammo - 0 Bonus", grey, 150, 760);
+                        "20 HP - 2 Bombs - 999+ Ammo - 0 Bonus", white, 150, 760);
             break;
         case HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "7 HP - 1 Bomb - 999+ Ammo - 1000 Bonus", grey, 150, 760);
+                        "7 HP - 1 Bomb - 999+ Ammo - 1000 Bonus", white, 150, 760);
             break;
 
         case REALLY_HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "3 HP - 1 Bomb - 200 Ammo - 3000 Bonus", grey, 150, 760);
+                        "3 HP - 1 Bomb - 200 Ammo - 3000 Bonus", white, 150, 760);
             break;
 
         default:
