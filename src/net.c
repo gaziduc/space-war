@@ -269,7 +269,7 @@ void create_server(struct window *window)
         render_text(window, window->fonts->zero4b_30_small, "Waiting for someone...",
                     orange, 150, 150);
 
-        render_text(window, window->fonts->zero4b_30_extra_small, "Your IP:",
+        render_text(window, window->fonts->zero4b_30_extra_small, "Your IP on local network:",
                     white, 150, 300);
 
         int index = 0;
@@ -297,6 +297,19 @@ void create_server(struct window *window)
 
             index++;
         }
+
+        render_text(window, window->fonts->pixel,
+                    "To play online, you need to open TCP on port 4321 on your computer via your Internet",
+                    white, 150, 800);
+
+        render_text(window, window->fonts->pixel, "service provider website. Also, you will need your online IP: just type",
+                    white, 150, 850);
+
+        render_text(window, window->fonts->pixel, "'what's my IP' on your favorite search engine and click on the first link to see it.",
+                    white, 150, 900);
+
+        render_text(window, window->fonts->pixel, "You don't need to do these steps if you're playing on your local network.",
+                    white, 150, 950);
 
         SDL_RenderPresent(window->renderer);
 
