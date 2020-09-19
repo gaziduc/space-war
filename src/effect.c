@@ -8,6 +8,6 @@ void render_touched_effect(struct window *window)
     {
         SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, window->touched_anim);
         SDL_RenderFillRect(window->renderer, NULL);
-        window->touched_anim -= 4;
+        window->touched_anim -= 2;
     }
 }

@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "event.h"
 #include "game.h"
+#include "ready.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 

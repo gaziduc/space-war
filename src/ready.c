@@ -3,6 +3,7 @@
 #include "event.h"
 #include "game.h"
 #include "menu.h"
+#include <stdio.h>
 
 static void render_ok(struct window *window, int selected_level,
                       int selected_difficulty, Uint32 begin)
