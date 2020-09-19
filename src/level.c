@@ -130,7 +130,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
 
         if (handle_play_event(window))
         {
-            choose_weapons(window, selected_level, selected_difficulty);
+            choose_weapons(window, selected_level, selected_difficulty, str);
             begin = SDL_GetTicks();
         }
 

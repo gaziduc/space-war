@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 static void render_ok(struct window *window, int selected_level,
-                      int selected_difficulty, Uint32 begin)
+                      int selected_difficulty, Uint32 begin, char *mission_name)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -30,7 +30,11 @@ static void render_ok(struct window *window, int selected_level,
     render_text(window, window->fonts->zero4b_30_extra_small, str,
                 white, 150, 300);
 
-    sprintf(str, "Mission: %d.%d", selected_level, window->num_players);
+    if (selected_level != NUM_LEVELS + 1)
+        sprintf(str, "Mission: %d.%d - %s", selected_level, window->num_players, mission_name);
+    else
+        sprintf(str, "Mission: Arcade Mode");
+
     render_text(window, window->fonts->zero4b_30_extra_small, str,
                 white, 150, 370);
 
@@ -69,7 +73,7 @@ static void render_ok(struct window *window, int selected_level,
 
 
 
-void ready(struct window *window, int selected_level, int selected_difficulty)
+int ready(struct window *window, int selected_level, int selected_difficulty, char *str)
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
@@ -89,7 +93,7 @@ void ready(struct window *window, int selected_level, int selected_difficulty)
             }
 
             play_game(window, selected_level, selected_difficulty);
-            return;
+            return 1;
         }
 
         escape = handle_escape_event(window);
@@ -100,11 +104,12 @@ void ready(struct window *window, int selected_level, int selected_difficulty)
 
         // Process/Draw all the things
         render_stars(window);
-        render_ok(window, selected_level, selected_difficulty, begin);
+        render_ok(window, selected_level, selected_difficulty, begin, str);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
         SDL_framerateDelay(window->fps);
     }
 
+    return 0;
 }
