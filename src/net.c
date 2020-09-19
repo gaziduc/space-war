@@ -303,13 +303,13 @@ void create_server(struct window *window)
                     white, 150, 800);
 
         render_text(window, window->fonts->pixel, "service provider website. Also, you will need your online IP: just type",
-                    white, 150, 850);
+                    white, 150, 840);
 
         render_text(window, window->fonts->pixel, "'what's my IP' on your favorite search engine and click on the first link to see it.",
-                    white, 150, 900);
+                    white, 150, 880);
 
         render_text(window, window->fonts->pixel, "You don't need to do these steps if you're playing on your local network.",
-                    white, 150, 950);
+                    white, 150, 920);
 
         SDL_RenderPresent(window->renderer);
 

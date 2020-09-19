@@ -144,6 +144,13 @@ struct window *init_all(void)
     // Enable blending (alpha)
     SDL_SetRenderDrawBlendMode(window->renderer, SDL_BLENDMODE_BLEND);
 
+    // Window icon
+    SDL_Surface *icon = SDL_LoadBMP("data/icon.bmp");
+    if (!icon)
+        error("Could not load surface", SDL_GetError(), window->window, window->renderer);
+    SDL_SetWindowIcon(window->window, icon);
+    SDL_FreeSurface(icon);
+
     // Hide cursor
     SDL_ShowCursor(SDL_DISABLE);
 
