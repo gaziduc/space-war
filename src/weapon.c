@@ -122,6 +122,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
         alpha = 1;
 
     SDL_Color orange = { 255, 128, 0, alpha };
+    SDL_Color blue = { 0, 255, 255, alpha };
 
     render_text(window, window->fonts->zero4b_30_small, "CHOOSE WEAPON",
                 orange, 150, 150);
@@ -149,7 +150,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
                 get_weapon_shots_per_second(i - 1));
 
         render_text(window, window->fonts->zero4b_30_extra_small,
-                    s, orange, 350, 350 + (i - 1) * 200);
+                    s, blue, 350, 350 + (i - 1) * 200);
 
         if (i == choice)
         {
