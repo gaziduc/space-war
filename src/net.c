@@ -6,6 +6,7 @@
 #include "level.h"
 #include "game.h"
 #include "lobby.h"
+#include "ip.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
@@ -18,6 +19,8 @@ int is_connected;
 char err[256];
 int accepting;
 int accepted;
+int has_online_ip;
+char *online_ip;
 
 
 static void render_create_or_join_texts(struct window *window, Uint32 begin,
@@ -205,6 +208,9 @@ static void get_ip(IPaddress *ip, unsigned int *a, unsigned int *b,
 }
 
 
+
+
+
 void create_server(struct window *window)
 {
     // Create server
@@ -213,8 +219,11 @@ void create_server(struct window *window)
     window->server = SDLNet_TCP_Open(&server_ip);
 
     // Get server IP
-    IPaddress *local_ips = xmalloc(sizeof(IPaddress) * 12, window->window, window->renderer);
-    int num_ips = SDLNet_GetLocalAddresses(local_ips, 12);
+    IPaddress *local_ips = xmalloc(sizeof(IPaddress) * MAX_IP_TO_SHOW, window->window, window->renderer);
+    int num_ips = SDLNet_GetLocalAddresses(local_ips, MAX_IP_TO_SHOW);
+
+    has_online_ip = 0;
+    SDL_CreateThread(get_online_ip_thread, "get_online_ip_thread", NULL);
 
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
@@ -293,22 +302,25 @@ void create_server(struct window *window)
             char buf[40] = { 0 }; // 40 =  Max IPv6 len + 1
             sprintf(buf, "%u.%u.%u.%u", a, b, c, d);
             render_text(window, window->fonts->pixel,
-                        buf, white, 150, 400 + index * 50);
+                        buf, white, 150, 400 + index * 40);
 
             index++;
         }
+
+        render_text(window, window->fonts->zero4b_30_extra_small, "Your online IP:",
+                    white, 1110, 300);
+
+        render_text(window, window->fonts->pixel, has_online_ip ? online_ip : "Searching online IP...",
+                    white, 1110, 400);
 
         render_text(window, window->fonts->pixel,
                     "To play online, you need to open TCP on port 4321 on your computer via your Internet",
                     white, 150, 800);
 
-        render_text(window, window->fonts->pixel, "service provider website. Also, you will need your online IP: just type",
+        render_text(window, window->fonts->pixel, "service provider website.",
                     white, 150, 840);
 
-        render_text(window, window->fonts->pixel, "'what's my IP' on your favorite search engine and click on the first link to see it.",
-                    white, 150, 880);
-
-        render_text(window, window->fonts->pixel, "You don't need to do these steps if you're playing on your local network.",
+        render_text(window, window->fonts->pixel, "You don't need to do this step if you're playing on your local network.",
                     white, 150, 920);
 
         SDL_RenderPresent(window->renderer);
@@ -583,3 +595,13 @@ int accepting_thread(void *data)
 
     return 0;
 }
+
+
+int get_online_ip_thread(void *data)
+{
+    online_ip = get_online_ip();
+    has_online_ip = 1;
+
+    return 0;
+}
+

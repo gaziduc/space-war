@@ -1,6 +1,8 @@
 #ifndef NET_H
 #define NET_H
 
+#define MAX_IP_TO_SHOW 10
+
 struct state
 {
     Uint16 pos_x;
@@ -29,5 +31,7 @@ int connecting_thread(void *data);
 int accepting_thread(void *data);
 
 int waiting_thread(void *data);
+
+int get_online_ip_thread(void *data);
 
 #endif /* !NET_H */
