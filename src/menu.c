@@ -152,7 +152,7 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
     render_text(window, window->fonts->zero4b_30_small, "SELECT MODE", orange, 150, 150);
 
     // Render items
-    char *s_list[MAX_PLAYERS + 1] = { "-> 1 Player", "-> 2 Players (Local)", "-> 2 Players (LAN)" };
+    char *s_list[MAX_PLAYERS + 1] = { "-> 1 Player", "-> 2 Players (Local)", "-> 2 Players (Network)" };
 
     for (int i = 1; i <= MAX_PLAYERS + 1; i++)
     {

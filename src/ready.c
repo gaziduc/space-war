@@ -24,7 +24,7 @@ static void render_ok(struct window *window, int selected_level,
     char str[128] = { 0 };
     sprintf(str, "Mode: %d Player%s %s", window->num_players,
                                    window->num_players == 2 ? "s" : "",
-                                   window->is_lan ? "(LAN)" :
+                                   window->is_lan ? "(Network)" :
                                    window->num_players == 2 ? "(Local)" : "");
 
     render_text(window, window->fonts->zero4b_30_extra_small, str,

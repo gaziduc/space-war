@@ -278,7 +278,7 @@ void create_server(struct window *window)
         render_text(window, window->fonts->zero4b_30_small, "Waiting for someone...",
                     orange, 150, 150);
 
-        render_text(window, window->fonts->zero4b_30_extra_small, "Your IP on local network:",
+        render_text(window, window->fonts->zero4b_30_extra_small, "Your IP (local network):",
                     white, 150, 300);
 
         int index = 0;
@@ -307,7 +307,7 @@ void create_server(struct window *window)
             index++;
         }
 
-        render_text(window, window->fonts->zero4b_30_extra_small, "Your online IP:",
+        render_text(window, window->fonts->zero4b_30_extra_small, "Your IP (online):",
                     white, 1110, 300);
 
         render_text(window, window->fonts->pixel, has_online_ip ? online_ip : "Searching online IP...",
