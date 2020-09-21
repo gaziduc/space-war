@@ -9,7 +9,7 @@ Space War is a shoot'em up game where you pilot a spaceship and your goal is to 
 - **Storage**: about **65 Mo** of available space
 ### Software
 - **Operating System** : Linux 64 bits, Windows 64 bits, macOS 64 bits
-- If you are on Linux, the following **libraries** must be installed:
+- If you are on Linux/macOS, the following **libraries** must be installed:
 ```
 sdl2
 sdl2_image
