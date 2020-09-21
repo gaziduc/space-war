@@ -132,6 +132,7 @@ void credits(struct window *window)
     ADD_LETTERS(window, screen, "|    SDL2_MIXER    |\n", &line, &col, 50, 0, begin, 1)
     ADD_LETTERS(window, screen, "|     SDL2_GFX     |\n", &line, &col, 50, 0, begin, 1)
     ADD_LETTERS(window, screen, "|     SDL2_NET     |\n", &line, &col, 50, 0, begin, 1)
+    ADD_LETTERS(window, screen, "|     LIBCURL      |\n", &line, &col, 50, 0, begin, 1)
     ADD_LETTERS(window, screen, h_line, &line, &col, 50, 0, begin, 1)
     ADD_LETTERS(window, screen, "\n\n\nTHANKS FOR PLAYING!", &line, &col, 50, 42000, begin, 1)
 }
