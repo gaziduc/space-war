@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 static void render_ok(struct window *window, int selected_level,
-                      int selected_difficulty, Uint32 begin, char *mission_name)
+                      int selected_difficulty, Uint32 begin, const char *mission_name)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -40,19 +40,20 @@ static void render_ok(struct window *window, int selected_level,
 
     switch (selected_difficulty)
     {
-        case 0:
+        case 1:
             render_text(window, window->fonts->zero4b_30_extra_small, "Difficulty: Easy", white, 150, 440);
             break;
 
-        case 1:
+        case 2:
             render_text(window, window->fonts->zero4b_30_extra_small, "Difficulty: Hard", white, 150, 440);
             break;
 
-        case 2:
+        case 3:
             render_text(window, window->fonts->zero4b_30_extra_small, "Difficulty: Really Hard", white, 150, 440);
             break;
 
         default:
+            error("Unknown difficulty", "Unknown difficulty level", window->window, window->renderer);
             break;
     }
 
@@ -73,7 +74,7 @@ static void render_ok(struct window *window, int selected_level,
 
 
 
-int ready(struct window *window, int selected_level, int selected_difficulty, char *str)
+int ready(struct window *window, int selected_level, int selected_difficulty, const char *str)
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();

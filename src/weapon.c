@@ -164,7 +164,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
 }
 
 
-void choose_weapons(struct window *window, int selected_level, int selected_difficulty, char *str)
+void choose_weapons(struct window *window, int selected_level, int selected_difficulty, const char *str)
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
