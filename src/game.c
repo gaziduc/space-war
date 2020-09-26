@@ -399,6 +399,8 @@ static void load_correct_music(struct window *window, int mission_num, int is_ar
 
 void play_game(struct window *window, int mission_num, int difficulty)
 {
+    window->mission_start_time = SDL_GetTicks();
+
     int is_arcade = 0;
 
     // Set mode to arcade if necessary

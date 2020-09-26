@@ -124,6 +124,7 @@ struct vector
 
 struct fonts
 {
+    TTF_Font *pixel_small_bold;
     TTF_Font *pixel;
     TTF_Font *pixel_large;
     TTF_Font *zero4b_30;
@@ -213,6 +214,7 @@ struct window
     int touched_anim;
     SDL_Point resolutions[NUM_RESOLUTIONS];
     int resolution_index;
+    Uint32 mission_start_time;
 };
 
 void load_music(struct window *window, const char *filename, int must_free);

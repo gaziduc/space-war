@@ -110,4 +110,6 @@ void delay_times(struct window *window, Uint32 begin)
 
     for (int i = 0; i < window->num_players; i++)
         window->player[i].last_shot_time += delay;
+
+    window->mission_start_time += delay;
 }
