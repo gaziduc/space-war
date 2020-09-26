@@ -17,14 +17,14 @@ static int init_string(struct string *str)
 
 static size_t write_function(void *ptr, size_t size, size_t nmemb, struct string *s)
 {
-  size_t new_len = s->len + size * nmemb;
+    size_t new_len = s->len + size * nmemb;
 
-  s->ptr = realloc(s->ptr, new_len + 1);
-  memcpy(s->ptr + s->len, ptr, size * nmemb);
-  s->ptr[new_len] = '\0';
-  s->len = new_len;
+    s->ptr = realloc(s->ptr, new_len + 1);
+    memcpy(s->ptr + s->len, ptr, size * nmemb);
+    s->ptr[new_len] = '\0';
+    s->len = new_len;
 
-  return size * nmemb;
+    return size * nmemb;
 }
 
 const char* get_online_ip(void)
