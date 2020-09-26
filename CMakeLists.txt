@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.13)
 project(space-war C)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
@@ -19,7 +19,6 @@ if (MSVC)
     add_compile_options(/W3)
 else ()
     add_compile_options(-Wall -Wextra -pedantic -std=c99 -O2)
-    add_link_options(-lm)
 endif ()
 
 if (WIN32)
@@ -32,4 +31,6 @@ target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDL2
 
 if (MSVC)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS /SUBSYSTEM:WINDOWS)
+else ()
+    target_link_libraries(${PROJECT_NAME} m)
 endif ()
