@@ -33,8 +33,10 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
     sprintf(s_list[3], "Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
     sprintf(s_list[4], "< Resolution: %dx%d >", window->w, window->h);
-    sprintf(s_list[5], "Player 1: %s", window->player[0].is_controller ? "Controller" : "Keyboard");
-    sprintf(s_list[6], "Player 2: %s", window->player[1].is_controller ? "Controller" : "Keyboard");
+    sprintf(s_list[5], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
+                                           window->player[0].input_type == MOUSE ? "Mouse" : "Controller");
+    sprintf(s_list[6], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
+                                           window->player[1].input_type == MOUSE ? "Mouse" : "Controller");
 
 
     // Render items
@@ -63,8 +65,8 @@ static void write_settings(struct window *window)
     fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
     fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
     fprintf(f, "resolution_index=%d\n", window->resolution_index);
-    fprintf(f, "input_type_player_1=%d\n", window->player[0].is_controller);
-    fprintf(f, "input_type_player_2=%d\n", window->player[1].is_controller);
+    fprintf(f, "input_type_player_1=%d\n", window->player[0].input_type);
+    fprintf(f, "input_type_player_2=%d\n", window->player[1].input_type);
 
     // Close file
     fclose(f);
@@ -104,8 +106,8 @@ void load_settings(struct window *window)
         window->resolution_index--;
         set_resolution_with_index(window);
 
-        window->player[0].is_controller = 0;
-        window->player[1].is_controller = 1;
+        window->player[0].input_type = KEYBOARD;
+        window->player[1].input_type = MOUSE;
 
         return;
     }
@@ -116,8 +118,8 @@ void load_settings(struct window *window)
     fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
     fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
     fscanf(f, "resolution_index=%d\n", &window->resolution_index);
-    fscanf(f, "input_type_player_1=%d\n", &window->player[0].is_controller);
-    fscanf(f, "input_type_player_2=%d\n", &window->player[1].is_controller);
+    fscanf(f, "input_type_player_1=%d\n", (int *) &window->player[0].input_type);
+    fscanf(f, "input_type_player_2=%d\n", (int *) &window->player[1].input_type);
 
     set_resolution_with_index(window);
 
@@ -128,7 +130,7 @@ void load_settings(struct window *window)
 
 static void handle_arrow_event(struct window *window, const int selected_item)
 {
-    if (window->in->key[SDL_SCANCODE_LEFT]
+            if (window->in->key[SDL_SCANCODE_LEFT]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
             && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
@@ -169,6 +171,18 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                                           SDL_WINDOWPOS_CENTERED);
                     write_settings(window);
                 }
+                break;
+
+            case 6:
+                if (window->player[0].input_type > 0)
+                    window->player[0].input_type--;
+                write_settings(window);
+                break;
+
+            case 7:
+                if (window->player[1].input_type > 0)
+                    window->player[1].input_type--;
+                write_settings(window);
                 break;
 
             default:
@@ -227,6 +241,18 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
+            case 6:
+                if (window->player[0].input_type < NUM_INPUT_TYPE - 1)
+                    window->player[0].input_type++;
+                write_settings(window);
+                break;
+
+            case 7:
+                if (window->player[1].input_type < NUM_INPUT_TYPE - 1)
+                    window->player[1].input_type++;
+                write_settings(window);
+                break;
+
             default:
                 break;
         }
@@ -270,12 +296,6 @@ void settings(struct window *window)
 
                 case 4:
                     window->settings->is_force_feedback = !window->settings->is_force_feedback;
-                    break;
-
-                case 6:
-                case 7:
-                    window->player[0].is_controller = !window->player[0].is_controller;
-                    window->player[1].is_controller = !window->player[1].is_controller;
                     break;
             }
 

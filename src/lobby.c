@@ -43,7 +43,13 @@ void lobby(struct window *window)
                 escape = 1;
             else
             {
+                if (SDL_SetRelativeMouseMode(SDL_TRUE) == -1)
+                    error("Cannot set relative mouse mode", SDL_GetError(), window->window, window->renderer);
+
                 play_game(window, level_num, level_difficulty);
+
+                SDL_SetRelativeMouseMode(SDL_FALSE);
+
                 selected = 0;
                 SDL_CreateThread(waiting_thread, "waiting_thread", window);
             }

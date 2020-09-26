@@ -71,6 +71,8 @@ struct input
     char quit;
     char focus_lost;
     char key[SDL_NUM_SCANCODES];
+    SDL_Point mouse_rel_pos;
+    char mouse_button[5];
     struct controller c;
     char text[8];
 };
@@ -154,6 +156,14 @@ struct save
 };
 
 
+enum input_type
+{
+    KEYBOARD = 0,
+    MOUSE,
+    CONTROLLER,
+    NUM_INPUT_TYPE
+};
+
 struct player
 {
     SDL_Rect pos;
@@ -165,7 +175,7 @@ struct player
     int animated_health_low;
     int animated_health_high;
     Uint32 last_shot_time;
-    int is_controller;
+    enum input_type input_type;
     int missile_around;
 };
 

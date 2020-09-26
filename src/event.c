@@ -15,6 +15,9 @@ void update_events(struct input *in, struct window *window)
     for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
         in->c.axis[i].state = 0;
 
+    in->mouse_rel_pos.x = 0;
+    in->mouse_rel_pos.y = 0;
+
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -93,11 +96,25 @@ void update_events(struct input *in, struct window *window)
             in->c.axis[event.caxis.axis].value = event.caxis.value;
             break;
 
+        // Handling window event to prevent bug on Windows
         case SDL_WINDOWEVENT:
             if (event.window.event == SDL_WINDOWEVENT_FOCUS_LOST)
                 in->focus_lost = 1;
             else if (event.window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
                 in->focus_lost = 0;
+            break;
+
+        case SDL_MOUSEMOTION:
+            in->mouse_rel_pos.x = event.motion.xrel;
+            in->mouse_rel_pos.y = event.motion.yrel;
+            break;
+
+        case SDL_MOUSEBUTTONDOWN:
+            in->mouse_button[event.button.button] = 1;
+            break;
+
+        case SDL_MOUSEBUTTONUP:
+            in->mouse_button[event.button.button] = 0;
             break;
 
         default:
