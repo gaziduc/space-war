@@ -15,9 +15,6 @@ void update_events(struct input *in, struct window *window)
     for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
         in->c.axis[i].state = 0;
 
-    in->mouse_rel_pos.x = 0;
-    in->mouse_rel_pos.y = 0;
-
     while (SDL_PollEvent(&event))
     {
         switch (event.type)
@@ -105,8 +102,8 @@ void update_events(struct input *in, struct window *window)
             break;
 
         case SDL_MOUSEMOTION:
-            in->mouse_rel_pos.x = event.motion.xrel;
-            in->mouse_rel_pos.y = event.motion.yrel;
+            in->mouse_pos.x = event.motion.x;
+            in->mouse_pos.y = event.motion.y;
             break;
 
         case SDL_MOUSEBUTTONDOWN:

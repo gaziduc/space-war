@@ -93,13 +93,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
                 SDLNet_TCP_Send(window->client, data, sizeof(data));
             }
 
-            if (SDL_SetRelativeMouseMode(SDL_TRUE) == -1)
-                error("Cannot set relative mouse mode", SDL_GetError(), window->window, window->renderer);
-
             play_game(window, selected_level, selected_difficulty);
-
-            SDL_SetRelativeMouseMode(SDL_FALSE);
-
             return 1;
         }
 

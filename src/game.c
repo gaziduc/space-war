@@ -75,23 +75,21 @@ static void handle_arrow_event(struct window *window, struct player *player)
             break;
 
         case MOUSE:
-            if (window->in->mouse_rel_pos.x >= 1)
-                window->in->mouse_rel_pos.x = SHIP_SPEED;
-            else if (window->in->mouse_rel_pos.x <= -1)
-                window->in->mouse_rel_pos.x = -SHIP_SPEED;
+            if (window->in->mouse_pos.x - player->pos.x > SHIP_SPEED)
+                player->pos.x += SHIP_SPEED;
+            else if (window->in->mouse_pos.x - player->pos.x < -SHIP_SPEED)
+                player->pos.x -= SHIP_SPEED;
             else
-                window->in->mouse_rel_pos.x = 0;
+                player->pos.x = window->in->mouse_pos.x;
 
-            if (window->in->mouse_rel_pos.y >= 1)
-                window->in->mouse_rel_pos.y = SHIP_SPEED;
-            else if (window->in->mouse_rel_pos.y <= -1)
-                window->in->mouse_rel_pos.y = -SHIP_SPEED;
+            if (window->in->mouse_pos.y - player->pos.y > SHIP_SPEED)
+                player->pos.y += SHIP_SPEED;
+            else if (window->in->mouse_pos.y - player->pos.y < -SHIP_SPEED)
+                player->pos.y -= SHIP_SPEED;
             else
-                window->in->mouse_rel_pos.y = 0;
+                player->pos.y = window->in->mouse_pos.y;
 
-            player->pos.x += window->in->mouse_rel_pos.x;
-            player->pos.y += window->in->mouse_rel_pos.y;
-
+            SDL_WarpMouseInWindow(window->window, player->pos.x, player->pos.y);
             break;
 
         default:

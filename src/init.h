@@ -71,7 +71,7 @@ struct input
     char quit;
     char focus_lost;
     char key[SDL_NUM_SCANCODES];
-    SDL_Point mouse_rel_pos;
+    SDL_Point mouse_pos;
     char mouse_button[5];
     struct controller c;
     char text[8];
