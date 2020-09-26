@@ -24,7 +24,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, 192);
 
         SDL_Rect pos = { .x = 10 + player_num * 220,
-                         .y = 30,
+                         .y = 32,
                          .w = anim_health_low,
                          .h = 30
                        };
@@ -41,7 +41,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_SetRenderDrawColor(window->renderer, 255, 128, 0, 192);
 
         SDL_Rect pos = { .x = 10 + anim_health_low + player_num * 220,
-                         .y = 30,
+                         .y = 32,
                          .w = anim_health_high - anim_health_low,
                          .h = 30
                        };
@@ -56,7 +56,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, 192);
 
         SDL_Rect pos = { .x = 10 + anim_health_high + player_num * 220,
-                         .y = 30,
+                         .y = 32,
                          .w = window->max_health - anim_health_high,
                          .h = 30
                        };
@@ -120,7 +120,7 @@ static void render_ammo(struct window *window, struct player *player, int player
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
-    render_text(window, window->fonts->pixel, s, color, 20 + player_num * 220, 30);
+    render_text(window, window->fonts->pixel, s, color, 20 + player_num * 220, 32);
 }
 
 void render_hud(struct window *window)

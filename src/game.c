@@ -288,6 +288,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
     window->last_enemy_time = 0;
     window->is_wave_title = 0;
     window->wave_title_time = 0;
+    window->mission_start_time = SDL_GetTicks();
 
     for (int i = 0; i < window->num_players; i++)
     {
@@ -399,8 +400,6 @@ static void load_correct_music(struct window *window, int mission_num, int is_ar
 
 void play_game(struct window *window, int mission_num, int difficulty)
 {
-    window->mission_start_time = SDL_GetTicks();
-
     int is_arcade = 0;
 
     // Set mode to arcade if necessary
