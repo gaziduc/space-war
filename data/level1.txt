@@ -8,12 +8,8 @@
 
 @ G
 
-$ .
-$ ..
 $ ...
 $ It_looks_like_I'm_not_alone
-$ .
-$ ..
 $ ...
 $ Oh,_a_new_galaxy!
 $ Hum...
