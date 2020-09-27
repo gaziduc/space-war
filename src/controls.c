@@ -27,7 +27,7 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
     for (enum control i = 0; i < NUM_CONTROLS; i++)
     {
         sprintf(s, "%s: %s", names[i], SDL_GetScancodeName(window->settings->controls[i]));
-        render_text(window, window->fonts->zero4b_30_small, s, selected_item - 1 == i ? green : white, 150, 350 + i * 100);
+        render_text(window, window->fonts->zero4b_30_small, s, selected_item - 1 == (int) i ? green : white, 150, 350 + i * 100);
     }
 }
 
