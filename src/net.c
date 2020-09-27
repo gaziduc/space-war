@@ -308,10 +308,10 @@ void create_server(struct window *window)
         }
 
         render_text(window, window->fonts->zero4b_30_extra_small, "Your IP (online):",
-                    white, 1110, 300);
+                    white, 1060, 300);
 
         render_text(window, window->fonts->pixel, has_online_ip ? online_ip : "Searching online IP...",
-                    white, 1110, 400);
+                    white, 1060, 400);
 
         render_text(window, window->fonts->pixel,
                     "To play online, you need to open TCP on port 4321 on your computer via your Internet",

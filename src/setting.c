@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "menu.h"
 #include "setting.h"
+#include "controls.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -27,7 +28,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
 
-    char s_list[NUM_SETTINGS][50] = { 0 };
+    char s_list[NUM_SETTINGS][64] = { 0 };
     sprintf(s_list[0], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
     sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
     sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
@@ -37,6 +38,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
                                            window->player[0].input_type == MOUSE ? "Mouse" : "Controller");
     sprintf(s_list[6], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[1].input_type == MOUSE ? "Mouse" : "Controller");
+    strcpy(s_list[7], "Keyboard Controls...");
 
 
     // Render items
@@ -52,7 +54,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
 }
 
 
-static void write_settings(struct window *window)
+void write_settings(struct window *window)
 {
     // Open file
     FILE *f = fopen("settings.ini", "w");
@@ -60,6 +62,7 @@ static void write_settings(struct window *window)
         error("settings.ini", "Couldn't open settings.txt for writing.", window->window, window->renderer);
 
     // Write settings
+    fputs("[settings]\n", f);
     fprintf(f, "fullscreen=%d\n", window->settings->is_fullscreen);
     fprintf(f, "music_volume=%d\n", window->settings->music_volume);
     fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
@@ -67,6 +70,14 @@ static void write_settings(struct window *window)
     fprintf(f, "resolution_index=%d\n", window->resolution_index);
     fprintf(f, "input_type_player_1=%d\n", window->player[0].input_type);
     fprintf(f, "input_type_player_2=%d\n", window->player[1].input_type);
+    fputs("\n", f);
+    fputs("[controls]\n", f);
+    fprintf(f, "up=%d\n", window->settings->controls[UP]);
+    fprintf(f, "left=%d\n", window->settings->controls[LEFT]);
+    fprintf(f, "down=%d\n", window->settings->controls[DOWN]);
+    fprintf(f, "right=%d\n", window->settings->controls[RIGHT]);
+    fprintf(f, "shoot=%d\n", window->settings->controls[SHOOT]);
+    fprintf(f, "bomb=%d\n", window->settings->controls[BOMB]);
 
     // Close file
     fclose(f);
@@ -109,10 +120,19 @@ void load_settings(struct window *window)
         window->player[0].input_type = KEYBOARD;
         window->player[1].input_type = MOUSE;
 
+        // Controls
+        window->settings->controls[UP] = SDL_SCANCODE_UP;
+        window->settings->controls[LEFT] = SDL_SCANCODE_LEFT;
+        window->settings->controls[DOWN] = SDL_SCANCODE_DOWN;
+        window->settings->controls[RIGHT] = SDL_SCANCODE_RIGHT;
+        window->settings->controls[SHOOT] = SDL_SCANCODE_SPACE;
+        window->settings->controls[BOMB] = SDL_SCANCODE_B;
+
         return;
     }
 
     // Read settings
+    fscanf(f, "[settings]\n");
     fscanf(f, "fullscreen=%d\n", &window->settings->is_fullscreen);
     fscanf(f, "music_volume=%d\n", &window->settings->music_volume);
     fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
@@ -120,6 +140,14 @@ void load_settings(struct window *window)
     fscanf(f, "resolution_index=%d\n", &window->resolution_index);
     fscanf(f, "input_type_player_1=%d\n", (int *) &window->player[0].input_type);
     fscanf(f, "input_type_player_2=%d\n", (int *) &window->player[1].input_type);
+    fscanf(f, "\n");
+    fscanf(f, "[controls]\n");
+    fscanf(f, "up=%d\n", (int *) &window->settings->controls[UP]);
+    fscanf(f, "left=%d\n", (int *) &window->settings->controls[LEFT]);
+    fscanf(f, "down=%d\n", (int *) &window->settings->controls[DOWN]);
+    fscanf(f, "right=%d\n", (int *) &window->settings->controls[RIGHT]);
+    fscanf(f, "shoot=%d\n", (int *) &window->settings->controls[SHOOT]);
+    fscanf(f, "bomb=%d\n", (int *) &window->settings->controls[BOMB]);
 
     set_resolution_with_index(window);
 
@@ -296,6 +324,11 @@ void settings(struct window *window)
 
                 case 4:
                     window->settings->is_force_feedback = !window->settings->is_force_feedback;
+                    break;
+
+                case 8:
+                    controls(window);
+                    begin = SDL_GetTicks();
                     break;
             }
 

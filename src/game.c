@@ -64,13 +64,13 @@ static void handle_arrow_event(struct window *window, struct player *player)
             break;
 
         case KEYBOARD:
-            if (window->in->key[SDL_SCANCODE_UP])
+            if (window->in->key[window->settings->controls[UP]])
                 player->pos.y -= SHIP_SPEED;
-            if (window->in->key[SDL_SCANCODE_DOWN])
+            if (window->in->key[window->settings->controls[DOWN]])
                 player->pos.y += SHIP_SPEED;
-            if (window->in->key[SDL_SCANCODE_LEFT])
+            if (window->in->key[window->settings->controls[LEFT]])
                 player->pos.x -= SHIP_SPEED;
-            if (window->in->key[SDL_SCANCODE_RIGHT])
+            if (window->in->key[window->settings->controls[RIGHT]])
                 player->pos.x += SHIP_SPEED;
             break;
 
@@ -137,7 +137,7 @@ static int handle_shot_event(struct window *window, struct player *player)
                     return try_to_shoot(window, player);
                 break;
             case KEYBOARD:
-                if (window->in->key[SDL_SCANCODE_SPACE])
+                if (window->in->key[window->settings->controls[SHOOT]])
                     return try_to_shoot(window, player);
                 break;
             case MOUSE:
@@ -173,9 +173,9 @@ static int handle_bomb_event(struct window *window, struct player *player)
                 break;
 
             case KEYBOARD:
-                if (window->in->key[SDL_SCANCODE_C])
+                if (window->in->key[window->settings->controls[BOMB]])
                 {
-                    window->in->key[SDL_SCANCODE_C] = 0;
+                    window->in->key[window->settings->controls[BOMB]] = 0;
 
                     // Bomb: erase all visible enemies
                     bomb(window);

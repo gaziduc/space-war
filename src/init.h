@@ -142,12 +142,24 @@ struct sounds
     Mix_Chunk *play;
 };
 
+enum control
+{
+    UP = 0,
+    LEFT,
+    DOWN,
+    RIGHT,
+    SHOOT,
+    BOMB,
+    NUM_CONTROLS
+};
+
 struct settings
 {
     int is_fullscreen;
     int music_volume;
     int sfx_volume;
     int is_force_feedback;
+    SDL_Scancode controls[NUM_CONTROLS];
 };
 
 struct save
