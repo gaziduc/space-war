@@ -42,6 +42,7 @@ void controls(struct window *window)
     while (!escape)
     {
         update_events(window->in, window);
+        handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, 6);
         escape = handle_escape_event(window);
         if (handle_play_event(window))
