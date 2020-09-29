@@ -121,12 +121,7 @@ void load_settings(struct window *window)
         window->player[1].input_type = MOUSE;
 
         // Controls
-        window->settings->controls[UP] = SDL_SCANCODE_UP;
-        window->settings->controls[LEFT] = SDL_SCANCODE_LEFT;
-        window->settings->controls[DOWN] = SDL_SCANCODE_DOWN;
-        window->settings->controls[RIGHT] = SDL_SCANCODE_RIGHT;
-        window->settings->controls[SHOOT] = SDL_SCANCODE_SPACE;
-        window->settings->controls[BOMB] = SDL_SCANCODE_B;
+        reset_controls(window);
 
         return;
     }
