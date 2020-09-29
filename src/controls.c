@@ -32,7 +32,7 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
     }
 
     char *str = "-> Reset inputs";
-    render_text(window, window->fonts->zero4b_30_small, selected_item == NUM_CONTROLS + 1 ? str : str + 3, selected_item == NUM_CONTROLS + 1 ? green : blue, 150, 360 + NUM_CONTROLS * 80);
+    render_text(window, window->fonts->zero4b_30_small, selected_item == (int) NUM_CONTROLS + 1 ? str : str + 3, selected_item == (int) NUM_CONTROLS + 1 ? green : blue, 150, 360 + NUM_CONTROLS * 80);
 }
 
 
