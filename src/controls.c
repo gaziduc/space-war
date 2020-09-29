@@ -21,9 +21,9 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
     SDL_Color orange = { 255, 128, 0, alpha };
     SDL_Color blue = { 0, 255, 255, alpha };
 
-    char s[64] = { 0 };
-
     render_text(window, window->fonts->zero4b_30_small, "Keyboard Controls...", orange, 150, 150);
+
+    char s[64] = { 0 };
 
     for (enum control i = 0; i < NUM_CONTROLS; i++)
     {
