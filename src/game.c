@@ -89,7 +89,9 @@ static void handle_arrow_event(struct window *window, struct player *player)
             else
                 player->pos.y = window->in->mouse_pos.y;
 
-            SDL_WarpMouseInWindow(window->window, player->pos.x, player->pos.y);
+            SDL_Rect cursor_pos = player->pos;
+            resize_pos_for_resolution(window, &cursor_pos);
+            SDL_WarpMouseInWindow(window->window, cursor_pos.x, cursor_pos.y);
             break;
 
         default:

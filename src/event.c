@@ -105,8 +105,8 @@ void update_events(struct input *in, struct window *window)
 
         /* Mouse events */
         case SDL_MOUSEMOTION:
-            in->mouse_pos.x = event.motion.x;
-            in->mouse_pos.y = event.motion.y;
+            in->mouse_pos.x = event.motion.x * DEFAULT_W / window->w;
+            in->mouse_pos.y = event.motion.y * DEFAULT_H / window->h;
             break;
 
         case SDL_MOUSEBUTTONDOWN:
