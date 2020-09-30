@@ -73,6 +73,7 @@ struct input
     char key[SDL_NUM_SCANCODES];
     SDL_Point mouse_pos;
     char mouse_button[5];
+    SDL_Point wheel;
     struct controller c;
     char text[8];
 };

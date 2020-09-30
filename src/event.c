@@ -9,6 +9,8 @@ void update_events(struct input *in, struct window *window)
 {
     in->quit = 0;
     memset(in->text, '\0', sizeof(in->text));
+    in->wheel.x = 0;
+    in->wheel.y = 0;
     SDL_Event event;
 
     // Reset axis state
@@ -101,6 +103,7 @@ void update_events(struct input *in, struct window *window)
                 in->focus_lost = 0;
             break;
 
+        /* Mouse events */
         case SDL_MOUSEMOTION:
             in->mouse_pos.x = event.motion.x;
             in->mouse_pos.y = event.motion.y;
@@ -112,6 +115,11 @@ void update_events(struct input *in, struct window *window)
 
         case SDL_MOUSEBUTTONUP:
             in->mouse_button[event.button.button] = 0;
+            break;
+
+        case SDL_MOUSEWHEEL:
+            in->wheel.x = event.wheel.x;
+            in->wheel.y = event.wheel.y;
             break;
 
         default:
@@ -136,10 +144,12 @@ void handle_quit_event(struct window *window, int is_in_level)
 int handle_escape_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_ESCAPE]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_BACK])
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_BACK]
+        || window->in->mouse_button[SDL_BUTTON_X1])
     {
         window->in->key[SDL_SCANCODE_ESCAPE] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_BACK] = 0;
+        window->in->mouse_button[SDL_BUTTON_X1] = 0;
 
         return 1;
     }
@@ -152,11 +162,13 @@ int handle_play_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_RETURN]
         || window->in->key[SDL_SCANCODE_KP_ENTER]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_A])
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_A]
+        || window->in->mouse_button[SDL_BUTTON_LEFT])
     {
         window->in->key[SDL_SCANCODE_RETURN] = 0;
         window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_A] = 0;
+        window->in->mouse_button[SDL_BUTTON_LEFT] = 0;
 
         Mix_PlayChannel(-1, window->sounds->play, 0);
 
@@ -172,7 +184,8 @@ void handle_select_arrow_event(struct window *window, int *selected, int max)
     if (window->in->key[SDL_SCANCODE_UP]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state)
+        || window->in->wheel.y > 0)
     {
         window->in->key[SDL_SCANCODE_UP] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
@@ -187,7 +200,8 @@ void handle_select_arrow_event(struct window *window, int *selected, int max)
     if (window->in->key[SDL_SCANCODE_DOWN]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state)
+        || window->in->wheel.y < 0)
     {
         window->in->key[SDL_SCANCODE_DOWN] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
