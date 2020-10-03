@@ -32,17 +32,17 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     render_text(window, window->fonts->zero4b_30_small, "SETTINGS", orange, 150, 150);
 
     char s_list[NUM_SETTINGS][64] = { 0 };
-    sprintf(s_list[0], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
-    sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
-    sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
-    sprintf(s_list[3], "Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
-    sprintf(s_list[4], "< Resolution: %dx%d >", window->w, window->h);
-    sprintf(s_list[5], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
+    sprintf(s_list[0], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
+    sprintf(s_list[1], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
+    sprintf(s_list[2], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
+    sprintf(s_list[3], "< Resolution: %dx%d >", window->w, window->h);
+    sprintf(s_list[4], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[0].input_type == MOUSE ? "Mouse" : "Controller");
-    sprintf(s_list[6], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
+    sprintf(s_list[5], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[1].input_type == MOUSE ? "Mouse" : "Controller");
-    strcpy(s_list[7], "Keyboard Controls...");
-    sprintf(s_list[8], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
+    strcpy(s_list[6], "Keyboard Controls...");
+    sprintf(s_list[7], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
+    sprintf(s_list[8], "Controller Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
 
 
     // Render items
@@ -171,7 +171,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
 
         switch (selected_item)
         {
-            case 2:
+            case 1:
                 if (window->settings->music_volume > 0)
                 {
                     window->settings->music_volume -= MIX_MAX_VOLUME / 8; // -= 16
@@ -180,7 +180,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
-            case 3:
+            case 2:
                 if (window->settings->sfx_volume > 0)
                 {
                     window->settings->sfx_volume -= MIX_MAX_VOLUME / 8; // -= 16
@@ -190,7 +190,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
-            case 5:
+            case 4:
                 if (window->resolution_index > 0)
                 {
                     window->resolution_index--;
@@ -204,13 +204,13 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
-            case 6:
+            case 5:
                 if (window->player[0].input_type > 0)
                     window->player[0].input_type--;
                 write_settings(window);
                 break;
 
-            case 7:
+            case 6:
                 if (window->player[1].input_type > 0)
                     window->player[1].input_type--;
                 write_settings(window);
@@ -231,7 +231,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
 
         switch (selected_item)
         {
-            case 2:
+            case 1:
                 if (window->settings->music_volume < MIX_MAX_VOLUME)
                 {
                     window->settings->music_volume += MIX_MAX_VOLUME / 8; // -= 16
@@ -240,7 +240,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
-            case 3:
+            case 2:
                 if (window->settings->sfx_volume < MIX_MAX_VOLUME)
                 {
                     window->settings->sfx_volume += MIX_MAX_VOLUME / 8; // -= 16
@@ -250,7 +250,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
-            case 5:
+            case 4:
                 ;
                 SDL_DisplayMode dm;
                 if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
@@ -272,13 +272,13 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 }
                 break;
 
-            case 6:
+            case 5:
                 if (window->player[0].input_type < NUM_INPUT_TYPE - 1)
                     window->player[0].input_type++;
                 write_settings(window);
                 break;
 
-            case 7:
+            case 6:
                 if (window->player[1].input_type < NUM_INPUT_TYPE - 1)
                     window->player[1].input_type++;
                 write_settings(window);
@@ -308,7 +308,7 @@ void settings(struct window *window)
         {
             switch (selected_item)
             {
-                case 1:
+                case 3:
                     if (is_fullscreen(window))
                     {
                         window->settings->is_fullscreen = 0;
@@ -324,17 +324,18 @@ void settings(struct window *window)
                     }
                     break;
 
-                case 4:
-                    window->settings->is_force_feedback = !window->settings->is_force_feedback;
-                    break;
 
-                case 8:
+                case 7:
                     controls(window);
                     begin = SDL_GetTicks();
                     break;
 
-                case 9:
+                case 8:
                     window->settings->mouse_sensitivity = !window->settings->mouse_sensitivity;
+                    break;
+
+                case 9:
+                    window->settings->is_force_feedback = !window->settings->is_force_feedback;
                     break;
             }
 
