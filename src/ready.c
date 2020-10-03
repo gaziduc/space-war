@@ -87,12 +87,6 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
 
         if (handle_play_event(window))
         {
-            if (window->is_lan)
-            {
-                char data[4] = { selected_level, selected_difficulty, window->weapon, 0 };
-                SDLNet_TCP_Send(window->client, data, sizeof(data));
-            }
-
             play_game(window, selected_level, selected_difficulty);
             return 1;
         }

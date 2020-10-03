@@ -149,7 +149,8 @@ void render_hud(struct window *window)
     for (int i = 0; i < window->num_players; i++)
     {
         char s[32] = { 0 };
-        sprintf(s, "P%d: %s", i + 1, window->player[i].input_type == KEYBOARD ? "KEYBOARD"
+        sprintf(s, "P%d: %s", i + 1, window->is_lan && i == 1 ? "NETWORK"
+                                     : window->player[i].input_type == KEYBOARD ? "KEYBOARD"
                                      : window->player[i].input_type == MOUSE ? "MOUSE" : "CONTROLLER");
         render_text(window, window->fonts->pixel_small_bold, s, i == 0 ? blue : red, 10 + i * 220, 10);
 

@@ -22,10 +22,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
-// LAN
-struct state state;
-int shots_to_handle;
 
+int has_recv_once;
 
 static void handle_arrow_event(struct window *window, struct player *player)
 {
@@ -409,7 +407,11 @@ static void load_correct_music(struct window *window, int mission_num, int is_ar
 
 void play_game(struct window *window, int mission_num, int difficulty)
 {
+    has_recv_once = 0;
     int is_arcade = 0;
+
+    if (window->is_lan && window->server)
+        SDL_CreateThread(recv_thread_server, "recv_thread_server", window);
 
     // Set mode to arcade if necessary
     if (mission_num == NUM_LEVELS + 1)
@@ -425,10 +427,6 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
     int escape = 0;
     int retry = 1;
-
-    // Thread for LAN
-    if (window->is_lan)
-        SDL_CreateThread(recv_thread, "recv_thread", window);
 
     while (!escape)
     {
@@ -464,8 +462,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     escape = pause(window);
                 else
                 {
-                    // Quit
-                    send_state(&window->player[0], window, 0, 0, 0, 1);
+                    send_state(&window->player[0], window, 0, 0, 0, 0, mission_num, difficulty);
+
                     free_background(window->stars);
                     free_vector(window->paths);
                     window->paths = NULL; // important, see free_all in free.c
@@ -496,9 +494,9 @@ void play_game(struct window *window, int mission_num, int difficulty)
             // LAN only
             if (window->is_lan)
             {
-                send_state(&window->player[0], window, is_shooting, is_throwing_bomb, 0, 0);
+                send_state(&window->player[0], window, is_shooting, is_throwing_bomb, 0, 1, mission_num, difficulty);
 
-                if (state.quit)
+                if ((!window->server || has_recv_once) && window->state.state == 0) // Go back to menu
                 {
                     // Quit
                     free_background(window->stars);
@@ -508,26 +506,26 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     return;
                 }
 
-                window->player[1].pos.x = state.pos_x;
-                window->player[1].pos.y = state.pos_y;
-                window->player[1].health = state.health;
-                window->player[1].ammo = state.ammo;
+                window->player[1].pos.x = window->state.pos_x;
+                window->player[1].pos.y = window->state.pos_y;
+                window->player[1].health = window->state.health;
+                window->player[1].ammo = window->state.ammo;
                 if (window->player[1].ammo == 1000)
                     window->player[1].ammo = -1;
 
-                if (shots_to_handle)
+                if (window->state.is_shooting)
                 {
                     shoot(window, &window->player[1]);
-                    shots_to_handle = 0;
+                    window->state.is_shooting = 0;
                 }
 
-                if (state.throw_bomb)
+                if (window->state.throw_bomb)
                 {
                     bomb(window);
                     window->num_bombs--;
                 }
 
-                if (state.has_shield)
+                if (window->state.has_shield)
                     window->player[1].shield_time = SDL_GetTicks();
             }
 
@@ -611,7 +609,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (is_arcade)
                 mission_num = 1;
 
-            escape = failure(window, is_arcade ? NUM_LEVELS + 1 : mission_num);
+            escape = failure(window, is_arcade ? NUM_LEVELS + 1 : mission_num, difficulty);
             if (!escape)
             {
                 retry = 1;
@@ -630,16 +628,18 @@ void play_game(struct window *window, int mission_num, int difficulty)
     load_music(window, "data/endgame.ogg", 1);
 }
 
-int recv_thread(void *data)
+
+
+int recv_thread_server(void *data)
 {
     struct window *window = data;
 
     do
     {
-        recv_state(window, &state);
-        if (state.is_shooting)
-            shots_to_handle = 1;
-    } while (!state.quit);
+        recv_state(window, &window->state);
+        has_recv_once = 1;
+    } while (window->state.state == 1); // while (playing a level)
 
     return 0;
 }
+

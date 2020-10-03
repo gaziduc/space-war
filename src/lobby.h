@@ -3,6 +3,6 @@
 
 void lobby(struct window *window);
 
-int waiting_thread(void *data);
+int waiting_thread_client(void *data);
 
 #endif /* !LOBBY_H */

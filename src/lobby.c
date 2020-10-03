@@ -4,13 +4,12 @@
 #include "lobby.h"
 #include "game.h"
 #include "menu.h"
+#include "net.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_net.h>
 
 int selected;
 int quit;
-int level_num;
-int level_difficulty;
 
 static void reset_global_vars()
 {
@@ -24,7 +23,7 @@ void lobby(struct window *window)
     Uint32 begin = SDL_GetTicks();
     reset_global_vars();
 
-    SDL_CreateThread(waiting_thread, "waiting_thread", window);
+    SDL_CreateThread(waiting_thread_client, "waiting_thread_client", window);
 
     while (!escape)
     {
@@ -43,9 +42,8 @@ void lobby(struct window *window)
                 escape = 1;
             else
             {
-                play_game(window, level_num, level_difficulty);
+                play_game(window, window->state.level_num, window->state.level_difficulty);
                 selected = 0;
-                SDL_CreateThread(waiting_thread, "waiting_thread", window);
             }
         }
 
@@ -70,19 +68,21 @@ void lobby(struct window *window)
 }
 
 
-int waiting_thread(void *data)
+int waiting_thread_client(void *data)
 {
     struct window *window = data;
-    char data_received[4] = { 0 };
 
-    SDLNet_TCP_Recv(window->client, data_received, sizeof(data_received));
+    do
+    {
+        recv_state(window, &window->state);
 
-    level_num = data_received[0];
-    level_difficulty = data_received[1];
-    window->weapon = data_received[2];
-    quit = data_received[3];
+        if (window->state.state == 1) // If server plays a level
+            selected = 1;
+
+    } while (window->state.state != 2); // while (!quit)
 
     selected = 1;
+    quit = 1;
 
     return 0;
 }

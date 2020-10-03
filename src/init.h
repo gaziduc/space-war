@@ -194,6 +194,23 @@ struct player
     int missile_around;
 };
 
+
+struct state
+{
+    Uint16 pos_x;
+    Uint16 pos_y;
+    Uint16 health;
+    Uint16 ammo;
+    char is_shooting;
+    char throw_bomb;
+    char has_shield;
+    char state; // 0 = is_in_menu, 1 = is_in_level, 2 = quit, 3 = end screen
+    char level_num;
+    char level_difficulty;
+    char weapon;
+};
+
+
 struct window
 {
     SDL_Window *window;
@@ -224,6 +241,7 @@ struct window
     int is_lan;
     TCPsocket server;
     TCPsocket client;
+    struct state state;
     int weapon;
     int touched_anim;
     SDL_Point resolutions[NUM_RESOLUTIONS];

@@ -264,7 +264,8 @@ void select_level(struct window *window)
 
     if (window->is_lan)
     {
-         char data[4] = { 0, 0, 0, 1 };
+         char data[15] = { 0 };
+         data[11] = 2;
          SDLNet_TCP_Send(window->client, data, sizeof(data));
     }
 }

@@ -514,9 +514,9 @@ void connect_to_server(struct window *window)
 
 void send_state(struct player *player, struct window *window,
                 char is_shooting, char throw_bomb, char has_shield,
-                char quit)
+                char state, char level_num, char level_difficulty)
 {
-    char data[12] = { 0 }; // 12 = 4 * sizeof(Uin16) + 4 * sizeof(char)
+    char data[15] = { 0 }; // 15 = 4 * sizeof(Uint16) + 7 * sizeof(char)
 
     SDLNet_Write16((Uint16) player->pos.x, data);
     SDLNet_Write16((Uint16) player->pos.y, data + 2);
@@ -533,7 +533,10 @@ void send_state(struct player *player, struct window *window,
     data[8] = is_shooting;
     data[9] = throw_bomb;
     data[10] = has_shield;
-    data[11] = quit;
+    data[11] = state;
+    data[12] = level_num;
+    data[13] = level_difficulty;
+    data[14] = window->weapon;
 
     SDLNet_TCP_Send(window->client, data, sizeof(data));
 }
@@ -541,7 +544,7 @@ void send_state(struct player *player, struct window *window,
 
 void recv_state(struct window *window, struct state *state)
 {
-    char data[12] = { 0 }; // 12 = 4 * sizeof(Uin16) + 4 * sizeof(char)
+    char data[15] = { 0 }; // 15 = 4 * sizeof(Uin16) + 7 * sizeof(char)
 
     SDLNet_TCP_Recv(window->client, data, sizeof(data));
 
@@ -552,7 +555,10 @@ void recv_state(struct window *window, struct state *state)
     state->is_shooting = data[8];
     state->throw_bomb = data[9];
     state->has_shield = data[10];
-    state->quit = data[11];
+    state->state = data[11];
+    state->level_num = data[12];
+    state->level_difficulty = data[13];
+    state->weapon = data[14];
 }
 
 

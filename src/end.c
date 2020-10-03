@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "menu.h"
 #include "save.h"
+#include "net.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -67,8 +68,12 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
 
 
     // Enter to continue
-    render_text(window, window->fonts->zero4b_30_small, "-> CONTINUE",
-                green, 150, 810);
+    if (!window->is_lan || window->server)
+        render_text(window, window->fonts->zero4b_30_small, "-> CONTINUE",
+                    green, 150, 810);
+    else
+        render_text(window, window->fonts->zero4b_30_small, "WAITING FOR THE SERVER...",
+                    orange, 150, 810);
 }
 
 
@@ -103,8 +108,20 @@ void success(struct window *window, const int level_num, const int difficulty)
     {
         update_events(window->in, window);
         handle_quit_event(window, 1);
-        escape = handle_play_event(window);
-        handle_select_arrow_event(window, &selected, 1);
+
+        if (!window->is_lan || window->server)
+        {
+            escape = handle_play_event(window);
+            handle_select_arrow_event(window, &selected, 1);
+
+            if (window->is_lan && window->server)
+                send_state(&window->player[0], window, 0, 0, 0, 3, level_num, difficulty);
+        }
+        else
+        {
+            if (window->state.state == 0)
+                return;
+        }
 
         SDL_RenderClear(window->renderer);
 
@@ -114,6 +131,7 @@ void success(struct window *window, const int level_num, const int difficulty)
 
         render_stars(window);
         render_success_texts(window, begin, is_best);
+
         SDL_RenderPresent(window->renderer);
 
         SDL_framerateDelay(window->fps);
@@ -151,24 +169,30 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
 
 
 
-    char *s_list[2] = { "-> RETRY", "-> BACK" };
-    SDL_Color blue = { 0, 255, 255, alpha };
-    SDL_Color green = { 0, 255, 0, alpha };
-
-
-    for (int i = 1; i <= 2; i++)
+    if (!window->is_lan || window->server)
     {
-        if (selected == i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
-                        green, 150, 730 + (i - 1) * 100);
-        else
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3,
-                        blue, 150, 730 + (i - 1) * 100);
+        char *s_list[2] = { "-> RETRY", "-> BACK" };
+        SDL_Color blue = { 0, 255, 255, alpha };
+        SDL_Color green = { 0, 255, 0, alpha };
+
+
+        for (int i = 1; i <= 2; i++)
+        {
+            if (selected == i)
+                render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
+                            green, 150, 730 + (i - 1) * 100);
+            else
+                render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3,
+                            blue, 150, 730 + (i - 1) * 100);
+        }
     }
+    else
+        render_text(window, window->fonts->zero4b_30_small, "WAITING FOR THE SERVER...",
+                            orange, 150, 730);
 }
 
 
-int failure(struct window *window, int level_num)
+int failure(struct window *window, int level_num, int level_difficulty)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
@@ -187,15 +211,30 @@ int failure(struct window *window, int level_num)
     {
         update_events(window->in, window);
         handle_quit_event(window, 1);
-        escape = handle_escape_event(window);
-        if (handle_play_event(window))
+        if (!window->is_lan || window->server)
         {
-            if (selected == 2)
-                escape = 1;
-            break;
+            escape = handle_escape_event(window);
+            if (handle_play_event(window))
+            {
+                if (selected == 2)
+                    escape = 1;
+                break;
+            }
+
+            handle_select_arrow_event(window, &selected, 2);
+
+            if (window->is_lan && window->server)
+                send_state(&window->player[0], window, 0, 0, 0, 3, level_num, level_difficulty);
+        }
+        else
+        {
+            if (window->state.state == 0)
+                return 1;
+            else if (window->state.state == 1)
+                return 0;
         }
 
-        handle_select_arrow_event(window, &selected, 2);
+
 
         SDL_RenderClear(window->renderer);
 
