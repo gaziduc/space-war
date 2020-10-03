@@ -29,7 +29,7 @@ struct collision_texture
     SDL_Texture *texture;
     int w;
     int h;
-    short *collision;
+    char *collision;
 };
 
 struct textures
