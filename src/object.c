@@ -33,10 +33,8 @@ void move_objects(struct window *window)
 
     while (temp)
     {
-        if (temp->framecount % 2 == 0)
-            temp->pos_dst.x--;
-
-        temp->framecount++;
+        temp->pos_dst.x--;
+        // temp->framecount++;
 
         // Prevent out of bounds by deleting the object if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)
