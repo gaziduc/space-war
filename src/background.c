@@ -62,7 +62,7 @@ void move_background(struct window *window, unsigned long framecount)
         new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 1;
         new->opacity = rand() % 256;
-        new->size = (rand() % 2) + 1;
+        new->size = (rand() % 3) + 1;
 
         if (new->z > 4)
             new->opacity /= 2;
