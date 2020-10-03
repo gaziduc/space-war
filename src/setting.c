@@ -27,6 +27,9 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
 
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
+    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+
+    render_text(window, window->fonts->zero4b_30_small, "SETTINGS", orange, 150, 150);
 
     char s_list[NUM_SETTINGS][64] = { 0 };
     sprintf(s_list[0], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
@@ -39,17 +42,18 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[6], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[1].input_type == MOUSE ? "Mouse" : "Controller");
     strcpy(s_list[7], "Keyboard Controls...");
+    sprintf(s_list[8], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
 
 
     // Render items
     for (int i = 1; i <= NUM_SETTINGS; i++)
     {
         if (selected_item != i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
-                        150, 150 + (i - 1) * 100);
+            render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], blue,
+                        150, 300 + (i - 1) * 60);
         else
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 150 + (i - 1) * 100);
+            render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], green,
+                        150, 300 + (i - 1) * 60);
     }
 }
 
@@ -70,6 +74,7 @@ void write_settings(struct window *window)
     fprintf(f, "resolution_index=%d\n", window->resolution_index);
     fprintf(f, "input_type_player_1=%d\n", window->player[0].input_type);
     fprintf(f, "input_type_player_2=%d\n", window->player[1].input_type);
+    fprintf(f, "mouse_sensitivity=%d\n", window->settings->mouse_sensitivity);
     fputs("\n", f);
     fputs("[controls]\n", f);
     fprintf(f, "up=%d\n", window->settings->controls[UP]);
@@ -120,6 +125,8 @@ void load_settings(struct window *window)
         window->player[0].input_type = KEYBOARD;
         window->player[1].input_type = MOUSE;
 
+        window->settings->mouse_sensitivity = 1;
+
         // Controls
         reset_controls(window);
 
@@ -135,6 +142,7 @@ void load_settings(struct window *window)
     fscanf(f, "resolution_index=%d\n", &window->resolution_index);
     fscanf(f, "input_type_player_1=%d\n", (int *) &window->player[0].input_type);
     fscanf(f, "input_type_player_2=%d\n", (int *) &window->player[1].input_type);
+    fscanf(f, "mouse_sensitivity=%d\n", &window->settings->mouse_sensitivity);
     fscanf(f, "\n");
     fscanf(f, "[controls]\n");
     fscanf(f, "up=%d\n", (int *) &window->settings->controls[UP]);
@@ -300,7 +308,6 @@ void settings(struct window *window)
         {
             switch (selected_item)
             {
-
                 case 1:
                     if (is_fullscreen(window))
                     {
@@ -324,6 +331,10 @@ void settings(struct window *window)
                 case 8:
                     controls(window);
                     begin = SDL_GetTicks();
+                    break;
+
+                case 9:
+                    window->settings->mouse_sensitivity = !window->settings->mouse_sensitivity;
                     break;
             }
 

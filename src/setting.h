@@ -1,7 +1,7 @@
 #ifndef SETTING_H
 #define SETTING_H
 
-#define NUM_SETTINGS 8
+#define NUM_SETTINGS 9
 
 void load_settings(struct window *window);
 

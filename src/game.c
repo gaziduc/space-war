@@ -75,19 +75,26 @@ static void handle_arrow_event(struct window *window, struct player *player)
             break;
 
         case MOUSE:
-            if (window->in->mouse_pos.x - player->pos.x > SHIP_SPEED)
-                player->pos.x += SHIP_SPEED;
-            else if (window->in->mouse_pos.x - player->pos.x < -SHIP_SPEED)
-                player->pos.x -= SHIP_SPEED;
+            ;
+            int cursor_speed_factor = window->settings->mouse_sensitivity == 0 ? 1 : 2;
+            SDL_Rect last_pos = player->pos;
+
+            if (window->in->mouse_pos.x - player->pos.x > SHIP_SPEED / cursor_speed_factor)
+                player->pos.x += SHIP_SPEED / cursor_speed_factor;
+            else if (window->in->mouse_pos.x - player->pos.x < -SHIP_SPEED / cursor_speed_factor)
+                player->pos.x -= SHIP_SPEED / cursor_speed_factor;
             else
                 player->pos.x = window->in->mouse_pos.x;
 
-            if (window->in->mouse_pos.y - player->pos.y > SHIP_SPEED)
-                player->pos.y += SHIP_SPEED;
-            else if (window->in->mouse_pos.y - player->pos.y < -SHIP_SPEED)
-                player->pos.y -= SHIP_SPEED;
+            if (window->in->mouse_pos.y - player->pos.y > SHIP_SPEED / cursor_speed_factor)
+                player->pos.y += SHIP_SPEED / cursor_speed_factor;
+            else if (window->in->mouse_pos.y - player->pos.y < -SHIP_SPEED / cursor_speed_factor)
+                player->pos.y -= SHIP_SPEED / cursor_speed_factor;
             else
                 player->pos.y = window->in->mouse_pos.y;
+
+            player->pos.x = (player->pos.x - last_pos.x) * cursor_speed_factor + last_pos.x;
+            player->pos.y = (player->pos.y - last_pos.y) * cursor_speed_factor + last_pos.y;
 
             SDL_Rect cursor_pos = player->pos;
             resize_pos_for_resolution(window, &cursor_pos);

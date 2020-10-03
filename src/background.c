@@ -18,7 +18,7 @@ void init_background(struct window *window)
         new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 1;
         new->opacity = rand() % 256;
-        new->size = (rand() % 2) + 1;
+        new->size = (rand() % 3) + 1;
 
         if (new->z > 4)
             new->opacity /= 2;
@@ -90,7 +90,7 @@ void render_background(struct window *window)
         {
             pos.w = p->size;
             pos.h = p->size;
-            SDL_RenderDrawRect(window->renderer, &pos);
+            SDL_RenderFillRect(window->renderer, &pos);
         }
         else
             SDL_RenderDrawPoint(window->renderer, pos.x, pos.y);

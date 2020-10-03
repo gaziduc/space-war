@@ -161,6 +161,7 @@ struct settings
     int sfx_volume;
     int is_force_feedback;
     SDL_Scancode controls[NUM_CONTROLS];
+    int mouse_sensitivity;
 };
 
 struct save

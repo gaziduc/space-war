@@ -233,13 +233,13 @@ int get_weapon_speed(int weapon)
     switch (weapon)
     {
         case 0:
-            return 20;
+            return 30;
 
         case 1:
-            return 15;
+            return 20;
 
         case 2:
-            return 30;
+            return 40;
 
         default:
             return 0;
