@@ -73,7 +73,7 @@ void render_stars(struct window *window)
                                  .h = rp.size
                                };
 
-                SDL_RenderDrawRect(window->renderer, &pos);
+                SDL_RenderFillRect(window->renderer, &pos);
             }
             else
                 SDL_RenderDrawPoint(window->renderer, rp.x + window->w / 2 - 1, -rp.y + window->h / 2 - 1);
