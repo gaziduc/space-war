@@ -80,17 +80,21 @@ void write_settings(struct window *window)
         error("settings.ini", "Couldn't open settings.txt for writing.", window->window, window->renderer);
 
     // Write settings
-    fputs("[settings]\n", f);
-    fprintf(f, "fullscreen=%d\n", window->settings->is_fullscreen);
+    fputs("[audio]\n", f);
     fprintf(f, "music_volume=%d\n", window->settings->music_volume);
     fprintf(f, "sfx_volume=%d\n", window->settings->sfx_volume);
-    fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
+    fputs("\n", f);
+    fputs("[video]\n", f);
+    fprintf(f, "fullscreen=%d\n", window->settings->is_fullscreen);
     fprintf(f, "resolution_index=%d\n", window->resolution_index);
+    fputs("\n", f);
+    fputs("[inputs]\n", f);
     fprintf(f, "input_type_player_1=%d\n", window->player[0].input_type);
     fprintf(f, "input_type_player_2=%d\n", window->player[1].input_type);
     fprintf(f, "mouse_sensitivity=%d\n", window->settings->mouse_sensitivity);
+    fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
     fputs("\n", f);
-    fputs("[controls]\n", f);
+    fputs("[keyboard_controls]\n", f);
     fprintf(f, "up=%d\n", window->settings->controls[UP]);
     fprintf(f, "left=%d\n", window->settings->controls[LEFT]);
     fprintf(f, "down=%d\n", window->settings->controls[DOWN]);
@@ -148,17 +152,21 @@ void load_settings(struct window *window)
     }
 
     // Read settings
-    fscanf(f, "[settings]\n");
-    fscanf(f, "fullscreen=%d\n", &window->settings->is_fullscreen);
+    fscanf(f, "[audio]\n");
     fscanf(f, "music_volume=%d\n", &window->settings->music_volume);
     fscanf(f, "sfx_volume=%d\n", &window->settings->sfx_volume);
-    fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
+    fscanf(f, "\n");
+    fscanf(f, "[video]\n");
+    fscanf(f, "fullscreen=%d\n", &window->settings->is_fullscreen);
     fscanf(f, "resolution_index=%d\n", &window->resolution_index);
+    fscanf(f, "\n");
+    fscanf(f, "[inputs]\n");
     fscanf(f, "input_type_player_1=%d\n", (int *) &window->player[0].input_type);
     fscanf(f, "input_type_player_2=%d\n", (int *) &window->player[1].input_type);
     fscanf(f, "mouse_sensitivity=%d\n", &window->settings->mouse_sensitivity);
+    fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
     fscanf(f, "\n");
-    fscanf(f, "[controls]\n");
+    fscanf(f, "[keyboard_controls]\n");
     fscanf(f, "up=%d\n", (int *) &window->settings->controls[UP]);
     fscanf(f, "left=%d\n", (int *) &window->settings->controls[LEFT]);
     fscanf(f, "down=%d\n", (int *) &window->settings->controls[DOWN]);
