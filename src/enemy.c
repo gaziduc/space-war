@@ -62,6 +62,7 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
                   new->rotating ? new->texture.textures[0]->texture
                                 : new->texture.texture->texture,
                   &new->pos_dst);
+    new->framecount = 0;
 }
 
 

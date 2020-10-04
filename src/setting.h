@@ -2,6 +2,14 @@
 #define SETTING_H
 
 #define NUM_SETTINGS 9
+#define NUM_TITLES_SETTINGS 3
+
+enum settings_titles
+{
+    AUDIO = 1,
+    VIDEO = 4,
+    INPUTS = 7
+};
 
 void load_settings(struct window *window);
 

@@ -28,32 +28,46 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color white = { .r = 255, .g = 255, .b = 255, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_small, "SETTINGS", orange, 150, 150);
 
-    char s_list[NUM_SETTINGS][64] = { 0 };
-    sprintf(s_list[0], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
-    sprintf(s_list[1], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
-    sprintf(s_list[2], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
-    sprintf(s_list[3], "< Resolution: %dx%d >", window->w, window->h);
-    sprintf(s_list[4], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
+    char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][64] = { 0 };
+    strcpy(s_list[AUDIO - 1], "Audio:");
+    sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
+    sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
+    strcpy(s_list[VIDEO - 1], "Video:");
+    sprintf(s_list[4], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
+    sprintf(s_list[5], "< Resolution: %dx%d >", window->w, window->h);
+    strcpy(s_list[INPUTS - 1], "Inputs:");
+    sprintf(s_list[7], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[0].input_type == MOUSE ? "Mouse" : "Controller");
-    sprintf(s_list[5], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
+    sprintf(s_list[8], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[1].input_type == MOUSE ? "Mouse" : "Controller");
-    strcpy(s_list[6], "Keyboard Controls...");
-    sprintf(s_list[7], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
-    sprintf(s_list[8], "Controller Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
+    strcpy(s_list[9], "Keyboard Controls...");
+    sprintf(s_list[10], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
+    sprintf(s_list[11], "Controller Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
 
+    int setting_index = 1;
 
     // Render items
-    for (int i = 1; i <= NUM_SETTINGS; i++)
+    for (int i = 1; i <= NUM_SETTINGS + NUM_TITLES_SETTINGS; i++)
     {
-        if (selected_item != i)
+        if (i == AUDIO || i == VIDEO || i == INPUTS)
+        {
+            render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], white,
+                        150, 280 + (i - 1) * 55);
+
+            setting_index--;
+        }
+        else if (selected_item != setting_index)
             render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], blue,
-                        150, 300 + (i - 1) * 60);
+                        200, 280 + (i - 1) * 55);
         else
             render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], green,
-                        150, 300 + (i - 1) * 60);
+                        200, 280 + (i - 1) * 55);
+
+        setting_index++;
     }
 }
 

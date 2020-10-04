@@ -34,6 +34,8 @@ void set_boss_attributes(struct list *new, SDL_Rect *pos,
     new->curr_texture = 0;
 
     init_position(DEFAULT_W, pos->y, new->texture.texture->texture, &new->pos_dst);
+
+    new->framecount = 0;
 }
 
 
