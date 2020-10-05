@@ -48,6 +48,12 @@ static struct window *init_window(void)
     if (!window->renderer)
         error("Could not create renderer", SDL_GetError(), window->window, NULL);
 
+
+    // To fix a bug on linux...
+    SDL_SetWindowPosition(window->window,
+                          SDL_WINDOWPOS_CENTERED,
+                          SDL_WINDOWPOS_CENTERED);
+
     return window;
 }
 
