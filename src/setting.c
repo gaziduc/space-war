@@ -92,7 +92,7 @@ void write_settings(struct window *window)
     fprintf(f, "input_type_player_1=%d\n", window->player[0].input_type);
     fprintf(f, "input_type_player_2=%d\n", window->player[1].input_type);
     fprintf(f, "mouse_sensitivity=%d\n", window->settings->mouse_sensitivity);
-    fprintf(f, "force_feedback=%d\n", window->settings->is_force_feedback);
+    fprintf(f, "controller_force_feedback=%d\n", window->settings->is_force_feedback);
     fputs("\n", f);
     fputs("[keyboard_controls]\n", f);
     fprintf(f, "up=%d\n", window->settings->controls[UP]);
@@ -164,7 +164,7 @@ void load_settings(struct window *window)
     fscanf(f, "input_type_player_1=%d\n", (int *) &window->player[0].input_type);
     fscanf(f, "input_type_player_2=%d\n", (int *) &window->player[1].input_type);
     fscanf(f, "mouse_sensitivity=%d\n", &window->settings->mouse_sensitivity);
-    fscanf(f, "force_feedback=%d\n", &window->settings->is_force_feedback);
+    fscanf(f, "controller_force_feedback=%d\n", &window->settings->is_force_feedback);
     fscanf(f, "\n");
     fscanf(f, "[keyboard_controls]\n");
     fscanf(f, "up=%d\n", (int *) &window->settings->controls[UP]);
