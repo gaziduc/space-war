@@ -34,8 +34,8 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
 
     char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][64] = { 0 };
     strcpy(s_list[AUDIO - 1], "Audio:");
-    sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 16, "--------");
-    sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 16, "--------");
+    sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 8, "----------------");
+    sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 8, "----------------");
     strcpy(s_list[VIDEO - 1], "Video:");
     sprintf(s_list[4], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
     sprintf(s_list[5], "< Resolution: %dx%d >", window->w, window->h);
@@ -196,7 +196,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
             case 1:
                 if (window->settings->music_volume > 0)
                 {
-                    window->settings->music_volume -= MIX_MAX_VOLUME / 8; // -= 16
+                    window->settings->music_volume -= MIX_MAX_VOLUME / 16; // -= 8
                     Mix_VolumeMusic(window->settings->music_volume);
                     write_settings(window);
                 }
@@ -205,7 +205,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
             case 2:
                 if (window->settings->sfx_volume > 0)
                 {
-                    window->settings->sfx_volume -= MIX_MAX_VOLUME / 8; // -= 16
+                    window->settings->sfx_volume -= MIX_MAX_VOLUME / 16; // -= 8
                     Mix_Volume(-1, window->settings->sfx_volume);
                     Mix_PlayChannel(-1, window->sounds->select, 0);
                     write_settings(window);
@@ -256,7 +256,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
             case 1:
                 if (window->settings->music_volume < MIX_MAX_VOLUME)
                 {
-                    window->settings->music_volume += MIX_MAX_VOLUME / 8; // -= 16
+                    window->settings->music_volume += MIX_MAX_VOLUME / 16; // -= 8
                     Mix_VolumeMusic(window->settings->music_volume);
                     write_settings(window);
                 }
@@ -265,7 +265,7 @@ static void handle_arrow_event(struct window *window, const int selected_item)
             case 2:
                 if (window->settings->sfx_volume < MIX_MAX_VOLUME)
                 {
-                    window->settings->sfx_volume += MIX_MAX_VOLUME / 8; // -= 16
+                    window->settings->sfx_volume += MIX_MAX_VOLUME / 16; // -= 8
                     Mix_Volume(-1, window->settings->sfx_volume);
                     Mix_PlayChannel(-1, window->sounds->select, 0);
                     write_settings(window);
