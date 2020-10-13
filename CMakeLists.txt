@@ -11,7 +11,7 @@ find_package(SDL2_GFX REQUIRED)
 find_package(SDL2_NET REQUIRED)
 find_package(CURL REQUIRED)
 
-aux_source_directory(src SRC)
+file(GLOB_RECURSE SRC "src/*.h" "src/*.c")
 
 include_directories(SRC ${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_GFX_INCLUDE_DIR} ${SDL2_NET_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
 
@@ -26,6 +26,17 @@ if (WIN32)
 else ()
     add_executable(${PROJECT_NAME} ${SRC})
 endif ()
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+                           "src"
+                           "src/data_struct"
+                           "src/game"
+                           "src/init"
+                           "src/menus"
+                           "src/network"
+                           "src/settings"
+                           "src/utils"
+                          )
 
 target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_GFX_LIBRARY} ${SDL2_NET_LIBRARY} ${CURL_LIBRARIES})
 
