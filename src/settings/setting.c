@@ -120,7 +120,12 @@ void load_settings(struct window *window)
     FILE *f = fopen("settings.ini", "r");
     if (!f)
     {
-        window->settings->is_fullscreen = 1;
+        #ifndef __APPLE__
+            window->settings->is_fullscreen = 1;
+        #else
+            window->settings->is_fullscreen = 0;
+        #endif
+
         window->settings->music_volume = MIX_MAX_VOLUME;
         window->settings->sfx_volume = MIX_MAX_VOLUME;
         window->settings->is_force_feedback = 1;
