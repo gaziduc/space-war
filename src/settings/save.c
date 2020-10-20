@@ -13,7 +13,7 @@ void read_save(struct window *window)
     window->save = xmalloc(sizeof(struct save), window->window, window->renderer);
 
     // Open file in binary mode for reading
-    FILE *f = fopen("save.bin", "rb");
+    SDL_RWops *f = SDL_RWFromFile("save.bin", "rb");
 
     if (!f) // if could not open file, e.g. the file does not exists
     {
@@ -35,18 +35,18 @@ void read_save(struct window *window)
     {
         for (int j = 0; j < NUM_LEVELS + 1; j++)
         {
-            fread(&window->save->progress[i][j], sizeof(window->save->progress[i][j]), 1, f);
-            fread(&window->save->score[i][j], sizeof(window->save->score[i][j]), 1, f);
+            SDL_RWread(f, &window->save->progress[i][j], sizeof(window->save->progress[i][j]), 1);
+            SDL_RWread(f, &window->save->score[i][j], sizeof(window->save->score[i][j]), 1);
         }
     }
 
-    fclose(f);
+    SDL_RWclose(f);
 }
 
 
 void write_save(struct window *window, struct save *save)
 {
-    FILE *f = fopen("save.bin", "wb");
+    SDL_RWops *f = SDL_RWFromFile("save.bin", "wb");
     if (!f)
         error("save.bin", "Could not open/create save file", window->window, window->renderer);
 
@@ -54,10 +54,10 @@ void write_save(struct window *window, struct save *save)
     {
         for (int j = 0; j < NUM_LEVELS + 1; j++)
         {
-            fwrite(&save->progress[i][j], sizeof(save->progress[i][j]), 1, f);
-            fwrite(&save->score[i][j], sizeof(save->score[i][j]), 1, f);
+            SDL_RWwrite(f, &save->progress[i][j], sizeof(save->progress[i][j]), 1);
+            SDL_RWwrite(f, &save->score[i][j], sizeof(save->score[i][j]), 1);
         }
     }
 
-    fclose(f);
+    SDL_RWclose(f);
 }

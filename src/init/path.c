@@ -7,16 +7,8 @@
 #include "wave.h"
 #include "object.h"
 #include "string_vec.h"
+#include "file.h"
 
-
-static void go_to_next_line(size_t *index, char *s)
-{
-    while (s[*index] && s[*index] != '\n')
-        (*index)++;
-
-    if (s[*index])
-        (*index)++;
-}
 
 static void replace_underscores(char *s)
 {
@@ -79,24 +71,9 @@ static void set_object_type(struct window *window, const char *filename, size_t 
 
 struct vector *load_paths(struct window *window, char *filename)
 {
-    // Load file
-    SDL_RWops *f = SDL_RWFromFile(filename, "r");
-    if (!f)
+    struct string_vec *str = dump_file_in_string(filename, window);
+    if (!str)
         error(filename, "Could not load file.", window->window, window->renderer);
-
-    // Dump file content into a string
-    struct string_vec *str = create_string(window);
-    char buffer[1025] = { 0 };
-    size_t read_bytes = 0;
-
-    do
-    {
-        read_bytes = SDL_RWread(f, buffer, sizeof(char), 1024);
-        add_string(window, str, buffer);
-    } while (read_bytes == 1024);
-
-    // Close file
-    SDL_RWclose(f);
 
     struct vector *vector = vector_create(window);
     size_t index = 0;
