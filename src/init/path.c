@@ -6,7 +6,17 @@
 #include "enemy.h"
 #include "wave.h"
 #include "object.h"
+#include "string_vec.h"
 
+
+static void go_to_next_line(size_t *index, char *s)
+{
+    while (s[*index] && s[*index] != '\n')
+        (*index)++;
+
+    if (s[*index])
+        (*index)++;
+}
 
 static void replace_underscores(char *s)
 {
@@ -15,25 +25,25 @@ static void replace_underscores(char *s)
             s[i] = ' ';
 }
 
-static int set_path_title(FILE *f, struct path *p)
+static int set_path_title(size_t *index, char *s, struct path *p)
 {
     p->type = TITLE;
-    int scan = fscanf(f, " %s\n", p->line.title);
+    int scan = sscanf(s + (*index), " %s\n", p->line.title);
+
+    go_to_next_line(index, s);
+
     return scan;
 }
 
-static void set_object_type(struct window *window, const char *filename, FILE *f, struct path *p)
+static void set_object_type(struct window *window, const char *filename, size_t *index, char *s, struct path *p)
 {
     p->type = OBJECT;
 
     char c = 0;
-    int scan = fscanf(f, " %c\n", &c);
+    int scan = sscanf(s + (*index), " %c\n", &c);
 
     if (scan != NUM_FIELDS_OBJECT)
-    {
-        fclose(f);
         error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
-    }
 
     switch (c)
     {
@@ -61,6 +71,8 @@ static void set_object_type(struct window *window, const char *filename, FILE *f
             error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
             break;
     }
+
+    go_to_next_line(index, s);
 }
 
 
@@ -68,70 +80,82 @@ static void set_object_type(struct window *window, const char *filename, FILE *f
 struct vector *load_paths(struct window *window, char *filename)
 {
     // Load file
-    FILE *f = fopen(filename, "r");
+    SDL_RWops *f = SDL_RWFromFile(filename, "r");
     if (!f)
         error(filename, "Could not load file.", window->window, window->renderer);
 
-    struct vector *vector = vector_create(window);
-    int c = 0;
+    // Dump file content into a string
+    struct string_vec *str = create_string(window);
+    char buffer[1025] = { 0 };
+    size_t read_bytes = 0;
 
-    while ((c = fgetc(f)) != EOF)
+    do
+    {
+        read_bytes = SDL_RWread(f, buffer, sizeof(char), 1024);
+        add_string(window, str, buffer);
+    } while (read_bytes == 1024);
+
+    // Close file
+    SDL_RWclose(f);
+
+    struct vector *vector = vector_create(window);
+    size_t index = 0;
+
+    while (str->ptr[index])
     {
         // If line[0] == '#' or '\n', go to next line
-        if (c == '#' || c == '\n')
+        if (str->ptr[index] == '#' || str->ptr[index] == '\r' || str->ptr[index] == '\n')
         {
-            while (c != EOF && c != '\n')
-                c = fgetc(f);
+            while (str->ptr[index] && str->ptr[index] != '\n')
+                index++;
 
-            if (c == EOF)
+            if (!str->ptr[index])
                 break;
 
+            index++;
             continue;
         }
 
         struct path p;
 
-        if (c == '$') // Wave title
+        if (str->ptr[index] == '$') // Wave title
         {
-            int scan = set_path_title(f, &p);
+            index++;
+
+            int scan = set_path_title(&index, str->ptr, &p);
 
             if (scan != NUM_FIELDS_TITLE)
-            {
-                fclose(f);
                 error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
-            }
             else
                 replace_underscores(p.line.title);
         }
-        else if (c == '@') // objects
+        else if (str->ptr[index] == '@') // objects
         {
-            set_object_type(window, filename, f, &p);
+            index++;
+
+            set_object_type(window, filename, &index, str->ptr, &p);
         }
         else
         {
-            // If line[0] wasn't a '#', '@', '/', '\n' or a '$', re-read it as part of a number
-            fseek(f, -1, SEEK_CUR);
-
+            // If line[0] wasn't a '#', '@', '\r', '\n' or a '$'
             p.type = ENEMY;
 
-            int scan = fscanf(f, "%u %d %d %d %c\n", &p.line.enemy_path.time_to_wait,
+            int scan = sscanf(str->ptr + index, "%u %d %d %d %c\n", &p.line.enemy_path.time_to_wait,
                                               &p.line.enemy_path.pos_y,
                                               &p.line.enemy_path.speed_x,
                                               &p.line.enemy_path.health,
                                               &p.line.enemy_path.enemy_type);
 
             if (scan != NUM_FIELDS_ENEMY)
-            {
-                fclose(f);
                 error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
-            }
+
+            go_to_next_line(&index, str->ptr);
         }
 
         vector_add_path(vector, &p, window);
     }
 
-    // Close file
-    fclose(f);
+    free_string(str);
 
     return vector;
 }

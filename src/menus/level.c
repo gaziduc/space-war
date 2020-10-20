@@ -68,9 +68,9 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
         if (window->save->progress[window->num_players - 1][level - 1] < i)
         {
             if (i != selected_difficulty)
-                snprintf(s, strlen(s_list[i - 1] + 3) - 1, s_list[i - 1] + 3);
+                snprintf(s, strlen(s_list[i - 1] + 3) - 1, "%s", s_list[i - 1] + 3);
             else
-                snprintf(s, strlen(s_list[i - 1]) - 1, s_list[i - 1]);
+                snprintf(s, strlen(s_list[i - 1]) - 1, "%s", s_list[i - 1]);
         }
         else
         {

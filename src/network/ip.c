@@ -42,7 +42,7 @@ const char* get_online_ip(void)
 
     curl_easy_setopt(curl, CURLOPT_URL, "http://ifconfig.me");
 
-    /* if website is redirected, we tell libcurl to follow redirection */
+    // if website is redirected, we tell libcurl to follow redirection
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_function);
