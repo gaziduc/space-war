@@ -1,4 +1,5 @@
 #include "utils.h"
+#include "string_vec.h"
 #include <SDL2/SDL.h>
 
 struct string_vec* dump_file_in_string(char *filename, struct window *window)

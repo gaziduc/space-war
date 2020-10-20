@@ -5,6 +5,7 @@
 #include "setting.h"
 #include "controls.h"
 #include "string_vec.h"
+#include "file.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
