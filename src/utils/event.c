@@ -55,11 +55,6 @@ void update_events(struct input *in, struct window *window)
             {
                 if (SDL_IsGameController(event.cdevice.which))
                     init_controller(in, event.cdevice.which);
-                else
-                    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING,
-                                             "Controller not reconized",
-                                             "Your controller is not compatible.",
-                                              window->window);
             }
             break;
 

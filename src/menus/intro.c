@@ -8,7 +8,10 @@
 
 void intro(struct window *window)
 {
-    char *s = "Made by David 'Gazi' Ghiassi";
+    char *s[3] = { "SPACE WAR",
+                   "Made by David 'Gazi' Ghiassi",
+                   "Game compatible with game controllers"
+                 };
 
     int escape = 0;
 
@@ -25,10 +28,17 @@ void intro(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
         SDL_RenderClear(window->renderer);
 
-        SDL_Color white = { i, i, i, i };
+        SDL_Color white = { i, i, i, i == 0 ? 1 : i };
+        SDL_Color blue = { 0, 255, 255, i == 0 ? 1 : i };
 
-        render_text(window, window->fonts->calibri, s, white,
-                    POS_CENTERED, POS_CENTERED);
+        render_text(window, window->fonts->zero4b_30, s[0], blue,
+                    POS_CENTERED, 200);
+
+        render_text(window, window->fonts->calibri, s[1], white,
+                    POS_CENTERED, 600);
+
+        render_text(window, window->fonts->calibri, s[2], white,
+                    POS_CENTERED, 750);
 
         SDL_RenderPresent(window->renderer);
 
@@ -52,9 +62,16 @@ void intro(struct window *window)
             SDL_RenderClear(window->renderer);
 
             SDL_Color white = { 255, 255, 255, 255 };
+            SDL_Color blue = { 0, 255, 255, 255 };
 
-            render_text(window, window->fonts->calibri, s, white,
-                        POS_CENTERED, POS_CENTERED);
+            render_text(window, window->fonts->zero4b_30, s[0], blue,
+                        POS_CENTERED, 200);
+
+            render_text(window, window->fonts->calibri, s[1], white,
+                        POS_CENTERED, 600);
+
+            render_text(window, window->fonts->calibri, s[2], white,
+                        POS_CENTERED, 750);
 
             SDL_RenderPresent(window->renderer);
 
@@ -78,10 +95,17 @@ void intro(struct window *window)
                 SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
                 SDL_RenderClear(window->renderer);
 
-                SDL_Color white = { i, i, i, i };
+                SDL_Color white = { i, i, i, i == 0 ? 1 : i };
+                SDL_Color blue = { 0, 255, 255, i == 0 ? 1 : i };
 
-                render_text(window, window->fonts->calibri, s, white,
-                            POS_CENTERED, POS_CENTERED);
+                render_text(window, window->fonts->zero4b_30, s[0], blue,
+                            POS_CENTERED, 200);
+
+                render_text(window, window->fonts->calibri, s[1], white,
+                            POS_CENTERED, 600);
+
+                render_text(window, window->fonts->calibri, s[2], white,
+                            POS_CENTERED, 750);
 
                 SDL_RenderPresent(window->renderer);
 

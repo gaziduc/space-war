@@ -182,9 +182,6 @@ struct window *init_all(void)
             init_controller(window->in, i);
             break;
         }
-        else
-            SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_WARNING, "Controller not reconized",
-                                     "Your controller is not compatible.", window->window);
     }
 
     // Init framerate manager
