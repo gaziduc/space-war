@@ -12,7 +12,7 @@
 #define DEFAULT_W 1920
 #define DEFAULT_H 1080
 #define MAX_PLAYERS 2
-#define NUM_RESOLUTIONS 6
+#define NUM_RESOLUTIONS 7
 
 enum object_type
 {
