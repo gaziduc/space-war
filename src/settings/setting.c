@@ -40,7 +40,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 8, "----------------");
     strcpy(s_list[VIDEO - 1], "Video:");
     sprintf(s_list[4], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
-    sprintf(s_list[5], "< Resolution: %dx%d >", window->w, window->h);
+    sprintf(s_list[5], "< Resolution: %dx%d %s>", window->w, window->h, window->resolution_index == 0 ? "(Native) " : "");
     strcpy(s_list[INPUTS - 1], "Inputs:");
     sprintf(s_list[7], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[0].input_type == MOUSE ? "Mouse" : "Controller");
@@ -175,19 +175,7 @@ void load_settings(struct window *window)
         window->settings->sfx_volume = MIX_MAX_VOLUME;
         window->settings->is_force_feedback = 1;
 
-        SDL_DisplayMode dm;
-        if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
-            error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
-
-        window->resolution_index = 1;
-        while (window->resolution_index < NUM_RESOLUTIONS
-            && dm.w >= window->resolutions[window->resolution_index].x
-            && dm.h >= window->resolutions[window->resolution_index].y)
-        {
-            window->resolution_index++;
-        }
-
-        window->resolution_index--;
+        window->resolution_index = 0;
         set_resolution_with_index(window);
 
         window->player[0].input_type = KEYBOARD;

@@ -23,12 +23,17 @@ static struct window *init_window(void)
 {
     struct window *window = xcalloc(1, sizeof(struct window), NULL, NULL);
 
-    add_resolution(window, 0, 1280, 720);
-    add_resolution(window, 1, 1366, 768);
-    add_resolution(window, 2, 1600, 900);
-    add_resolution(window, 3, 1920, 1080); // native
-    add_resolution(window, 4, 2560, 1440);
-    add_resolution(window, 5, 3840, 2160);
+    SDL_DisplayMode dm;
+    if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+        error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
+        
+    add_resolution(window, 0, dm.w, dm.h);
+    add_resolution(window, 1, 1280, 720);
+    add_resolution(window, 2, 1366, 768);
+    add_resolution(window, 3, 1600, 900);
+    add_resolution(window, 4, DEFAULT_W, DEFAULT_H);
+    add_resolution(window, 5, 2560, 1440);
+    add_resolution(window, 6, 3840, 2160);
 
     load_settings(window);
 
