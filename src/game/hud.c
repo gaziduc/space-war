@@ -168,15 +168,12 @@ void render_hud(struct window *window)
 void set_hud_text(struct list *new, SDL_Rect *pos_dst, struct window *window)
 {
     /* Get text width */
-    // Random color as we are just getting text length
-    SDL_Color color = { 0, 0, 0, 0 };
-    SDL_Surface *surface = TTF_RenderText_Blended(window->fonts->pixel, "+100", color);
+    int w = 0;
+    TTF_SizeText(window->fonts->pixel, "+100", &w, NULL);
 
-    new->pos_dst.x = pos_dst->x + pos_dst->w / 2 - surface->w / 2;
+    new->pos_dst.x = pos_dst->x + pos_dst->w / 2 - w / 2;
     new->pos_dst.y = pos_dst->y;
     new->last_time_hurt = SDL_GetTicks();
-
-    SDL_FreeSurface(surface);
 }
 
 
