@@ -43,9 +43,11 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     sprintf(s_list[5], "< Resolution: %dx%d %s>", window->w, window->h, window->resolution_index == 0 ? "(Native) " : "");
     strcpy(s_list[INPUTS - 1], "Inputs:");
     sprintf(s_list[7], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
-                                           window->player[0].input_type == MOUSE ? "Mouse" : "Controller");
+                                           window->player[0].input_type == MOUSE ? "Mouse" :
+                                           window->player[0].input_type == CONTROLLER ? "Controller" : "Touch screen");
     sprintf(s_list[8], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
-                                           window->player[1].input_type == MOUSE ? "Mouse" : "Controller");
+                                           window->player[1].input_type == MOUSE ? "Mouse" :
+                                           window->player[0].input_type == CONTROLLER ? "Controller" : "Touch screen");
     strcpy(s_list[9], "Keyboard Controls...");
     sprintf(s_list[10], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
     sprintf(s_list[11], "Controller Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");

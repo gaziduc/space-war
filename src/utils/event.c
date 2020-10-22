@@ -117,6 +117,33 @@ void update_events(struct input *in, struct window *window)
             in->wheel.y = event.wheel.y;
             break;
 
+        /* Touch events */
+        case SDL_FINGERDOWN:
+            if (event.tfinger.fingerId < MAX_NUM_FINGERS)
+            {
+                in->finger[event.tfinger.fingerId] = 1;
+                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
+                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+            }
+            break;
+
+        case SDL_FINGERMOTION:
+            if (event.tfinger.fingerId < MAX_NUM_FINGERS)
+            {
+                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
+                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+            }
+            break;
+
+        case SDL_FINGERUP:
+            if (event.tfinger.fingerId < MAX_NUM_FINGERS)
+            {
+                in->finger[event.tfinger.fingerId] = 0;
+                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
+                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+            }
+            break;
+
         default:
             break;
         }
@@ -140,11 +167,13 @@ int handle_escape_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_ESCAPE]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_BACK]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_START]
         || window->in->mouse_button[SDL_BUTTON_X1]
         || window->in->key[SDL_SCANCODE_AC_BACK]) // Android back button
     {
         window->in->key[SDL_SCANCODE_ESCAPE] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_BACK] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_START] = 0;
         window->in->mouse_button[SDL_BUTTON_X1] = 0;
         window->in->key[SDL_SCANCODE_AC_BACK] = 0;
 

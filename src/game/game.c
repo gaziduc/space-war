@@ -74,7 +74,7 @@ static void handle_arrow_event(struct window *window, struct player *player)
 
         case MOUSE:
             ;
-            int cursor_speed_factor = window->settings->mouse_sensitivity == 0 ? 1 : 2;
+            int cursor_speed_factor = window->settings->mouse_sensitivity + 1;
             SDL_Rect last_pos = player->pos;
 
             if (window->in->mouse_pos.x - player->pos.x > SHIP_SPEED / cursor_speed_factor)
@@ -97,6 +97,30 @@ static void handle_arrow_event(struct window *window, struct player *player)
             SDL_Rect cursor_pos = player->pos;
             resize_pos_for_resolution(window, &cursor_pos);
             SDL_WarpMouseInWindow(window->window, cursor_pos.x, cursor_pos.y);
+            break;
+
+        case TOUCH:
+            for (SDL_FingerID i = 0; i < MAX_NUM_FINGERS; i++)
+            {
+                if (window->in->touch_pos[i].x < (window->w * 5) / 6)
+                {
+                    if (window->in->touch_pos[i].x - player->pos.x > SHIP_SPEED)
+                        player->pos.x += SHIP_SPEED;
+                    else if (window->in->touch_pos[i].x - player->pos.x < SHIP_SPEED)
+                        player->pos.x -= SHIP_SPEED;
+                    else
+                        player->pos.x = window->in->touch_pos[i].x;
+
+                    if (window->in->touch_pos[i].y - player->pos.y > SHIP_SPEED)
+                        player->pos.y += SHIP_SPEED;
+                    else if (window->in->touch_pos[i].y - player->pos.y < SHIP_SPEED)
+                        player->pos.y -= SHIP_SPEED;
+                    else
+                        player->pos.y = window->in->touch_pos[i].y;
+
+                    break;
+                }
+            }
             break;
 
         default:
@@ -150,6 +174,13 @@ static int handle_shot_event(struct window *window, struct player *player)
             case MOUSE:
                 if (window->in->mouse_button[SDL_BUTTON_LEFT])
                     return try_to_shoot(window, player);
+                break;
+            case TOUCH:
+                for (SDL_FingerID i = 0; i < MAX_NUM_FINGERS; i++)
+                {
+                    if (window->in->finger[i] && window->in->touch_pos[i].x >= (window->w * 5) / 6)
+                        return try_to_shoot(window, player);
+                }
                 break;
 
             default:

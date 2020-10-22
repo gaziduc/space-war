@@ -13,6 +13,7 @@
 #define DEFAULT_H 1080
 #define MAX_PLAYERS 2
 #define NUM_RESOLUTIONS 7
+#define MAX_NUM_FINGERS 2
 
 enum object_type
 {
@@ -76,6 +77,8 @@ struct input
     SDL_Point wheel;
     struct controller c;
     char text[8];
+    char finger[MAX_NUM_FINGERS];
+    SDL_Point touch_pos[MAX_NUM_FINGERS];
 };
 
 
@@ -176,6 +179,7 @@ enum input_type
     KEYBOARD = 0,
     MOUSE,
     CONTROLLER,
+    TOUCH,
     NUM_INPUT_TYPE
 };
 
