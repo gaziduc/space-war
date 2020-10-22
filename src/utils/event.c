@@ -140,11 +140,13 @@ int handle_escape_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_ESCAPE]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_BACK]
-        || window->in->mouse_button[SDL_BUTTON_X1])
+        || window->in->mouse_button[SDL_BUTTON_X1]
+        || window->in->key[SDL_SCANCODE_AC_BACK]) // Android back button
     {
         window->in->key[SDL_SCANCODE_ESCAPE] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_BACK] = 0;
         window->in->mouse_button[SDL_BUTTON_X1] = 0;
+        window->in->key[SDL_SCANCODE_AC_BACK] = 0;
 
         return 1;
     }
