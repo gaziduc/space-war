@@ -253,6 +253,8 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     // Mouse and touch screen
     if (window->in->last_input_type == MOUSE)
     {
+        *selected = 0;
+
         for (unsigned i = 0; i < max; i++)
         {
             if (window->in->mouse_pos.x >= areas[i].x
@@ -264,6 +266,8 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     }
     else if (window->in->last_input_type == TOUCH)
     {
+        *selected = 0;
+
         for (unsigned i = 0; i < max; i++)
         {
             if (window->in->touch_pos[0].x >= areas[i].x

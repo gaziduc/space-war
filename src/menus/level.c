@@ -58,7 +58,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     SDL_Color blue = { 0, 255, 255, alpha };
     SDL_Color green = { 0, 255, 0, alpha };
 
-    char *s_list[NUM_DIFFICULTIES] = { "-> Easy *", "-> Hard *", "-> Really Hard *" };
+    char *s_list[NUM_DIFFICULTIES + 1] = { "-> Easy *", "-> Hard *", "-> Really Hard *", "-> Back" };
 
     for (int i = 1; i <= NUM_DIFFICULTIES; i++)
     {
@@ -84,6 +84,10 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
                     i != selected_difficulty ? blue : green, 150, y);
     }
 
+    render_text(window, window->fonts->zero4b_30_small,
+                selected_difficulty == NUM_DIFFICULTIES + 1 ? s_list[NUM_DIFFICULTIES] : s_list[NUM_DIFFICULTIES] + 3,
+                selected_difficulty == NUM_DIFFICULTIES + 1 ? green : blue, 150, 360 + NUM_DIFFICULTIES * 80);
+
     SDL_Color white = { 255, 255, 255, alpha };
 
     switch (selected_difficulty)
@@ -103,7 +107,6 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
             break;
 
         default:
-            error("Unknown selected difficulty", "Unknown selected difficulty", window->window, window->renderer);
             break;
     }
 }
@@ -122,11 +125,15 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     else
         sprintf(s, "Mission %d.%d - %s", selected_level, window->num_players, str);
 
+    SDL_Rect areas[NUM_DIFFICULTIES + 1];
 
-    SDL_Rect areas[] = { { .x = 150, .y = 360, .w = 1620, .h = 80 },
-                         { .x = 150, .y = 440, .w = 1620, .h = 80 },
-                         { .x = 150, .y = 520, .w = 1620, .h = 80 }
-                       };
+    for (unsigned i = 0; i < NUM_DIFFICULTIES + 1; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 360 + i * 80;
+        areas[i].w = 1400;
+        areas[i].h = 80;
+    }
 
     while (!escape)
     {
@@ -136,12 +143,17 @@ static void level_difficulty(struct window *window, int selected_level, const ch
 
         if (handle_play_event(window))
         {
-            choose_weapons(window, selected_level, selected_difficulty, str);
-            begin = SDL_GetTicks();
+            if (selected_difficulty > 0 && selected_difficulty <= NUM_DIFFICULTIES)
+            {
+                choose_weapons(window, selected_level, selected_difficulty, str);
+                begin = SDL_GetTicks();
+            }
+            else if (selected_difficulty == NUM_DIFFICULTIES + 1)
+                escape = 1;
         }
 
-        handle_select_arrow_event(window, &selected_difficulty, NUM_DIFFICULTIES, areas);
-        escape = handle_escape_event(window);
+        handle_select_arrow_event(window, &selected_difficulty, NUM_DIFFICULTIES + 1, areas);
+        escape = escape || handle_escape_event(window);
 
         // Display black bachground
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
@@ -214,8 +226,16 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
         }
     }
 
-    render_selected_level_title(window, s_list[selected_level - 1],
-                                alpha, window->save->score[window->num_players - 1][selected_level - 1]);
+    if (selected_level > 0 && selected_level <= NUM_LEVELS + 1)
+        render_selected_level_title(window, s_list[selected_level - 1],
+                                    alpha, window->save->score[window->num_players - 1][selected_level - 1]);
+
+    char *back = "-> Back";
+
+    render_text(window, window->fonts->zero4b_30_extra_small,
+                selected_level == NUM_LEVELS + 2 ? back : back + 3,
+                selected_level == NUM_LEVELS + 2 ? green : blue,
+                150, 320 + (NUM_LEVELS + 1) * 60);
 }
 
 
@@ -234,11 +254,11 @@ void select_level(struct window *window)
                                  "New Planet",
                                  "Space Tunnel",
                                  "The End",
-                                 "Arcade Mode"
+                                 "Arcade Mode",
                                };
 
-    SDL_Rect areas[NUM_LEVELS + 1];
-    for (unsigned i = 0; i < NUM_LEVELS + 1; i++)
+    SDL_Rect areas[NUM_LEVELS + 2];
+    for (unsigned i = 0; i < NUM_LEVELS + 2; i++)
     {
         areas[i].x = 150;
         areas[i].y = 320 + i * 60;
@@ -254,15 +274,20 @@ void select_level(struct window *window)
 
         if (handle_play_event(window))
         {
-            if (selected_level == 1 || window->save->progress[window->num_players - 1][selected_level - 2] > 0)
+            if (selected_level > 0 && selected_level <= NUM_LEVELS + 1)
             {
-                level_difficulty(window, selected_level, s_list[selected_level - 1]);
-                begin = SDL_GetTicks();
+                if (selected_level == 1 || window->save->progress[window->num_players - 1][selected_level - 2] > 0)
+                {
+                    level_difficulty(window, selected_level, s_list[selected_level - 1]);
+                    begin = SDL_GetTicks();
+                }
             }
+            else if (selected_level == NUM_LEVELS + 2)
+                escape = 1;
         }
 
-        handle_select_arrow_event(window, &selected_level, NUM_LEVELS + 1, areas);
-        escape = handle_escape_event(window);
+        handle_select_arrow_event(window, &selected_level, NUM_LEVELS + 2, areas);
+        escape = escape || handle_escape_event(window);
 
         // Display black bachground
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);

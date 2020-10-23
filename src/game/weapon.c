@@ -122,6 +122,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
         alpha = 1;
 
     SDL_Color orange = { 255, 128, 0, alpha };
+    SDL_Color green = { 0, 255, 0, alpha };
     SDL_Color blue = { 0, 255, 255, alpha };
 
     render_text(window, window->fonts->zero4b_30_small, "CHOOSE WEAPON",
@@ -150,7 +151,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
                 get_weapon_shots_per_second(i - 1));
 
         render_text(window, window->fonts->zero4b_30_extra_small,
-                    s, blue, 350, 350 + (i - 1) * 200);
+                    s, choice == i ? green : blue, 350, 350 + (i - 1) * 200);
 
         if (i == choice)
         {
@@ -161,6 +162,12 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
             SDL_RenderDrawRect(window->renderer, &pos);
         }
     }
+
+    char *back = "-> Back";
+
+    render_text(window, window->fonts->zero4b_30_extra_small,
+                choice == 4 ? back : back + 3,
+                choice == 4 ? green : blue, 150, 900);
 }
 
 
@@ -171,7 +178,8 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
     window->weapon = 1;
     SDL_Rect areas[] = { { .x = 150, .y = 300, .w = 1620, .h = 150 },
                          { .x = 150, .y = 500, .w = 1620, .h = 150 },
-                         { .x = 150, .y = 700, .w = 1620, .h = 150 }
+                         { .x = 150, .y = 700, .w = 1620, .h = 150 },
+                         { .x = 150, .y = 900, .w = 1620, .h = 80 }
                        };
 
     while (!escape)
@@ -179,24 +187,29 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &window->weapon, 3, areas);
+        handle_select_arrow_event(window, &window->weapon, 4, areas);
 
         if (handle_play_event(window))
         {
-            // Decrement window->weapon to get a 0 based number
-            window->weapon--;
+            if (window->weapon > 0 && window->weapon <= 3)
+            {
+                // Decrement window->weapon to get a 0 based number
+                window->weapon--;
 
-            int was_ready = ready(window, selected_level, selected_difficulty, str);
+                int was_ready = ready(window, selected_level, selected_difficulty, str);
 
-            window->weapon++;
+                window->weapon++;
 
-            if (was_ready)
-                return;
+                if (was_ready)
+                    return;
 
-            begin = SDL_GetTicks();
+                begin = SDL_GetTicks();
+            }
+            else if (window->weapon == 4)
+                escape = 1;
         }
 
-        escape = handle_escape_event(window);
+        escape = escape || handle_escape_event(window);
 
         // Display black bachground
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);

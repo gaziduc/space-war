@@ -42,9 +42,9 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin,
                 orange, 150, 150);
 
     // Render items
-    char *s_list[2] = { "-> CREATE", "-> JOIN" };
+    char *s_list[3] = { "-> Create", "-> Join", "-> Back" };
 
-    for (int i = 1; i <= 2; i++)
+    for (int i = 1; i <= 3; i++)
     {
         if (selected_item != i)
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
@@ -62,7 +62,8 @@ void create_or_join(struct window *window)
     unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
     SDL_Rect areas[] = { { .x = 150, .y = 450, .w = 900, .h = 100 },
-                         { .x = 150, .y = 550, .w = 900, .h = 100 }
+                         { .x = 150, .y = 550, .w = 900, .h = 100 },
+                         { .x = 150, .y = 650, .w = 900, .h = 100 }
                        };
 
     while (!escape)
@@ -70,10 +71,10 @@ void create_or_join(struct window *window)
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, 2, areas);
+        handle_select_arrow_event(window, &selected_item, 3, areas);
         escape = handle_escape_event(window);
 
-        if (handle_play_event(window))
+        if (handle_play_event(window) && selected_item > 0)
         {
             switch (selected_item)
             {
@@ -83,6 +84,10 @@ void create_or_join(struct window *window)
 
                 case 2: // Join
                     connect_to_server(window);
+                    break;
+
+                case 3:
+                    escape = 1;
                     break;
 
                 default:
@@ -167,7 +172,7 @@ static void accept_client(struct window *window, char *ip_str)
             SDLNet_TCP_Send(window->client, buf, sizeof(buf));
         }
 
-        if (!escape && handle_play_event(window))
+        if (!escape && handle_play_event(window) && selected_item > 0)
         {
             switch (selected_item)
             {

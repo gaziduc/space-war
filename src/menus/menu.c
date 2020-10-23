@@ -109,25 +109,26 @@ void menu(struct window *window)
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, NUM_ITEMS, areas);
 
-        if (handle_play_event(window))
+        if (selected_item > 0 && handle_play_event(window))
         {
             switch (selected_item)
             {
                 case 1:
                     select_num_players(window);
+                    begin = SDL_GetTicks();
                     break;
                 case 2:
                     settings(window);
+                    begin = SDL_GetTicks();
                     break;
                 case 3:
                     credits(window);
+                    begin = SDL_GetTicks();
                     break;
                 case 4:
                     escape = 1;
                     break;
             }
-
-            begin = SDL_GetTicks();
         }
 
         // Display black background
@@ -161,9 +162,9 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
     render_text(window, window->fonts->zero4b_30_small, "SELECT MODE", orange, 150, 150);
 
     // Render items
-    char *s_list[MAX_PLAYERS + 1] = { "-> 1 Player", "-> 2 Players (Local)", "-> 2 Players (Network)" };
+    char *s_list[MAX_PLAYERS + 2] = { "-> 1 Player", "-> 2 Players (Local)", "-> 2 Players (Network)", "-> Back" };
 
-    for (int i = 1; i <= MAX_PLAYERS + 1; i++)
+    for (int i = 1; i <= MAX_PLAYERS + 2; i++)
     {
         if (selected_item != i)
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
@@ -180,9 +181,9 @@ void select_num_players(struct window *window)
     int escape = 0;
     window->num_players = 1;
     Uint32 begin = SDL_GetTicks();
-    SDL_Rect areas[MAX_PLAYERS + 1];
+    SDL_Rect areas[MAX_PLAYERS + 2];
 
-    for (unsigned i = 0; i < MAX_PLAYERS + 1; i++)
+    for (unsigned i = 0; i < MAX_PLAYERS + 2; i++)
     {
         areas[i].x = 150;
         areas[i].y = 450 + i * 100;
@@ -195,7 +196,7 @@ void select_num_players(struct window *window)
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS + 1, areas);
+        handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS + 2, areas);
         escape = handle_escape_event(window);
 
         if (handle_play_event(window))
@@ -208,14 +209,16 @@ void select_num_players(struct window *window)
 
                 // To select to correct menu choice
                 window->num_players = MAX_PLAYERS + 1;
+                begin = SDL_GetTicks();
             }
-            else
+            else if (window->num_players > 0 && window->num_players <= MAX_PLAYERS)
             {
                 window->is_lan = 0;
                 select_level(window);
+                begin = SDL_GetTicks();
             }
-
-            begin = SDL_GetTicks();
+            else if (window->num_players == MAX_PLAYERS + 2)
+                escape = 1;
         }
 
         // Display black background
