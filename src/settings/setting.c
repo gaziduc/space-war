@@ -47,7 +47,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
                                            window->player[0].input_type == CONTROLLER ? "Controller" : "Touch screen");
     sprintf(s_list[8], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
                                            window->player[1].input_type == MOUSE ? "Mouse" :
-                                           window->player[0].input_type == CONTROLLER ? "Controller" : "Touch screen");
+                                           window->player[1].input_type == CONTROLLER ? "Controller" : "Touch screen");
     strcpy(s_list[9], "Keyboard Controls...");
     sprintf(s_list[10], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
     sprintf(s_list[11], "Controller Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
@@ -262,7 +262,7 @@ void load_settings(struct window *window)
 }
 
 
-static void handle_arrow_event(struct window *window, const int selected_item)
+static void handle_arrow_event(struct window *window, const int selected_item, Uint32 *begin)
 {
     if (window->in->key[SDL_SCANCODE_LEFT]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
@@ -324,11 +324,20 @@ static void handle_arrow_event(struct window *window, const int selected_item)
         }
     }
 
-    if (window->in->key[SDL_SCANCODE_RIGHT]
+    if (window->in->key[SDL_SCANCODE_RETURN]
+        || window->in->key[SDL_SCANCODE_KP_ENTER]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_A]
+        || window->in->mouse_button[SDL_BUTTON_LEFT]
+        // Enter or right
+        || window->in->key[SDL_SCANCODE_RIGHT]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
             && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
     {
+        window->in->key[SDL_SCANCODE_RETURN] = 0;
+        window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_A] = 0;
+        window->in->mouse_button[SDL_BUTTON_LEFT] = 0;
         window->in->key[SDL_SCANCODE_RIGHT] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
 
@@ -336,21 +345,40 @@ static void handle_arrow_event(struct window *window, const int selected_item)
         {
             case 1:
                 if (window->settings->music_volume < MIX_MAX_VOLUME)
-                {
                     window->settings->music_volume += MIX_MAX_VOLUME / 16; // -= 8
-                    Mix_VolumeMusic(window->settings->music_volume);
-                    write_settings(window);
-                }
+                else
+                    window->settings->music_volume = 0;
+
+                Mix_VolumeMusic(window->settings->music_volume);
+                write_settings(window);
                 break;
 
             case 2:
                 if (window->settings->sfx_volume < MIX_MAX_VOLUME)
-                {
                     window->settings->sfx_volume += MIX_MAX_VOLUME / 16; // -= 8
-                    Mix_Volume(-1, window->settings->sfx_volume);
-                    Mix_PlayChannel(-1, window->sounds->select, 0);
-                    write_settings(window);
+                else
+                    window->settings->sfx_volume = 0;
+
+                Mix_Volume(-1, window->settings->sfx_volume);
+                Mix_PlayChannel(-1, window->sounds->select, 0);
+                write_settings(window);
+                break;
+
+            case 3:
+                if (is_fullscreen(window))
+                {
+                    window->settings->is_fullscreen = 0;
+                    SDL_SetWindowFullscreen(window->window, 0);
+                    SDL_SetWindowPosition(window->window,
+                                          SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED);
                 }
+                else
+                {
+                    window->settings->is_fullscreen = 1;
+                    SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
+                }
+                write_settings(window);
                 break;
 
             case 4:
@@ -363,27 +391,49 @@ static void handle_arrow_event(struct window *window, const int selected_item)
                 if (window->resolution_index + 1 < NUM_RESOLUTIONS
                     && dm.w >= window->resolutions[window->resolution_index + 1].x
                     && dm.h >= window->resolutions[window->resolution_index + 1].y)
-                {
                     window->resolution_index++;
-                    set_resolution_with_index(window);
+                else
+                    window->resolution_index = 0;
 
-                    SDL_SetWindowSize(window->window, window->w, window->h);
-                    SDL_SetWindowPosition(window->window,
-                                          SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED);
-                    write_settings(window);
-                }
+                set_resolution_with_index(window);
+
+                SDL_SetWindowSize(window->window, window->w, window->h);
+                SDL_SetWindowPosition(window->window,
+                                      SDL_WINDOWPOS_CENTERED,
+                                      SDL_WINDOWPOS_CENTERED);
+                write_settings(window);
                 break;
 
             case 5:
                 if (window->player[0].input_type < NUM_INPUT_TYPE - 1)
                     window->player[0].input_type++;
+                else
+                    window->player[0].input_type = 0;
+
                 write_settings(window);
                 break;
 
             case 6:
                 if (window->player[1].input_type < NUM_INPUT_TYPE - 1)
                     window->player[1].input_type++;
+                else
+                    window->player[1].input_type = 0;
+
+                write_settings(window);
+                break;
+
+            case 7:
+                controls(window);
+                *begin = SDL_GetTicks();
+                break;
+
+            case 8:
+                window->settings->mouse_sensitivity = !window->settings->mouse_sensitivity;
+                write_settings(window);
+                break;
+
+            case 9:
+                window->settings->is_force_feedback = !window->settings->is_force_feedback;
                 write_settings(window);
                 break;
 
@@ -397,55 +447,43 @@ static void handle_arrow_event(struct window *window, const int selected_item)
 void settings(struct window *window)
 {
     int escape = 0;
-    int selected_item = 1;
+    unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
+    SDL_Rect areas[NUM_SETTINGS];
+
+    for (unsigned i = 0; i < 2; i++)
+    {
+        areas[i].x = 200;
+        areas[i].y = 280 + (i + 1) * 55;
+        areas[i].w = 1500;
+        areas[i].h = 55;
+    }
+
+    for (unsigned i = 2; i < 4; i++)
+    {
+        areas[i].x = 200;
+        areas[i].y = 280 + (i + 2) * 55;
+        areas[i].w = 1500;
+        areas[i].h = 55;
+    }
+
+    for (unsigned i = 4; i < 9; i++)
+    {
+        areas[i].x = 200;
+        areas[i].y = 280 + (i + 3) * 55;
+        areas[i].w = 1500;
+        areas[i].h = 55;
+    }
+
 
     while (!escape)
     {
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, NUM_SETTINGS);
+        handle_select_arrow_event(window, &selected_item, NUM_SETTINGS, areas);
 
-        if (handle_play_event(window))
-        {
-            switch (selected_item)
-            {
-                case 3:
-                    if (is_fullscreen(window))
-                    {
-                        window->settings->is_fullscreen = 0;
-                        SDL_SetWindowFullscreen(window->window, 0);
-                        SDL_SetWindowPosition(window->window,
-                                              SDL_WINDOWPOS_CENTERED,
-                                              SDL_WINDOWPOS_CENTERED);
-                    }
-                    else
-                    {
-                        window->settings->is_fullscreen = 1;
-                        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
-                    }
-                    break;
-
-
-                case 7:
-                    controls(window);
-                    begin = SDL_GetTicks();
-                    break;
-
-                case 8:
-                    window->settings->mouse_sensitivity = !window->settings->mouse_sensitivity;
-                    break;
-
-                case 9:
-                    window->settings->is_force_feedback = !window->settings->is_force_feedback;
-                    break;
-            }
-
-            write_settings(window);
-        }
-
-        handle_arrow_event(window, selected_item);
+        handle_arrow_event(window, selected_item, &begin);
         escape = handle_escape_event(window);
 
         // Display black background

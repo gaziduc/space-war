@@ -59,15 +59,18 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin,
 void create_or_join(struct window *window)
 {
     int escape = 0;
-    int selected_item = 1;
+    unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
+    SDL_Rect areas[] = { { .x = 150, .y = 450, .w = 900, .h = 100 },
+                         { .x = 150, .y = 550, .w = 900, .h = 100 }
+                       };
 
     while (!escape)
     {
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, 2);
+        handle_select_arrow_event(window, &selected_item, 2, areas);
         escape = handle_escape_event(window);
 
         if (handle_play_event(window))
@@ -144,16 +147,19 @@ static void render_accept_client_texts(struct window *window, Uint32 begin,
 static void accept_client(struct window *window, char *ip_str)
 {
     int escape = 0;
-    int selected_item = 1;
+    unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
     char buf[1] = { 0 };
+    SDL_Rect areas[] = { { .x = 150, .y = 400, .w = 800, .h = 100 },
+                         { .x = 150, .y = 500, .w = 800, .h = 100 }
+                       };
 
     while (!escape)
     {
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, 2);
+        handle_select_arrow_event(window, &selected_item, 2, areas);
         escape = handle_escape_event(window);
         if (escape)
         {

@@ -26,7 +26,7 @@ static struct window *init_window(void)
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
         error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
-        
+
     add_resolution(window, 0, dm.w, dm.h);
     add_resolution(window, 1, 1280, 720);
     add_resolution(window, 2, 1366, 768);
@@ -165,7 +165,7 @@ struct window *init_all(void)
     SDL_FreeSurface(icon);
 
     // Hide cursor
-    SDL_ShowCursor(SDL_DISABLE);
+    // SDL_ShowCursor(SDL_DISABLE);
 
     // Init SDL2_image
     int img_flags = IMG_INIT_PNG;
@@ -200,7 +200,7 @@ struct window *init_all(void)
         init_list(window, i);
 
     // We can now shot
-    for (int i = 0; i < window->num_players; i++)
+    for (unsigned i = 0; i < window->num_players; i++)
         window->player[i].last_shot_time = 0;
 
     window->paths = NULL;

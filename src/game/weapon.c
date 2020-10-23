@@ -169,13 +169,17 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
     window->weapon = 1;
+    SDL_Rect areas[] = { { .x = 150, .y = 300, .w = 1620, .h = 150 },
+                         { .x = 150, .y = 500, .w = 1620, .h = 150 },
+                         { .x = 150, .y = 700, .w = 1620, .h = 150 }
+                       };
 
     while (!escape)
     {
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &window->weapon, 3);
+        handle_select_arrow_event(window, &window->weapon, 3, areas);
 
         if (handle_play_event(window))
         {

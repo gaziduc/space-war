@@ -90,15 +90,24 @@ void menu(struct window *window)
     load_music(window, "data/endgame.ogg", 1);
 
     int escape = 0;
-    int selected_item = 1;
+    unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
+    SDL_Rect areas[NUM_ITEMS];
+
+    for (unsigned i = 0; i < NUM_ITEMS; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 570 + i * 100;
+        areas[i].w = 1200;
+        areas[i].h = 100;
+    }
 
     while (!escape)
     {
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, NUM_ITEMS);
+        handle_select_arrow_event(window, &selected_item, NUM_ITEMS, areas);
 
         if (handle_play_event(window))
         {
@@ -171,13 +180,22 @@ void select_num_players(struct window *window)
     int escape = 0;
     window->num_players = 1;
     Uint32 begin = SDL_GetTicks();
+    SDL_Rect areas[MAX_PLAYERS + 1];
+
+    for (unsigned i = 0; i < MAX_PLAYERS + 1; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 450 + i * 100;
+        areas[i].w = 1200;
+        areas[i].h = 100;
+    }
 
     while (!escape)
     {
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS + 1);
+        handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS + 1, areas);
         escape = handle_escape_event(window);
 
         if (handle_play_event(window))

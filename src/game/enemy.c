@@ -208,7 +208,7 @@ void move_enemies(struct window *window)
 
             // If enemy passed, mission failed
             if (shoot)
-                for (int i = 0; i < window->num_players; i++)
+                for (unsigned i = 0; i < window->num_players; i++)
                     window->player[i].lives = 0;
 
             // Go to next shot

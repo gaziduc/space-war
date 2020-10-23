@@ -39,15 +39,29 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
 void controls(struct window *window)
 {
     int escape = 0;
-    int selected_item = 1;
+    unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
     char *names[NUM_CONTROLS] = { "Up", "Left", "Down", "Right", "Shoot", "Bomb" };
+    SDL_Rect areas[NUM_CONTROLS + 1];
+
+    for (unsigned i = 0; i < NUM_CONTROLS; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 300 + i * 80;
+        areas[i].w = 1000;
+        areas[i].h = 80;
+    }
+
+    areas[NUM_CONTROLS].x = 150;
+    areas[NUM_CONTROLS].y = 360 + NUM_CONTROLS * 80;
+    areas[NUM_CONTROLS].w = 1000;
+    areas[NUM_CONTROLS].h = 80;
 
     while (!escape)
     {
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, NUM_CONTROLS + 1);
+        handle_select_arrow_event(window, &selected_item, NUM_CONTROLS + 1, areas);
         escape = handle_escape_event(window);
         if (handle_play_event(window))
         {

@@ -14,7 +14,7 @@ int handle_escape_event(struct window *window);
 
 int handle_play_event(struct window *window);
 
-void handle_select_arrow_event(struct window *window, int *selected, int max);
+void handle_select_arrow_event(struct window *window, unsigned *selected, unsigned max, SDL_Rect areas[]);
 
 void init_controller(struct input *in, Sint32 which);
 

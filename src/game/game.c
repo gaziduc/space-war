@@ -328,12 +328,12 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
     window->wave_title_time = 0;
     window->mission_start_time = SDL_GetTicks();
 
-    for (int i = 0; i < window->num_players; i++)
+    for (unsigned i = 0; i < window->num_players; i++)
     {
         window->player[i].respawn_frame = 0;
 
         if (all_reset)
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
                 window->player[i].missile_around = 0;
     }
 
@@ -341,10 +341,10 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
     {
         case EASY:
             if (all_reset)
-                for (int i = 0; i < window->num_players; i++)
+                for (unsigned i = 0; i < window->num_players; i++)
                     window->player[i].health = MAX_HEALTH_EASY;
 
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
                 window->player[i].ammo = -1;
 
             window->num_bombs = 2;
@@ -353,10 +353,10 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 
         case HARD:
             if (all_reset)
-                for (int i = 0; i < window->num_players; i++)
+                for (unsigned i = 0; i < window->num_players; i++)
                     window->player[i].health = MAX_HEALTH_HARD;
 
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
                 window->player[i].ammo = -1;
 
             window->num_bombs = 1;
@@ -365,10 +365,10 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 
         case REALLY_HARD:
             if (all_reset)
-                for (int i = 0; i < window->num_players; i++)
+                for (unsigned i = 0; i < window->num_players; i++)
                     window->player[i].health = MAX_HEALTH_REALLY_HARD;
 
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
                 window->player[i].ammo = 200;
 
             window->num_bombs = 1;
@@ -384,14 +384,14 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
     {
         window->max_health = window->player[0].health;
 
-        for (int i = 0; i < window->num_players; i++)
+        for (unsigned i = 0; i < window->num_players; i++)
         {
             window->player[i].animated_health_low = window->player[i].health;
             window->player[i].animated_health_high = window->player[i].health;
         }
     }
 
-    for (int i = 0; i < window->num_players; i++)
+    for (unsigned i = 0; i < window->num_players; i++)
     {
         window->player[i].lives = 1;
         window->player[i].shield_time = -SHIELD_TIME;
@@ -468,7 +468,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             load_correct_music(window, mission_num, is_arcade);
             init_background(window);
 
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
                 init_position(120, 250 + i * 500, window->img->ship->texture, &window->player[i].pos);
 
             retry = 0;
@@ -506,7 +506,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             int is_shooting = 0;
             int is_throwing_bomb = 0;
 
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
             {
                 handle_arrow_event(window, &window->player[i]);
                 is_shooting += handle_shot_event(window, &window->player[i]);
@@ -560,7 +560,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     window->player[1].shield_time = SDL_GetTicks();
             }
 
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
             {
                 // Check collisions
                 check_collisions(window, &window->player[i]);
@@ -581,13 +581,13 @@ void play_game(struct window *window, int mission_num, int difficulty)
             SDL_RenderClear(window->renderer);
             render_background(window);
             render_objects(window);
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
                 render_trail(window, &window->player[i], &window->player[i].pos, 0, 0);
             render_enemies_health(window);
             render_shots(window);
             render_enemy_shots(window);
             render_enemies(window);
-            for (int i = 0; i < window->num_players; i++)
+            for (unsigned i = 0; i < window->num_players; i++)
             {
                 if (window->player[i].health > 0)
                 {

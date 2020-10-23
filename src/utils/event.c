@@ -44,6 +44,7 @@ void update_events(struct input *in, struct window *window)
         // Keyboard events
         case SDL_KEYDOWN:
             in->key[event.key.keysym.scancode] = 1;
+            in->last_input_type = KEYBOARD;
             break;
         case SDL_KEYUP:
             in->key[event.key.keysym.scancode] = 0;
@@ -75,6 +76,7 @@ void update_events(struct input *in, struct window *window)
 
         case SDL_CONTROLLERBUTTONDOWN:
             in->c.button[event.cbutton.button] = 1;
+            in->last_input_type = CONTROLLER;
             break;
 
         case SDL_CONTROLLERBUTTONUP:
@@ -88,6 +90,7 @@ void update_events(struct input *in, struct window *window)
                 in->c.axis[event.caxis.axis].state = 1;
 
             in->c.axis[event.caxis.axis].value = event.caxis.value;
+            in->last_input_type = CONTROLLER;
             break;
 
         // Handling window event to prevent bug on Windows
@@ -102,10 +105,12 @@ void update_events(struct input *in, struct window *window)
         case SDL_MOUSEMOTION:
             in->mouse_pos.x = event.motion.x * DEFAULT_W / window->w;
             in->mouse_pos.y = event.motion.y * DEFAULT_H / window->h;
+            in->last_input_type = MOUSE;
             break;
 
         case SDL_MOUSEBUTTONDOWN:
             in->mouse_button[event.button.button] = 1;
+            in->last_input_type = MOUSE;
             break;
 
         case SDL_MOUSEBUTTONUP:
@@ -115,6 +120,7 @@ void update_events(struct input *in, struct window *window)
         case SDL_MOUSEWHEEL:
             in->wheel.x = event.wheel.x;
             in->wheel.y = event.wheel.y;
+            in->last_input_type = KEYBOARD;
             break;
 
         /* Touch events */
@@ -124,6 +130,7 @@ void update_events(struct input *in, struct window *window)
                 in->finger[event.tfinger.fingerId] = 1;
                 in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
                 in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+                in->last_input_type = TOUCH;
             }
             break;
 
@@ -132,6 +139,7 @@ void update_events(struct input *in, struct window *window)
             {
                 in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
                 in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+                in->last_input_type = TOUCH;
             }
             break;
 
@@ -205,8 +213,10 @@ int handle_play_event(struct window *window)
 }
 
 
-void handle_select_arrow_event(struct window *window, int *selected, int max)
+void handle_select_arrow_event(struct window *window, unsigned *selected, unsigned max, SDL_Rect areas[])
 {
+    /* Keyboard and controller */
+    // Up
     if (window->in->key[SDL_SCANCODE_UP]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
@@ -223,6 +233,7 @@ void handle_select_arrow_event(struct window *window, int *selected, int max)
         }
     }
 
+    // Down
     if (window->in->key[SDL_SCANCODE_DOWN]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
@@ -236,6 +247,30 @@ void handle_select_arrow_event(struct window *window, int *selected, int max)
         {
             (*selected)++;
             Mix_PlayChannel(-1, window->sounds->select, 0);
+        }
+    }
+
+    // Mouse and touch screen
+    if (window->in->last_input_type == MOUSE)
+    {
+        for (unsigned i = 0; i < max; i++)
+        {
+            if (window->in->mouse_pos.x >= areas[i].x
+                && window->in->mouse_pos.x < areas[i].x + areas[i].w
+                && window->in->mouse_pos.y >= areas[i].y
+                && window->in->mouse_pos.y < areas[i].y + areas[i].h)
+                *selected = i + 1;
+        }
+    }
+    else if (window->in->last_input_type == TOUCH)
+    {
+        for (unsigned i = 0; i < max; i++)
+        {
+            if (window->in->touch_pos[0].x >= areas[i].x
+                && window->in->touch_pos[0].x < areas[i].x + areas[i].w
+                && window->in->touch_pos[0].y >= areas[i].y
+                && window->in->touch_pos[0].y < areas[i].y + areas[i].h)
+                *selected = i + 1;
         }
     }
 }
@@ -266,7 +301,8 @@ int handle_focus_lost_event(struct window *window)
     while (window->in->focus_lost)
     {
         update_events(window->in, window);
-        handle_quit_event(window, 1); // 1 because else handle_quit_event call handle_focus_lost_event
+        handle_quit_event(window, 1); // 1 because else handle_quit_event calls
+                                      // handle_focus_lost_event
         SDL_framerateDelay(window->fps);
     }
 

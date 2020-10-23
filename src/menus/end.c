@@ -34,7 +34,7 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
     // Health Bonus
     int health_bonus = 0;
 
-    for (int i = 0; i < window->num_players; i++)
+    for (unsigned i = 0; i < window->num_players; i++)
         health_bonus += window->player[i].health;
 
     sprintf(s, "Health Bonus: %d", health_bonus);
@@ -84,7 +84,7 @@ void success(struct window *window, const int level_num, const int difficulty)
         window->save->progress[window->num_players - 1][level_num - 1] = difficulty;
 
     int final_score = window->score + window->num_bombs * 100 + window->bonus;
-    for (int i = 0; i < window->num_players; i++)
+    for (unsigned i = 0; i < window->num_players; i++)
         final_score += window->player[i].health;
 
     int is_best = 0;
@@ -100,7 +100,8 @@ void success(struct window *window, const int level_num, const int difficulty)
 
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
-    int selected = 1;
+    unsigned selected = 1;
+    SDL_Rect areas[] = { { .x = 150, .y = 810, .w = 1620, .h = 150 } };
 
     load_music(window, "data/success.ogg", 1);
 
@@ -112,7 +113,7 @@ void success(struct window *window, const int level_num, const int difficulty)
         if (!window->is_lan || window->server)
         {
             escape = handle_play_event(window);
-            handle_select_arrow_event(window, &selected, 1);
+            handle_select_arrow_event(window, &selected, 1, areas);
 
             if (window->is_lan && window->server)
                 send_state(&window->player[0], window, 0, 0, 0, 3, level_num, difficulty);
@@ -196,7 +197,7 @@ int failure(struct window *window, int level_num, int level_difficulty)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
-    int selected = 1;
+    unsigned selected = 1;
     int is_best = 0;
 
     if (window->save->score[window->num_players - 1][level_num - 1] < window->score)
@@ -206,6 +207,10 @@ int failure(struct window *window, int level_num, int level_difficulty)
     }
 
     load_music(window, "data/failure.ogg", 1);
+
+    SDL_Rect areas[] = { { .x = 150, .y = 730, .w = 1620, .h = 100 },
+                         { .x = 150, .y = 830, .w = 1620, .h = 100 }
+                     };
 
     while (!escape)
     {
@@ -221,7 +226,7 @@ int failure(struct window *window, int level_num, int level_difficulty)
                 break;
             }
 
-            handle_select_arrow_event(window, &selected, 2);
+            handle_select_arrow_event(window, &selected, 2, areas);
 
             if (window->is_lan && window->server)
                 send_state(&window->player[0], window, 0, 0, 0, 3, level_num, level_difficulty);

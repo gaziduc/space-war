@@ -47,9 +47,18 @@ int pause(struct window *window)
 
 
     int escape = 0;
-    int selected = 1;
+    unsigned selected = 1;
     Uint32 first_begin = SDL_GetTicks();
     Uint32 begin = first_begin;
+    SDL_Rect areas[NUM_CHOICES_PAUSE];
+
+    for (unsigned i = 0; i < NUM_CHOICES_PAUSE; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 670 + i * 100;
+        areas[i].w = 1000;
+        areas[i].h = 100;
+    }
 
     while (!escape)
     {
@@ -57,7 +66,7 @@ int pause(struct window *window)
         update_events(window->in, window);
         handle_quit_event(window, 1);
         handle_focus_lost_event(window);
-        handle_select_arrow_event(window, &selected, NUM_CHOICES_PAUSE);
+        handle_select_arrow_event(window, &selected, NUM_CHOICES_PAUSE, areas);
         if (handle_escape_event(window))
             escape = 1;
 
@@ -108,7 +117,7 @@ void delay_times(struct window *window, Uint32 begin)
     window->last_enemy_time += delay;
     window->wave_title_time += delay;
 
-    for (int i = 0; i < window->num_players; i++)
+    for (unsigned i = 0; i < window->num_players; i++)
         window->player[i].last_shot_time += delay;
 
     window->mission_start_time += delay;

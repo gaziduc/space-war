@@ -146,7 +146,7 @@ void render_hud(struct window *window)
     SDL_Color blue_transparent = { .r = 0, .g = 128, .b = 255, .a = alpha };
     SDL_Color red_transparent = { .r = 255, .g = 0, .b = 0, .a = alpha };
 
-    for (int i = 0; i < window->num_players; i++)
+    for (unsigned i = 0; i < window->num_players; i++)
     {
         char s[32] = { 0 };
         sprintf(s, "P%d: %s", i + 1, window->is_lan && i == 1 ? "NETWORK"

@@ -112,7 +112,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
 static void level_difficulty(struct window *window, int selected_level, const char *str)
 {
     int escape = 0;
-    int selected_difficulty = 1;
+    unsigned selected_difficulty = 1;
     Uint32 begin = SDL_GetTicks();
 
     char s[50] = { 0 };
@@ -121,6 +121,12 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         sprintf(s, "Arcade Mode");
     else
         sprintf(s, "Mission %d.%d - %s", selected_level, window->num_players, str);
+
+
+    SDL_Rect areas[] = { { .x = 150, .y = 360, .w = 1620, .h = 80 },
+                         { .x = 150, .y = 440, .w = 1620, .h = 80 },
+                         { .x = 150, .y = 520, .w = 1620, .h = 80 }
+                       };
 
     while (!escape)
     {
@@ -134,7 +140,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
             begin = SDL_GetTicks();
         }
 
-        handle_select_arrow_event(window, &selected_difficulty, NUM_DIFFICULTIES);
+        handle_select_arrow_event(window, &selected_difficulty, NUM_DIFFICULTIES, areas);
         escape = handle_escape_event(window);
 
         // Display black bachground
@@ -216,7 +222,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
 void select_level(struct window *window)
 {
     int escape = 0;
-    int selected_level = 1;
+    unsigned selected_level = 1;
     Uint32 begin = SDL_GetTicks();
 
     char *s_list[NUM_LEVELS + 1] = { "The Milky Way",
@@ -230,6 +236,15 @@ void select_level(struct window *window)
                                  "The End",
                                  "Arcade Mode"
                                };
+
+    SDL_Rect areas[NUM_LEVELS + 1];
+    for (unsigned i = 0; i < NUM_LEVELS + 1; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 320 + i * 60;
+        areas[i].w = 1000;
+        areas[i].h = 60;
+    }
 
     while (!escape)
     {
@@ -246,7 +261,7 @@ void select_level(struct window *window)
             }
         }
 
-        handle_select_arrow_event(window, &selected_level, NUM_LEVELS + 1);
+        handle_select_arrow_event(window, &selected_level, NUM_LEVELS + 1, areas);
         escape = handle_escape_event(window);
 
         // Display black bachground

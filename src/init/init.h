@@ -67,6 +67,17 @@ struct controller
     SDL_Haptic *haptic;
 };
 
+
+enum input_type
+{
+    KEYBOARD = 0,
+    MOUSE,
+    CONTROLLER,
+    TOUCH,
+    NUM_INPUT_TYPE
+};
+
+
 struct input
 {
     char quit;
@@ -79,6 +90,8 @@ struct input
     char text[8];
     char finger[MAX_NUM_FINGERS];
     SDL_Point touch_pos[MAX_NUM_FINGERS];
+    enum input_type last_input_type;
+
 };
 
 
@@ -174,15 +187,6 @@ struct save
 };
 
 
-enum input_type
-{
-    KEYBOARD = 0,
-    MOUSE,
-    CONTROLLER,
-    TOUCH,
-    NUM_INPUT_TYPE
-};
-
 struct player
 {
     SDL_Rect pos;
@@ -240,13 +244,13 @@ struct window
     struct settings *settings;
     int max_health;
     struct save *save;
-    int num_players;
+    unsigned num_players;
     struct player player[MAX_PLAYERS];
     int is_lan;
     TCPsocket server;
     TCPsocket client;
     struct state state;
-    int weapon;
+    unsigned weapon;
     int touched_anim;
     SDL_Point resolutions[NUM_RESOLUTIONS];
     int resolution_index;
