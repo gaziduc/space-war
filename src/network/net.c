@@ -605,6 +605,8 @@ int accepting_thread(void *data)
 
 int get_online_ip_thread(void *data)
 {
+    (void) data;
+
     online_ip = get_online_ip();
     has_online_ip = 1;
 

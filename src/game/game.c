@@ -102,18 +102,18 @@ static void handle_arrow_event(struct window *window, struct player *player)
         case TOUCH:
             for (SDL_FingerID i = 0; i < MAX_NUM_FINGERS; i++)
             {
-                if (window->in->touch_pos[i].x < (window->w * 5) / 6)
+                if (window->in->finger[i] && window->in->touch_pos[i].x < (window->w * 5) / 6)
                 {
                     if (window->in->touch_pos[i].x - player->pos.x > SHIP_SPEED)
                         player->pos.x += SHIP_SPEED;
-                    else if (window->in->touch_pos[i].x - player->pos.x < SHIP_SPEED)
+                    else if (window->in->touch_pos[i].x - player->pos.x < -SHIP_SPEED)
                         player->pos.x -= SHIP_SPEED;
                     else
                         player->pos.x = window->in->touch_pos[i].x;
 
                     if (window->in->touch_pos[i].y - player->pos.y > SHIP_SPEED)
                         player->pos.y += SHIP_SPEED;
-                    else if (window->in->touch_pos[i].y - player->pos.y < SHIP_SPEED)
+                    else if (window->in->touch_pos[i].y - player->pos.y < -SHIP_SPEED)
                         player->pos.y -= SHIP_SPEED;
                     else
                         player->pos.y = window->in->touch_pos[i].y;

@@ -27,7 +27,7 @@ static size_t write_function(void *ptr, size_t size, size_t nmemb, struct string
     return size * nmemb;
 }
 
-const char* get_online_ip(void)
+char* get_online_ip(void)
 {
     static char res[40] = { 0 };
 
