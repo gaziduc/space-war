@@ -102,7 +102,7 @@ static void handle_arrow_event(struct window *window, struct player *player)
         case TOUCH:
             for (SDL_FingerID i = 0; i < MAX_NUM_FINGERS; i++)
             {
-                if (window->in->finger[i] && window->in->touch_pos[i].x < (window->w * 5) / 6)
+                if (window->in->finger[i] && window->in->touch_pos[i].x < (DEFAULT_W * 5) / 6)
                 {
                     if (window->in->touch_pos[i].x - player->pos.x > SHIP_SPEED)
                         player->pos.x += SHIP_SPEED;
@@ -178,7 +178,7 @@ static int handle_shot_event(struct window *window, struct player *player)
             case TOUCH:
                 for (SDL_FingerID i = 0; i < MAX_NUM_FINGERS; i++)
                 {
-                    if (window->in->finger[i] && window->in->touch_pos[i].x >= (window->w * 5) / 6)
+                    if (window->in->finger[i] && window->in->touch_pos[i].x >= (WINDOW_W * 5) / 6)
                         return try_to_shoot(window, player);
                 }
                 break;
