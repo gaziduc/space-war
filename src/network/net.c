@@ -74,7 +74,7 @@ void create_or_join(struct window *window)
         handle_select_arrow_event(window, &selected_item, 3, areas);
         escape = handle_escape_event(window);
 
-        if (handle_play_event(window) && selected_item > 0)
+        if (selected_item > 0 && handle_play_event(window))
         {
             switch (selected_item)
             {
@@ -172,7 +172,7 @@ static void accept_client(struct window *window, char *ip_str)
             SDLNet_TCP_Send(window->client, buf, sizeof(buf));
         }
 
-        if (!escape && handle_play_event(window) && selected_item > 0)
+        if (!escape && selected_item > 0 && handle_play_event(window))
         {
             switch (selected_item)
             {

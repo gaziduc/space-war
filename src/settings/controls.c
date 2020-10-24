@@ -39,7 +39,7 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
 void controls(struct window *window)
 {
     int escape = 0;
-    unsigned selected_item = 1;
+    unsigned selected_item = 0;
     Uint32 begin = SDL_GetTicks();
     char *names[NUM_CONTROLS] = { "Up", "Left", "Down", "Right", "Shoot", "Bomb" };
     SDL_Rect areas[NUM_CONTROLS + 1];
@@ -63,7 +63,8 @@ void controls(struct window *window)
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, NUM_CONTROLS + 1, areas);
         escape = handle_escape_event(window);
-        if (handle_play_event(window))
+
+        if (selected_item > 0 && handle_play_event(window))
         {
             if (selected_item == NUM_CONTROLS + 1) // if user want to reset inputs
             {

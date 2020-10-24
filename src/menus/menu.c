@@ -199,7 +199,7 @@ void select_num_players(struct window *window)
         handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS + 2, areas);
         escape = handle_escape_event(window);
 
-        if (handle_play_event(window))
+        if (window->num_players > 0 && handle_play_event(window))
         {
             if (window->num_players == MAX_PLAYERS + 1)
             {
@@ -211,7 +211,7 @@ void select_num_players(struct window *window)
                 window->num_players = MAX_PLAYERS + 1;
                 begin = SDL_GetTicks();
             }
-            else if (window->num_players > 0 && window->num_players <= MAX_PLAYERS)
+            else if (window->num_players <= MAX_PLAYERS)
             {
                 window->is_lan = 0;
                 select_level(window);

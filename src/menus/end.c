@@ -208,8 +208,8 @@ int failure(struct window *window, int level_num, int level_difficulty)
 
     load_music(window, "data/failure.ogg", 1);
 
-    SDL_Rect areas[] = { { .x = 150, .y = 730, .w = 1620, .h = 100 },
-                         { .x = 150, .y = 830, .w = 1620, .h = 100 }
+    SDL_Rect areas[] = { { .x = 150, .y = 730, .w = 620, .h = 100 },
+                         { .x = 150, .y = 830, .w = 620, .h = 100 }
                      };
 
     while (!escape)
@@ -219,7 +219,7 @@ int failure(struct window *window, int level_num, int level_difficulty)
         if (!window->is_lan || window->server)
         {
             escape = handle_escape_event(window);
-            if (handle_play_event(window))
+            if (selected > 0 && handle_play_event(window))
             {
                 if (selected == 2)
                     escape = 1;

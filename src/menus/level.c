@@ -141,9 +141,9 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         update_events(window->in, window);
         handle_quit_event(window, 0);
 
-        if (handle_play_event(window))
+        if (selected_difficulty > 0 && handle_play_event(window))
         {
-            if (selected_difficulty > 0 && selected_difficulty <= NUM_DIFFICULTIES)
+            if (selected_difficulty <= NUM_DIFFICULTIES)
             {
                 choose_weapons(window, selected_level, selected_difficulty, str);
                 begin = SDL_GetTicks();
@@ -272,9 +272,9 @@ void select_level(struct window *window)
         update_events(window->in, window);
         handle_quit_event(window, 0);
 
-        if (handle_play_event(window))
+        if (selected_level > 0 && handle_play_event(window))
         {
-            if (selected_level > 0 && selected_level <= NUM_LEVELS + 1)
+            if (selected_level <= NUM_LEVELS + 1)
             {
                 if (selected_level == 1 || window->save->progress[window->num_players - 1][selected_level - 2] > 0)
                 {

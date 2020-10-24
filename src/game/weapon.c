@@ -189,9 +189,9 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &window->weapon, 4, areas);
 
-        if (handle_play_event(window))
+        if (window->weapon > 0 && handle_play_event(window))
         {
-            if (window->weapon > 0 && window->weapon <= 3)
+            if (window->weapon <= 3)
             {
                 // Decrement window->weapon to get a 0 based number
                 window->weapon--;

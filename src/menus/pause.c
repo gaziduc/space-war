@@ -70,7 +70,7 @@ int pause(struct window *window)
         if (handle_escape_event(window))
             escape = 1;
 
-        if (handle_play_event(window))
+        if (selected > 0 && handle_play_event(window))
         {
             if (selected == 1)
                 escape = 1;

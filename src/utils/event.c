@@ -9,8 +9,6 @@ void update_events(struct input *in, struct window *window)
 {
     in->quit = 0;
     memset(in->text, '\0', sizeof(in->text));
-    in->wheel.x = 0;
-    in->wheel.y = 0;
     SDL_Event event;
 
     enum input_type before = in->last_input_type;
@@ -117,12 +115,6 @@ void update_events(struct input *in, struct window *window)
 
         case SDL_MOUSEBUTTONUP:
             in->mouse_button[event.button.button] = 0;
-            break;
-
-        case SDL_MOUSEWHEEL:
-            in->wheel.x = event.wheel.x;
-            in->wheel.y = event.wheel.y;
-            in->last_input_type = KEYBOARD;
             break;
 
         /* Touch events */
