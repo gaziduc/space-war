@@ -115,7 +115,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
 static void level_difficulty(struct window *window, int selected_level, const char *str)
 {
     int escape = 0;
-    unsigned selected_difficulty = 1;
+    unsigned selected_difficulty = 0;
     Uint32 begin = SDL_GetTicks();
 
     char s[50] = { 0 };
@@ -242,7 +242,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
 void select_level(struct window *window)
 {
     int escape = 0;
-    unsigned selected_level = 1;
+    unsigned selected_level = 0;
     Uint32 begin = SDL_GetTicks();
 
     char *s_list[NUM_LEVELS + 1] = { "The Milky Way",
@@ -262,7 +262,7 @@ void select_level(struct window *window)
     {
         areas[i].x = 150;
         areas[i].y = 320 + i * 60;
-        areas[i].w = 1000;
+        areas[i].w = 600;
         areas[i].h = 60;
     }
 

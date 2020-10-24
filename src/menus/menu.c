@@ -90,7 +90,7 @@ void menu(struct window *window)
     load_music(window, "data/endgame.ogg", 1);
 
     int escape = 0;
-    unsigned selected_item = 1;
+    unsigned selected_item = 0;
     Uint32 begin = SDL_GetTicks();
     SDL_Rect areas[NUM_ITEMS];
 
@@ -98,7 +98,7 @@ void menu(struct window *window)
     {
         areas[i].x = 150;
         areas[i].y = 570 + i * 100;
-        areas[i].w = 1200;
+        areas[i].w = 700;
         areas[i].h = 100;
     }
 

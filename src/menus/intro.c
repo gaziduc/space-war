@@ -10,26 +10,47 @@ void intro(struct window *window)
 {
     char *s[3] = { "SPACE WAR",
                    "Made by David 'Gazi' Ghiassi",
-                   "Game compatible with game controllers"
+                   "Compatible with game controllers."
                  };
 
     int escape = 0;
 
-    for (int i = 0; i < 256; i += 3)
+
+    for (int i = 255; i >= 0; i -= 4)
     {
         update_events(window->in, window);
         handle_quit_event(window, 0);
-
-        escape = handle_escape_event(window) || handle_play_event(window);
-        if (escape)
-            break;
 
         // Black screen
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { i, i, i, i == 0 ? 1 : i };
-        SDL_Color blue = { 0, 255, 255, i == 0 ? 1 : i };
+        SDL_Color blue = { 0, 255, 255, 255 };
+
+        render_text(window, window->fonts->zero4b_30, s[0], blue,
+                    POS_CENTERED, 200);
+
+        render_text(window, window->fonts->calibri, "Loading: 100 %...", white, POS_CENTERED, 675);
+        SDL_RenderPresent(window->renderer);
+
+        // Wait a frame
+        SDL_framerateDelay(window->fps);
+    }
+
+
+
+    for (int i = 0; i < 256; i += 4)
+    {
+        update_events(window->in, window);
+        handle_quit_event(window, 0);
+
+        // Black screen
+        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(window->renderer);
+
+        SDL_Color white = { i, i, i, i == 0 ? 1 : i };
+        SDL_Color blue = { 0, 255, 255, 255 };
 
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
@@ -46,73 +67,63 @@ void intro(struct window *window)
         SDL_framerateDelay(window->fps);
     }
 
-    if (!escape)
+
+    for (int i = 0; i < 100; i++)
     {
-        for (int i = 0; i < 100; i++)
-        {
-            update_events(window->in, window);
-            handle_quit_event(window, 0);
+        update_events(window->in, window);
+        handle_quit_event(window, 0);
 
-            escape = handle_escape_event(window) || handle_play_event(window);
-            if (escape)
-                break;
+        escape = handle_escape_event(window) || handle_play_event(window);
+        if (escape)
+            break;
 
-            // Black screen
-            SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
-            SDL_RenderClear(window->renderer);
+        // Black screen
+        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(window->renderer);
 
-            SDL_Color white = { 255, 255, 255, 255 };
-            SDL_Color blue = { 0, 255, 255, 255 };
+        SDL_Color white = { 255, 255, 255, 255 };
+        SDL_Color blue = { 0, 255, 255, 255 };
 
-            render_text(window, window->fonts->zero4b_30, s[0], blue,
-                        POS_CENTERED, 200);
+        render_text(window, window->fonts->zero4b_30, s[0], blue,
+                POS_CENTERED, 200);
 
-            render_text(window, window->fonts->calibri, s[1], white,
-                        POS_CENTERED, 600);
+        render_text(window, window->fonts->calibri, s[1], white,
+                POS_CENTERED, 600);
 
-            render_text(window, window->fonts->calibri, s[2], white,
-                        POS_CENTERED, 750);
+        render_text(window, window->fonts->calibri, s[2], white,
+                POS_CENTERED, 750);
 
-            SDL_RenderPresent(window->renderer);
+        SDL_RenderPresent(window->renderer);
 
-            // Wait a frame
-            SDL_framerateDelay(window->fps);
+        // Wait a frame
+        SDL_framerateDelay(window->fps);
+    }
 
-        }
+    for (int i = 255; i >= 0; i -= 4)
+    {
+        update_events(window->in, window);
+        handle_quit_event(window, 0);
 
-        if (!escape)
-        {
-            for (int i = 255; i >= 0; i -= 3)
-            {
-                update_events(window->in, window);
-                handle_quit_event(window, 0);
+        // Black screen
+        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_RenderClear(window->renderer);
 
-                escape = handle_escape_event(window) || handle_play_event(window);
-                if (escape)
-                    break;
+        SDL_Color white = { i, i, i, i == 0 ? 1 : i };
+        SDL_Color blue = { 0, 255, 255, i == 0 ? 1 : i };
 
-                // Black screen
-                SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
-                SDL_RenderClear(window->renderer);
+        render_text(window, window->fonts->zero4b_30, s[0], blue,
+                POS_CENTERED, 200);
 
-                SDL_Color white = { i, i, i, i == 0 ? 1 : i };
-                SDL_Color blue = { 0, 255, 255, i == 0 ? 1 : i };
+        render_text(window, window->fonts->calibri, s[1], white,
+                POS_CENTERED, 600);
 
-                render_text(window, window->fonts->zero4b_30, s[0], blue,
-                            POS_CENTERED, 200);
+        render_text(window, window->fonts->calibri, s[2], white,
+                POS_CENTERED, 750);
 
-                render_text(window, window->fonts->calibri, s[1], white,
-                            POS_CENTERED, 600);
+        SDL_RenderPresent(window->renderer);
 
-                render_text(window, window->fonts->calibri, s[2], white,
-                            POS_CENTERED, 750);
-
-                SDL_RenderPresent(window->renderer);
-
-                // Wait a frame
-                SDL_framerateDelay(window->fps);
-            }
-        }
+        // Wait a frame
+        SDL_framerateDelay(window->fps);
     }
 
 

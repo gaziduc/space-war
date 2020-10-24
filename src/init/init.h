@@ -257,6 +257,8 @@ struct window
     Uint32 mission_start_time;
 };
 
+void render_loading_screen(struct window *window);
+
 void load_music(struct window *window, const char *filename, int must_free);
 
 struct window *init_all(void);

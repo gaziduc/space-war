@@ -47,7 +47,7 @@ int pause(struct window *window)
 
 
     int escape = 0;
-    unsigned selected = 1;
+    unsigned selected = 0;
     Uint32 first_begin = SDL_GetTicks();
     Uint32 begin = first_begin;
     SDL_Rect areas[NUM_CHOICES_PAUSE];

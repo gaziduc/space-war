@@ -13,6 +13,34 @@
 #include <SDL2/SDL_mixer.h>
 #include <SDL2/SDL2_rotozoom.h>
 
+
+void render_loading_screen(struct window *window)
+{
+    static Uint32 last_time = 0;
+    Uint32 time = SDL_GetTicks();
+
+    static int progress = 0;
+
+    progress += 4;
+
+    if (time - last_time > 16)
+    {
+        last_time = time;
+
+        SDL_Color white = { 255, 255, 255, 255 };
+        SDL_Color blue = { 0, 255, 255, 255 };
+
+        char s[128] = { 0 };
+        sprintf(s, "Loading: %d %%...", progress);
+
+        SDL_RenderClear(window->renderer);
+        render_text(window, window->fonts->zero4b_30, "SPACE WAR", blue, POS_CENTERED, 200);
+        render_text(window, window->fonts->calibri, s, white, POS_CENTERED, 675);
+        SDL_RenderPresent(window->renderer);
+    }
+}
+
+
 static void add_resolution(struct window *window, int index, int w, int h)
 {
     window->resolutions[index].x = w;
@@ -145,6 +173,7 @@ static void load_sounds(struct window *window)
     window->sounds->play = load_sound(window, "data/play.wav");
 }
 
+
 struct window *init_all(void)
 {
     // Init SDL2
@@ -164,14 +193,31 @@ struct window *init_all(void)
     SDL_SetWindowIcon(window->window, icon);
     SDL_FreeSurface(icon);
 
-    // Hide cursor
-    // SDL_ShowCursor(SDL_DISABLE);
-
     // Init SDL2_image
     int img_flags = IMG_INIT_PNG;
     int img_initted = IMG_Init(img_flags);
     if ((img_initted & img_flags) != img_flags)
         error("Could not load SDL2_image", IMG_GetError(), window->window, window->renderer);
+
+    // Init SDL2_tff
+    if (TTF_Init() == -1)
+        error("Could not load SDL2_ttf", TTF_GetError(), window->window, window->renderer);
+
+    load_fonts(window);
+
+    // Cursor
+    SDL_Surface *cursor_surface = SDL_LoadBMP("data/cursor.bmp");
+    if (!cursor_surface)
+        error("Could not load surface", SDL_GetError(), window->window, window->renderer);
+
+    SDL_Cursor *cursor = SDL_CreateColorCursor(cursor_surface, 24, 24);
+    if (!cursor)
+        error("Could not create cursor", SDL_GetError(), window->window, window->renderer);
+
+    SDL_FreeSurface(cursor_surface);
+
+    SDL_SetCursor(cursor);
+
 
     // Load textures
     load_textures(window);
@@ -204,12 +250,6 @@ struct window *init_all(void)
         window->player[i].last_shot_time = 0;
 
     window->paths = NULL;
-
-    // Init SDL2_tff and load fonts
-    if (TTF_Init() == -1)
-        error("Could not load SDL2_ttf", TTF_GetError(), window->window, window->renderer);
-
-    load_fonts(window);
 
     // Init SDL2_mixer
     int mix_flags = MIX_INIT_OGG;

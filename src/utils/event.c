@@ -13,6 +13,8 @@ void update_events(struct input *in, struct window *window)
     in->wheel.y = 0;
     SDL_Event event;
 
+    enum input_type before = in->last_input_type;
+
     // Reset axis state
     for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
         in->c.axis[i].state = 0;
@@ -128,8 +130,8 @@ void update_events(struct input *in, struct window *window)
             if (event.tfinger.fingerId < MAX_NUM_FINGERS)
             {
                 in->finger[event.tfinger.fingerId] = 1;
-                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
-                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * DEFAULT_W;
+                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * DEFAULT_H;
                 in->last_input_type = TOUCH;
             }
             break;
@@ -137,8 +139,8 @@ void update_events(struct input *in, struct window *window)
         case SDL_FINGERMOTION:
             if (event.tfinger.fingerId < MAX_NUM_FINGERS)
             {
-                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
-                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * DEFAULT_W;
+                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * DEFAULT_H;
                 in->last_input_type = TOUCH;
             }
             break;
@@ -147,8 +149,8 @@ void update_events(struct input *in, struct window *window)
             if (event.tfinger.fingerId < MAX_NUM_FINGERS)
             {
                 in->finger[event.tfinger.fingerId] = 0;
-                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * window->w;
-                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * window->h;
+                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * DEFAULT_W;
+                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * DEFAULT_H;
             }
             break;
 
@@ -156,6 +158,11 @@ void update_events(struct input *in, struct window *window)
             break;
         }
     }
+
+    if (before != MOUSE && in->last_input_type == MOUSE)
+        SDL_ShowCursor(SDL_ENABLE);
+    else if (in->last_input_type != MOUSE)
+        SDL_ShowCursor(SDL_DISABLE);
 }
 
 void handle_quit_event(struct window *window, int is_in_level)
@@ -220,8 +227,7 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     if (window->in->key[SDL_SCANCODE_UP]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state)
-        || window->in->wheel.y > 0)
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
     {
         window->in->key[SDL_SCANCODE_UP] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
@@ -237,8 +243,7 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     if (window->in->key[SDL_SCANCODE_DOWN]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
         || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state)
-        || window->in->wheel.y < 0)
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
     {
         window->in->key[SDL_SCANCODE_DOWN] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;

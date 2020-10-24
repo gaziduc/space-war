@@ -100,7 +100,7 @@ void success(struct window *window, const int level_num, const int difficulty)
 
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
-    unsigned selected = 1;
+    unsigned selected = 0;
     SDL_Rect areas[] = { { .x = 150, .y = 810, .w = 1620, .h = 150 } };
 
     load_music(window, "data/success.ogg", 1);
@@ -197,7 +197,7 @@ int failure(struct window *window, int level_num, int level_difficulty)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
-    unsigned selected = 1;
+    unsigned selected = 0;
     int is_best = 0;
 
     if (window->save->score[window->num_players - 1][level_num - 1] < window->score)

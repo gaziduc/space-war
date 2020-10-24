@@ -175,7 +175,7 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
-    window->weapon = 1;
+    window->weapon = 0;
     SDL_Rect areas[] = { { .x = 150, .y = 300, .w = 1620, .h = 150 },
                          { .x = 150, .y = 500, .w = 1620, .h = 150 },
                          { .x = 150, .y = 700, .w = 1620, .h = 150 },

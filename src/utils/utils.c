@@ -8,6 +8,8 @@
 
 SDL_Texture *load_texture(const char *path, struct window *window)
 {
+    render_loading_screen(window);
+
     SDL_Surface *surface = IMG_Load(path);
 
     if (!surface)
@@ -64,6 +66,8 @@ struct collision_texture *get_texture_collision(SDL_Surface *surface, struct win
 
 struct collision_texture *load_texture_collision(const char *path, struct window *window)
 {
+    render_loading_screen(window);
+
     SDL_Surface *surface = IMG_Load(path);
 
     if (!surface)
@@ -195,6 +199,8 @@ TTF_Font *load_font(struct window *window, const char *filename,
 
 Mix_Chunk *load_sound(struct window *window, const char *filename)
 {
+    render_loading_screen(window);
+
     Mix_Chunk *sound = Mix_LoadWAV(filename);
 
     if (!sound)

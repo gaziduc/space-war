@@ -447,7 +447,7 @@ static void handle_arrow_event(struct window *window, const int selected_item, U
 void settings(struct window *window)
 {
     int escape = 0;
-    unsigned selected_item = 1;
+    unsigned selected_item = 0;
     Uint32 begin = SDL_GetTicks();
     SDL_Rect areas[NUM_SETTINGS];
 
