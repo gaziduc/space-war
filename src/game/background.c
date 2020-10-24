@@ -31,7 +31,6 @@ void init_background(struct window *window)
 void move_background(struct window *window, unsigned long framecount)
 {
     struct point *p = window->stars->next;
-    struct point *last = window->stars;
 
     while (p)
     {
@@ -41,34 +40,18 @@ void move_background(struct window *window, unsigned long framecount)
         // Delete point
         if (p->x + p->size - 1 < 0)
         {
-            struct point *to_delete = p;
-            last->next = p->next;
-            p = p->next;
-            free(to_delete);
+            // Remove and create new without free and malloc
+            p->x = DEFAULT_W - 1;
+            p->y = rand() % DEFAULT_H;
+            p->z = (rand() % 5) + 1;
+            p->opacity = rand() % 256;
+            p->size = (rand() % 3) + 1;
+
+            if (p->z > 4)
+                p->opacity /= 2;
         }
-        else
-        {
-            last = p;
-            p = p->next;
-        }
-    }
 
-    // Create some points
-    for (int c = 0; c < rand() % 3; c++)
-    {
-        struct point *new = xmalloc(sizeof(struct point), window->window, window->renderer);
-
-        new->x = DEFAULT_W - 1;
-        new->y = rand() % DEFAULT_H;
-        new->z = (rand() % 5) + 1;
-        new->opacity = rand() % 256;
-        new->size = (rand() % 3) + 1;
-
-        if (new->z > 4)
-            new->opacity /= 2;
-
-        new->next = window->stars->next;
-        window->stars->next = new;
+        p = p->next;
     }
 }
 
