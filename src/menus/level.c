@@ -99,7 +99,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
 
         case HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "7 HP - 1 Bomb - 999+ Ammo - 1000 Bonus", white, 150, 880);
+                        "7 HP - 1 Bomb - 999+ Ammo - 1500 Bonus", white, 150, 880);
             break;
 
         case REALLY_HARD:
