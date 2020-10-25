@@ -42,16 +42,16 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin,
                 orange, 150, 150);
 
     // Render items
-    char *s_list[3] = { "-> CREATE", "-> JOIN", "-> BACK" };
+    char *s_list[3] = { "CREATE", "JOIN", "BACK" };
 
     for (int i = 1; i <= 3; i++)
     {
         if (selected_item != i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
-                        150, 450 + (i - 1) * 100);
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
+                        150, 670 + (i - 1) * 100);
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 450 + (i - 1) * 100);
+                        150, 670 + (i - 1) * 100);
     }
 }
 
@@ -61,9 +61,9 @@ void create_or_join(struct window *window)
     int escape = 0;
     unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
-    SDL_Rect areas[] = { { .x = 150, .y = 450, .w = 900, .h = 100 },
-                         { .x = 150, .y = 550, .w = 900, .h = 100 },
-                         { .x = 150, .y = 650, .w = 900, .h = 100 }
+    SDL_Rect areas[] = { { .x = 150, .y = 670, .w = 900, .h = 100 },
+                         { .x = 150, .y = 770, .w = 900, .h = 100 },
+                         { .x = 150, .y = 870, .w = 900, .h = 100 }
                        };
 
     while (!escape)
@@ -133,12 +133,12 @@ static void render_accept_client_texts(struct window *window, Uint32 begin,
     render_text(window, window->fonts->zero4b_30_extra_small, text, orange, 150, 150);
 
     // Render items
-    char *s_list[2] = { "-> ACCEPT", "-> DECLINE" };
+    char *s_list[2] = { "ACCEPT", "DECLINE" };
 
     for (int i = 1; i <= 2; i++)
     {
         if (selected_item != i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
                         150, 400 + (i - 1) * 100);
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
