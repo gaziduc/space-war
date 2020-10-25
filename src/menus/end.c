@@ -69,7 +69,7 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
 
     // Enter to continue
     if (!window->is_lan || window->server)
-        render_text(window, window->fonts->zero4b_30_small, "-> CONTINUE",
+        render_text(window, window->fonts->zero4b_30_small, "CONTINUE",
                     green, 150, 810);
     else
         render_text(window, window->fonts->zero4b_30_small, "WAITING FOR THE SERVER...",
@@ -172,7 +172,7 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
 
     if (!window->is_lan || window->server)
     {
-        char *s_list[2] = { "-> RETRY", "-> BACK" };
+        char *s_list[2] = { "RETRY", "BACK" };
         SDL_Color blue = { 0, 255, 255, alpha };
         SDL_Color green = { 0, 255, 0, alpha };
 
@@ -183,7 +183,7 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
                 render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                             green, 150, 730 + (i - 1) * 100);
             else
-                render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3,
+                render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                             blue, 150, 730 + (i - 1) * 100);
         }
     }

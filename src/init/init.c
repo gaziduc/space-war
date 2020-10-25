@@ -7,6 +7,7 @@
 #include "setting.h"
 #include "save.h"
 #include "event.h"
+#include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL2_framerate.h>
@@ -204,20 +205,6 @@ struct window *init_all(void)
         error("Could not load SDL2_ttf", TTF_GetError(), window->window, window->renderer);
 
     load_fonts(window);
-
-    // Cursor
-    SDL_Surface *cursor_surface = SDL_LoadBMP("data/cursor.bmp");
-    if (!cursor_surface)
-        error("Could not load surface", SDL_GetError(), window->window, window->renderer);
-
-    SDL_Cursor *cursor = SDL_CreateColorCursor(cursor_surface, 24, 24);
-    if (!cursor)
-        error("Could not create cursor", SDL_GetError(), window->window, window->renderer);
-
-    SDL_FreeSurface(cursor_surface);
-
-    SDL_SetCursor(cursor);
-
 
     // Load textures
     load_textures(window);

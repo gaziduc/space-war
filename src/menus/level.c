@@ -58,24 +58,24 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     SDL_Color blue = { 0, 255, 255, alpha };
     SDL_Color green = { 0, 255, 0, alpha };
 
-    char *s_list[NUM_DIFFICULTIES + 1] = { "-> Easy *", "-> Hard *", "-> Really Hard *", "-> Back" };
+    char *s_list[NUM_DIFFICULTIES + 1] = { "EASY *", "HARD *", "REALLY HARD *", "BACK" };
 
     for (int i = 1; i <= NUM_DIFFICULTIES; i++)
     {
-        int y = 360 + (i - 1) * 80;
+        int y = 360 + (i - 1) * 100;
         char s[100] = { 0 };
 
         if (window->save->progress[window->num_players - 1][level - 1] < i)
         {
             if (i != selected_difficulty)
-                snprintf(s, strlen(s_list[i - 1] + 3) - 1, "%s", s_list[i - 1] + 3);
+                snprintf(s, strlen(s_list[i - 1]) - 1, "%s", s_list[i - 1]);
             else
                 snprintf(s, strlen(s_list[i - 1]) - 1, "%s", s_list[i - 1]);
         }
         else
         {
             if (i != selected_difficulty)
-                strcpy(s, s_list[i - 1] + 3);
+                strcpy(s, s_list[i - 1]);
             else
                 strcpy(s, s_list[i - 1]);
         }
@@ -85,8 +85,8 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     }
 
     render_text(window, window->fonts->zero4b_30_small,
-                selected_difficulty == NUM_DIFFICULTIES + 1 ? s_list[NUM_DIFFICULTIES] : s_list[NUM_DIFFICULTIES] + 3,
-                selected_difficulty == NUM_DIFFICULTIES + 1 ? green : blue, 150, 360 + NUM_DIFFICULTIES * 80);
+                s_list[NUM_DIFFICULTIES],
+                selected_difficulty == NUM_DIFFICULTIES + 1 ? green : blue, 150, 360 + NUM_DIFFICULTIES * 100);
 
     SDL_Color white = { 255, 255, 255, alpha };
 
@@ -94,16 +94,17 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     {
         case EASY:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "20 HP - 2 Bombs - 999+ Ammo - 0 Bonus", white, 150, 760);
+                        "20 HP - 2 Bombs - 999+ Ammo - 0 Bonus", white, 150, 880);
             break;
+
         case HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "7 HP - 1 Bomb - 999+ Ammo - 1000 Bonus", white, 150, 760);
+                        "7 HP - 1 Bomb - 999+ Ammo - 1000 Bonus", white, 150, 880);
             break;
 
         case REALLY_HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "3 HP - 1 Bomb - 200 Ammo - 3000 Bonus", white, 150, 760);
+                        "3 HP - 1 Bomb - 200 Ammo - 3000 Bonus", white, 150, 880);
             break;
 
         default:
@@ -130,9 +131,9 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     for (unsigned i = 0; i < NUM_DIFFICULTIES + 1; i++)
     {
         areas[i].x = 150;
-        areas[i].y = 360 + i * 80;
-        areas[i].w = 1400;
-        areas[i].h = 80;
+        areas[i].y = 360 + i * 100;
+        areas[i].w = 900;
+        areas[i].h = 100;
     }
 
     while (!escape)
@@ -203,9 +204,9 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
         char s[50] = { 0 };
 
         if (i != NUM_LEVELS + 1)
-            sprintf(s, "-> Mission %d.%d %.*s", i, window->num_players, window->save->progress[window->num_players - 1][i - 1], "***");
+            sprintf(s, "MISSION %d.%d %.*s", i, window->num_players, window->save->progress[window->num_players - 1][i - 1], "***");
         else
-            sprintf(s, "-> Arcade Mode %.*s", window->save->progress[window->num_players - 1][i - 1], "***");
+            sprintf(s, "ARCADE MODE %.*s", window->save->progress[window->num_players - 1][i - 1], "***");
 
 
         int y = 320 + (i - 1) * 60;
@@ -213,9 +214,9 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
         if (i != selected_level)
         {
             if (i == 1 || window->save->progress[window->num_players - 1][i - 2] > 0)
-                render_text(window, window->fonts->zero4b_30_extra_small, s + 3, blue, 150, y);
+                render_text(window, window->fonts->zero4b_30_extra_small, s, blue, 150, y);
             else
-                render_text(window, window->fonts->zero4b_30_extra_small, s + 3, grey, 150, y);
+                render_text(window, window->fonts->zero4b_30_extra_small, s, grey, 150, y);
         }
         else
         {
@@ -230,10 +231,10 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
         render_selected_level_title(window, s_list[selected_level - 1],
                                     alpha, window->save->score[window->num_players - 1][selected_level - 1]);
 
-    char *back = "-> Back";
+    char *back = "BACK";
 
     render_text(window, window->fonts->zero4b_30_extra_small,
-                selected_level == NUM_LEVELS + 2 ? back : back + 3,
+                back,
                 selected_level == NUM_LEVELS + 2 ? green : blue,
                 150, 320 + (NUM_LEVELS + 1) * 60);
 }

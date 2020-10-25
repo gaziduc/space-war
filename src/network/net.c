@@ -42,7 +42,7 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin,
                 orange, 150, 150);
 
     // Render items
-    char *s_list[3] = { "-> Create", "-> Join", "-> Back" };
+    char *s_list[3] = { "-> CREATE", "-> JOIN", "-> BACK" };
 
     for (int i = 1; i <= 3; i++)
     {

@@ -23,12 +23,12 @@ static void render_pause_texts(struct window *window, Uint32 begin, int selected
     render_text(window, window->fonts->zero4b_30, "PAUSE", orange, 150, 150);
 
     // Render items
-    char *s_list[NUM_CHOICES_PAUSE] = { "-> RESUME", "-> SETTINGS", "-> ESCAPE" };
+    char *s_list[NUM_CHOICES_PAUSE] = { "RESUME", "SETTINGS", "ESCAPE" };
 
     for (int i = 1; i <= NUM_CHOICES_PAUSE; i++)
     {
         if (selected_item != i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1] + 3, blue,
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
                         150, 670 + (i - 1) * 100);
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,

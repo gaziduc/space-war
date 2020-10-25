@@ -163,10 +163,9 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
         }
     }
 
-    char *back = "-> Back";
+    char *back = "BACK";
 
-    render_text(window, window->fonts->zero4b_30_extra_small,
-                choice == 4 ? back : back + 3,
+    render_text(window, window->fonts->zero4b_30_extra_small, back,
                 choice == 4 ? green : blue, 150, 900);
 }
 
