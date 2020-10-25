@@ -94,7 +94,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
         escape = handle_escape_event(window);
 
         // Display black bachground
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things

@@ -487,7 +487,7 @@ void settings(struct window *window)
         escape = handle_escape_event(window);
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things

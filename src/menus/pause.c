@@ -84,7 +84,7 @@ int pause(struct window *window)
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Copy screenshot on background and add transparency

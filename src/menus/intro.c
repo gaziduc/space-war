@@ -22,7 +22,7 @@ void intro(struct window *window)
         handle_quit_event(window, 0);
 
         // Black screen
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { i, i, i, i == 0 ? 1 : i };
@@ -46,7 +46,7 @@ void intro(struct window *window)
         handle_quit_event(window, 0);
 
         // Black screen
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { i, i, i, i == 0 ? 1 : i };
@@ -78,7 +78,7 @@ void intro(struct window *window)
             break;
 
         // Black screen
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { 255, 255, 255, 255 };
@@ -105,7 +105,7 @@ void intro(struct window *window)
         handle_quit_event(window, 0);
 
         // Black screen
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { i, i, i, i == 0 ? 1 : i };

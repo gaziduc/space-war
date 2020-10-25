@@ -82,7 +82,7 @@ void controls(struct window *window)
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
@@ -120,7 +120,7 @@ SDL_Scancode get_key(struct window *window, int selected_item, char *names[NUM_C
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things

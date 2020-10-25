@@ -20,7 +20,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
 
 
     // Clear screen
-    SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+    SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
     SDL_RenderClear(window->renderer);
 
     // Render stars if we are in a menu
@@ -50,7 +50,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
         if (alpha > 255)
             alpha = -alpha + 511;
 
-        SDL_SetRenderDrawColor(window->renderer, 0, alpha, 0, alpha);
+        SDL_SetRenderDrawColor(window->renderer, 8, alpha, 8, alpha);
 
         SDL_Rect pos = { .x = LEFT_PADDING + col * CREDITS_CHAR_W,
                          .y = UP_PADDING + line * CREDITS_CHAR_H,

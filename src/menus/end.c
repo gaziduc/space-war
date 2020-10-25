@@ -127,7 +127,7 @@ void success(struct window *window, const int level_num, const int difficulty)
         SDL_RenderClear(window->renderer);
 
         // Display black bg
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         render_stars(window);
@@ -244,7 +244,7 @@ int failure(struct window *window, int level_num, int level_difficulty)
         SDL_RenderClear(window->renderer);
 
         // Display black bg
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         render_stars(window);

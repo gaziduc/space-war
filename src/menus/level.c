@@ -157,7 +157,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         escape = escape || handle_escape_event(window);
 
         // Display black bachground
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
@@ -197,7 +197,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     SDL_Color orange = { 255, 128, 0, alpha };
     SDL_Color grey = { 128, 128, 128, alpha };
 
-    render_text(window, window->fonts->zero4b_30_small, "MISSION SELECT", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, "SELECT MISSION", orange, 150, 150);
 
     for (int i = 1; i <= NUM_LEVELS + 1; i++)
     {
@@ -291,7 +291,7 @@ void select_level(struct window *window)
         escape = escape || handle_escape_event(window);
 
         // Display black bachground
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things

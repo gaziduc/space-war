@@ -98,7 +98,7 @@ void create_or_join(struct window *window)
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
@@ -196,7 +196,7 @@ static void accept_client(struct window *window, char *ip_str)
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
@@ -270,7 +270,7 @@ void create_server(struct window *window)
         escape = handle_escape_event(window);
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
@@ -453,7 +453,7 @@ void connect_to_server(struct window *window)
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things

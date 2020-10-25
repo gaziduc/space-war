@@ -34,6 +34,7 @@ void render_loading_screen(struct window *window)
         char s[128] = { 0 };
         sprintf(s, "Loading: %d %%...", progress);
 
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
         render_text(window, window->fonts->zero4b_30, "SPACE WAR", blue, POS_CENTERED, 200);
         render_text(window, window->fonts->calibri, s, white, POS_CENTERED, 675);

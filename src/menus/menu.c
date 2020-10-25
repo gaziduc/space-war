@@ -132,7 +132,7 @@ void menu(struct window *window)
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
@@ -179,7 +179,7 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
 void select_num_players(struct window *window)
 {
     int escape = 0;
-    window->num_players = 1;
+    window->num_players = 0;
     Uint32 begin = SDL_GetTicks();
     SDL_Rect areas[MAX_PLAYERS + 2];
 
@@ -222,7 +222,7 @@ void select_num_players(struct window *window)
         }
 
         // Display black background
-        SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 255);
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
