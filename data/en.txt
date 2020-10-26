@@ -1,0 +1,60 @@
+PLAY
+SETTINGS
+CREDITS
+QUIT
+SELECT MODE
+1 PLAYER
+2 PLAYERS (LOCAL)
+2 PLAYERS (NETWORK)
+BACK
+SELECT MISSION
+MISSION %d.%d %.*s
+ARCADE MODE %.*s
+BACK
+The Milky Way
+Andromeda Galaxy
+Hyperspace
+New Universe
+Spatial Army
+Bosses
+New Planet
+Space Tunnel
+The End
+Arcade Mode
+Mission %d.%d - %s
+EASY *
+HARD *
+REALLY HARD *
+BACK
+20 HP - 2 Bombs - 999+ Ammo - 0 Bonus
+7 HP - 1 Bomb - 999+ Ammo - 1500 Bonus
+3 HP - 1 Bomb - 200 Ammo - 3000 Bonus
+CHOOSE WEAPON
+DAMAGE: %d - SPEED: %d - SHOTS/SECOND: %d
+BACK
+SUMMARY
+MODE: %s
+WEAPON: 
+START MISSION
+BACK
+CREATE OR JOIN?
+CREATE
+JOIN
+BACK
+User at %s wants to play with you.
+ACCEPT
+DECLINE
+Waiting for someone...
+Your IP (local network):
+Your IP (online):
+Searching for online IP...
+To play online, you need to open TCP on port 4321 on your computer via your Internet
+service provider website.
+You don't need to do this step if you're playing on your local network.
+Connecting... Please wait...
+Waiting for the other player to accept request...
+Invalid IP
+PAUSE
+RESUME
+SETTINGS
+ESCAPE

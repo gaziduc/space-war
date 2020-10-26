@@ -7,6 +7,7 @@
 #include "setting.h"
 #include "save.h"
 #include "event.h"
+#include "language.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -32,7 +33,7 @@ void render_loading_screen(struct window *window)
         SDL_Color blue = { 0, 255, 255, 255 };
 
         char s[128] = { 0 };
-        sprintf(s, "Loading: %d %%...", progress);
+        sprintf(s, "%d %%", progress);
 
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
@@ -206,6 +207,8 @@ struct window *init_all(void)
         error("Could not load SDL2_ttf", TTF_GetError(), window->window, window->renderer);
 
     load_fonts(window);
+
+    load_language_file(window, "data/en.txt");
 
     // Load textures
     load_textures(window);

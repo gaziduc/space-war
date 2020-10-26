@@ -125,7 +125,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
     SDL_Color green = { 0, 255, 0, alpha };
     SDL_Color blue = { 0, 255, 255, alpha };
 
-    render_text(window, window->fonts->zero4b_30_small, "CHOOSE WEAPON",
+    render_text(window, window->fonts->zero4b_30_small, window->txt[CHOOSE_WEAPON],
                 orange, 150, 150);
 
     for (int i = 1; i <= 3; i++)
@@ -145,7 +145,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
         SDL_RenderCopy(window->renderer, window->img->shot[i - 1]->texture, NULL, &pos_shot);
 
         char s[128] = { 0 };
-        sprintf(s, "DAMAGE: %d - SPEED: %d - SHOTS/SECOND: %d",
+        sprintf(s, window->txt[WEAPON_CONDITIONS],
                 get_weapon_damage(i - 1),
                 get_weapon_speed(i - 1),
                 get_weapon_shots_per_second(i - 1));
@@ -155,7 +155,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
 
         if (i == choice)
         {
-            SDL_Rect pos = { .x = 150, .y = 300 + (i - 1) * 200, .w = 150, .h = 150 };
+            SDL_Rect pos = { .x = 150, .y = 325 + (i - 1) * 200, .w = 150, .h = 100 };
             resize_pos_for_resolution(window, &pos);
 
             SDL_SetRenderDrawColor(window->renderer, 0, 128, 255, alpha);
@@ -163,9 +163,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
         }
     }
 
-    char *back = "BACK";
-
-    render_text(window, window->fonts->zero4b_30_extra_small, back,
+    render_text(window, window->fonts->zero4b_30_extra_small, window->txt[BACK_4],
                 choice == 4 ? green : blue, 150, 900);
 }
 
@@ -175,11 +173,27 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
     window->weapon = 0;
-    SDL_Rect areas[] = { { .x = 150, .y = 300, .w = 1620, .h = 150 },
-                         { .x = 150, .y = 500, .w = 1620, .h = 150 },
-                         { .x = 150, .y = 700, .w = 1620, .h = 150 },
-                         { .x = 150, .y = 900, .w = 1620, .h = 80 }
-                       };
+    SDL_Rect areas[4];
+
+    for (unsigned i = 0; i < 4; i++)
+    {
+        areas[i].x = 150;
+
+        char s[128] = { 0 };
+
+        if (i < 3)
+        {
+            areas[i].y = 325 + i * 200;
+            areas[i].w = 1620;
+            areas[i].h = 100;
+        }
+        else
+        {
+            areas[i].y = 900;
+            sprintf(s, "%s", window->txt[BACK_4]);
+            TTF_SizeText(window->fonts->zero4b_30_extra_small, s, &areas[i].w, &areas[i].h);
+        }
+    }
 
     while (!escape)
     {

@@ -31,7 +31,7 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
 
-        render_text(window, window->fonts->calibri, "Loading: 100 %...", white, POS_CENTERED, 675);
+        render_text(window, window->fonts->calibri, "100 %", white, POS_CENTERED, 675);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

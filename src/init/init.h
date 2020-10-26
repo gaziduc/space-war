@@ -218,6 +218,71 @@ struct state
 };
 
 
+enum texts
+{
+    PLAY = 0,
+    SETTINGS,
+    CREDITS,
+    QUIT,
+    SELECT_MODE,
+    ONE_PLAYER,
+    TWO_PLAYERS_LOCAL,
+    TWO_PLAYERS_NETWORK,
+    BACK_1,
+    SELECT_MISSION,
+    MISSION_D_D_S,
+    ARCADE_MODE_S,
+    BACK_2,
+    THE_MILKY_WAY,
+    ANDROMEDA_GALAXY,
+    HYPERSPACE,
+    NEW_UNIVERSE,
+    SPATIAL_ARMY,
+    BOSSES,
+    NEW_PLANET,
+    SPACE_TUNNEL,
+    THE_END,
+    ARCADE_MODE,
+    MISSION_D_D___S,
+    EASY__,
+    HARD__,
+    REALLY_HARD__,
+    BACK_3,
+    EASY_CONDITIONS,
+    HARD_CONDITIONS,
+    REALLY_HARD_CONDITIONS,
+    CHOOSE_WEAPON,
+    WEAPON_CONDITIONS,
+    BACK_4,
+    SUMMARY,
+    MODE_S,
+    WEAPON,
+    START_MISSION,
+    BACK_5,
+    CREATE_OR_JOIN,
+    CREATE,
+    JOIN,
+    BACK_6,
+    USER_AT,
+    ACCEPT,
+    DECLINE,
+    WAITING_FOR_SOMEONE,
+    YOUR_IP_LOCAL,
+    YOUR_IP_ONLINE,
+    SEARCHING_FOR_ONLINE_IP,
+    TO_PLAY_ONLINE_1,
+    TO_PLAY_ONLINE_2,
+    TO_PLAY_ONLINE_3,
+    CONNECTING,
+    WAITING_FOR_OTHER,
+    INVALID_IP,
+    PAUSE,
+    RESUME,
+    SETTINGS_2,
+    ESCAPE,
+    NUM_TXT
+};
+
 struct window
 {
     SDL_Window *window;
@@ -254,6 +319,7 @@ struct window
     SDL_Point resolutions[NUM_RESOLUTIONS];
     int resolution_index;
     Uint32 mission_start_time;
+    char *txt[NUM_TXT];
 };
 
 void render_loading_screen(struct window *window);

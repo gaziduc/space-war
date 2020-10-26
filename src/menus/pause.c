@@ -20,19 +20,16 @@ static void render_pause_texts(struct window *window, Uint32 begin, int selected
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     // Render title
-    render_text(window, window->fonts->zero4b_30, "PAUSE", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30, window->txt[PAUSE], orange, 150, 150);
 
     // Render items
-    char *s_list[NUM_CHOICES_PAUSE] = { "RESUME", "SETTINGS", "ESCAPE" };
+    char *s_list[NUM_CHOICES_PAUSE] = { window->txt[RESUME], window->txt[SETTINGS_2], window->txt[ESCAPE] };
 
     for (int i = 1; i <= NUM_CHOICES_PAUSE; i++)
     {
-        if (selected_item != i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
-                        150, 670 + (i - 1) * 100);
-        else
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 670 + (i - 1) * 100);
+        render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
+                    selected_item != i ? blue : green,
+                    150, 670 + (i - 1) * 100);
     }
 }
 
@@ -56,8 +53,7 @@ int pause(struct window *window)
     {
         areas[i].x = 150;
         areas[i].y = 670 + i * 100;
-        areas[i].w = 1000;
-        areas[i].h = 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[RESUME + i], &areas[i].w, &areas[i].h);
     }
 
     while (!escape)

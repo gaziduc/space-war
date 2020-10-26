@@ -38,11 +38,11 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin,
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     // Render title
-    render_text(window, window->fonts->zero4b_30_small, "CREATE OR JOIN ?",
+    render_text(window, window->fonts->zero4b_30_small, window->txt[CREATE_OR_JOIN],
                 orange, 150, 150);
 
     // Render items
-    char *s_list[3] = { "CREATE", "JOIN", "BACK" };
+    char *s_list[3] = { window->txt[CREATE], window->txt[JOIN], window->txt[BACK_6] };
 
     for (int i = 1; i <= 3; i++)
     {
@@ -61,10 +61,14 @@ void create_or_join(struct window *window)
     int escape = 0;
     unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
-    SDL_Rect areas[] = { { .x = 150, .y = 670, .w = 900, .h = 100 },
-                         { .x = 150, .y = 770, .w = 900, .h = 100 },
-                         { .x = 150, .y = 870, .w = 900, .h = 100 }
-                       };
+    SDL_Rect areas[3];
+
+    for (unsigned i = 0; i < 3; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 670 + i * 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[CREATE + i], &areas[i].w, &areas[i].h);
+    }
 
     while (!escape)
     {
@@ -126,23 +130,23 @@ static void render_accept_client_texts(struct window *window, Uint32 begin,
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
-    char text[100] = { 0 };
-    sprintf(text, "User at %s wants to play with you.", ip_str);
+    char text[128] = { 0 };
+    sprintf(text, window->txt[USER_AT], ip_str);
 
     // Render title
     render_text(window, window->fonts->zero4b_30_extra_small, text, orange, 150, 150);
 
     // Render items
-    char *s_list[2] = { "ACCEPT", "DECLINE" };
+    char *s_list[2] = { window->txt[ACCEPT], window->txt[DECLINE] };
 
     for (int i = 1; i <= 2; i++)
     {
         if (selected_item != i)
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
-                        150, 400 + (i - 1) * 100);
+                        150, 770 + (i - 1) * 100);
         else
             render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 400 + (i - 1) * 100);
+                        150, 770 + (i - 1) * 100);
     }
 }
 
@@ -155,9 +159,14 @@ static void accept_client(struct window *window, char *ip_str)
     unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
     char buf[1] = { 0 };
-    SDL_Rect areas[] = { { .x = 150, .y = 400, .w = 800, .h = 100 },
-                         { .x = 150, .y = 500, .w = 800, .h = 100 }
-                       };
+    SDL_Rect areas[2];
+
+    for (unsigned i = 0; i < 2; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 770 + i * 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[ACCEPT + i], &areas[i].w, &areas[i].h);
+    }
 
     while (!escape)
     {
@@ -286,10 +295,10 @@ void create_server(struct window *window)
         SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
         SDL_Color white = { 255, 255, 255, alpha };
 
-        render_text(window, window->fonts->zero4b_30_small, "Waiting for someone...",
+        render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_SOMEONE],
                     orange, 150, 150);
 
-        render_text(window, window->fonts->zero4b_30_extra_small, "Your IP (local network):",
+        render_text(window, window->fonts->zero4b_30_extra_small, window->txt[YOUR_IP_LOCAL],
                     white, 150, 300);
 
         int index = 0;
@@ -318,20 +327,19 @@ void create_server(struct window *window)
             index++;
         }
 
-        render_text(window, window->fonts->zero4b_30_extra_small, "Your IP (online):",
+        render_text(window, window->fonts->zero4b_30_extra_small, window->txt[YOUR_IP_ONLINE],
                     white, 1060, 300);
 
-        render_text(window, window->fonts->pixel, has_online_ip ? online_ip : "Searching online IP...",
+        render_text(window, window->fonts->pixel, has_online_ip ? online_ip : window->txt[SEARCHING_FOR_ONLINE_IP],
                     white, 1060, 400);
 
-        render_text(window, window->fonts->pixel,
-                    "To play online, you need to open TCP on port 4321 on your computer via your Internet",
+        render_text(window, window->fonts->pixel, window->txt[TO_PLAY_ONLINE_1],
                     white, 150, 800);
 
-        render_text(window, window->fonts->pixel, "service provider website.",
+        render_text(window, window->fonts->pixel, window->txt[TO_PLAY_ONLINE_2],
                     white, 150, 840);
 
-        render_text(window, window->fonts->pixel, "You don't need to do this step if you're playing on your local network.",
+        render_text(window, window->fonts->pixel, window->txt[TO_PLAY_ONLINE_3],
                     white, 150, 920);
 
         SDL_RenderPresent(window->renderer);
@@ -483,7 +491,7 @@ void connect_to_server(struct window *window)
 
         if (is_connecting)
             render_text(window, window->fonts->pixel,
-                        "Connecting... Please wait...", green, 150, 470);
+                        window->txt[CONNECTING], green, 150, 470);
 
         if (is_connected)
         {
@@ -495,7 +503,7 @@ void connect_to_server(struct window *window)
             else if (!accepted && accepting)
             {
                 render_text(window, window->fonts->pixel,
-                            "Waiting for the other player to accept request...",
+                            window->txt[WAITING_FOR_OTHER],
                             green, 150, 470);
             }
             else // if accepted (or declined)
@@ -595,7 +603,7 @@ int connecting_thread(void *data)
             strcpy(err, SDLNet_GetError());
     }
     else
-        strcpy(err, "Invalid IP");
+        strcpy(err, window->txt[INVALID_IP]);
 
     is_connecting = 0;
     return 0;

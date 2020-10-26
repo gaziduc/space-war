@@ -58,7 +58,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     SDL_Color blue = { 0, 255, 255, alpha };
     SDL_Color green = { 0, 255, 0, alpha };
 
-    char *s_list[NUM_DIFFICULTIES + 1] = { "EASY *", "HARD *", "REALLY HARD *", "BACK" };
+    char *s_list[NUM_DIFFICULTIES + 1] = { window->txt[EASY__], window->txt[HARD__], window->txt[REALLY_HARD__], window->txt[BACK_3] };
 
     for (int i = 1; i <= NUM_DIFFICULTIES; i++)
     {
@@ -94,17 +94,17 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     {
         case EASY:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "20 HP - 2 Bombs - 999+ Ammo - 0 Bonus", white, 150, 880);
+                        window->txt[EASY_CONDITIONS], white, 150, 880);
             break;
 
         case HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "7 HP - 1 Bomb - 999+ Ammo - 1500 Bonus", white, 150, 880);
+                        window->txt[HARD_CONDITIONS], white, 150, 880);
             break;
 
         case REALLY_HARD:
             render_text(window, window->fonts->zero4b_30_extra_small,
-                        "3 HP - 1 Bomb - 200 Ammo - 3000 Bonus", white, 150, 880);
+                        window->txt[REALLY_HARD_CONDITIONS], white, 150, 880);
             break;
 
         default:
@@ -122,9 +122,9 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     char s[50] = { 0 };
 
     if (selected_level == NUM_LEVELS + 1)
-        sprintf(s, "Arcade Mode");
+        sprintf(s, window->txt[ARCADE_MODE]);
     else
-        sprintf(s, "Mission %d.%d - %s", selected_level, window->num_players, str);
+        sprintf(s, window->txt[MISSION_D_D___S], selected_level, window->num_players, str);
 
     SDL_Rect areas[NUM_DIFFICULTIES + 1];
 
@@ -132,8 +132,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     {
         areas[i].x = 150;
         areas[i].y = 360 + i * 100;
-        areas[i].w = 900;
-        areas[i].h = 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[EASY__ + i], &areas[i].w, &areas[i].h);
     }
 
     while (!escape)
@@ -197,16 +196,16 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     SDL_Color orange = { 255, 128, 0, alpha };
     SDL_Color grey = { 128, 128, 128, alpha };
 
-    render_text(window, window->fonts->zero4b_30_small, "SELECT MISSION", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[SELECT_MISSION], orange, 150, 150);
 
     for (int i = 1; i <= NUM_LEVELS + 1; i++)
     {
         char s[50] = { 0 };
 
         if (i != NUM_LEVELS + 1)
-            sprintf(s, "MISSION %d.%d %.*s", i, window->num_players, window->save->progress[window->num_players - 1][i - 1], "***");
+            sprintf(s, window->txt[MISSION_D_D_S], i, window->num_players, window->save->progress[window->num_players - 1][i - 1], "***");
         else
-            sprintf(s, "ARCADE MODE %.*s", window->save->progress[window->num_players - 1][i - 1], "***");
+            sprintf(s, window->txt[ARCADE_MODE_S], window->save->progress[window->num_players - 1][i - 1], "***");
 
 
         int y = 320 + (i - 1) * 60;
@@ -231,10 +230,8 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
         render_selected_level_title(window, s_list[selected_level - 1],
                                     alpha, window->save->score[window->num_players - 1][selected_level - 1]);
 
-    char *back = "BACK";
-
     render_text(window, window->fonts->zero4b_30_extra_small,
-                back,
+                window->txt[BACK_2],
                 selected_level == NUM_LEVELS + 2 ? green : blue,
                 150, 320 + (NUM_LEVELS + 1) * 60);
 }
@@ -246,16 +243,16 @@ void select_level(struct window *window)
     unsigned selected_level = 0;
     Uint32 begin = SDL_GetTicks();
 
-    char *s_list[NUM_LEVELS + 1] = { "The Milky Way",
-                                 "Andromeda Galaxy",
-                                 "Hyperspace",
-                                 "New Universe",
-                                 "Spatial Army",
-                                 "Bosses",
-                                 "New Planet",
-                                 "Space Tunnel",
-                                 "The End",
-                                 "Arcade Mode",
+    char *s_list[NUM_LEVELS + 1] = { window->txt[THE_MILKY_WAY],
+                                 window->txt[ANDROMEDA_GALAXY],
+                                 window->txt[HYPERSPACE],
+                                 window->txt[NEW_UNIVERSE],
+                                 window->txt[SPATIAL_ARMY],
+                                 window->txt[BOSSES],
+                                 window->txt[NEW_PLANET],
+                                 window->txt[SPACE_TUNNEL],
+                                 window->txt[THE_END],
+                                 window->txt[ARCADE_MODE]
                                };
 
     SDL_Rect areas[NUM_LEVELS + 2];
@@ -263,8 +260,16 @@ void select_level(struct window *window)
     {
         areas[i].x = 150;
         areas[i].y = 320 + i * 60;
-        areas[i].w = 600;
-        areas[i].h = 60;
+        char s[100] = { 0 };
+
+        if (i < NUM_LEVELS)
+            sprintf(s, window->txt[MISSION_D_D_S], i + 1, window->num_players, window->save->progress[window->num_players - 1][i], "***");
+        else if (i == NUM_LEVELS)
+            sprintf(s, window->txt[ARCADE_MODE_S], window->save->progress[window->num_players - 1][i], "***");
+        else
+            sprintf(s, window->txt[BACK_2]);
+
+        TTF_SizeText(window->fonts->zero4b_30_extra_small, s, &areas[i].w, &areas[i].h);
     }
 
     while (!escape)

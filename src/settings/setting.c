@@ -257,6 +257,7 @@ void load_settings(struct window *window)
     sscanf(str->ptr + index, "bomb=%d\n", (int *) &window->settings->controls[BOMB]);
     go_to_next_line(&index, str->ptr);
 
+    free_string(str);
 
     set_resolution_with_index(window);
 }

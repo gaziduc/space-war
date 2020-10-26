@@ -31,16 +31,13 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     render_text(window, window->fonts->zero4b_30, "SPACE WAR", orange, 150, 150);
 
     // Render items
-    char *s_list[NUM_ITEMS] = { "PLAY", "SETTINGS", "CREDITS", "QUIT" };
+    char *s_list[NUM_ITEMS] = { window->txt[PLAY], window->txt[SETTINGS], window->txt[CREDITS], window->txt[QUIT] };
 
     for (int i = 1; i <= NUM_ITEMS; i++)
     {
-        if (selected_item != i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
-                        150, 570 + (i - 1) * 100);
-        else
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 570 + (i - 1) * 100);
+        render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
+                    selected_item != i ? blue : green,
+                    150, 570 + (i - 1) * 100);
     }
 
     render_text(window, window->fonts->zero4b_30_small, VERSION_INGAME, white, 1300, 870);
@@ -98,8 +95,7 @@ void menu(struct window *window)
     {
         areas[i].x = 150;
         areas[i].y = 570 + i * 100;
-        areas[i].w = 700;
-        areas[i].h = 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[0 + i], &areas[i].w, &areas[i].h);
     }
 
     while (!escape)
@@ -159,19 +155,16 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
     // Render title
-    render_text(window, window->fonts->zero4b_30_small, "SELECT MODE", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[SELECT_MODE], orange, 150, 150);
 
     // Render items
-    char *s_list[MAX_PLAYERS + 2] = { "1 PLAYER", "2 PLAYERS (LOCAL)", "2 PLAYERS (NETWORK)", "BACK" };
+    char *s_list[MAX_PLAYERS + 2] = { window->txt[ONE_PLAYER], window->txt[TWO_PLAYERS_LOCAL], window->txt[TWO_PLAYERS_NETWORK], window->txt[BACK_1] };
 
     for (int i = 1; i <= MAX_PLAYERS + 2; i++)
     {
-        if (selected_item != i)
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], blue,
-                        150, 570 + (i - 1) * 100);
-        else
-            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1], green,
-                        150, 570 + (i - 1) * 100);
+        render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
+                    selected_item != i ? blue : green,
+                    150, 570 + (i - 1) * 100);
     }
 }
 
@@ -187,8 +180,7 @@ void select_num_players(struct window *window)
     {
         areas[i].x = 150;
         areas[i].y = 570 + i * 100;
-        areas[i].w = 1000;
-        areas[i].h = 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[ONE_PLAYER + i], &areas[i].w, &areas[i].h);
     }
 
     while (!escape)

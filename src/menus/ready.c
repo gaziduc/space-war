@@ -4,9 +4,11 @@
 #include "game.h"
 #include "menu.h"
 #include <stdio.h>
+#include <string.h>
 
 static void render_ok(struct window *window, int selected_level,
-                      int selected_difficulty, Uint32 begin, const char *mission_name)
+                      int selected_difficulty, Uint32 begin, const char *mission_name,
+                      unsigned selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -17,50 +19,35 @@ static void render_ok(struct window *window, int selected_level,
 
     SDL_Color white = { 255, 255, 255, alpha };
     SDL_Color orange = { 255, 128, 0, alpha };
-    SDL_Color purple = { 192, 0, 192, alpha };
+    SDL_Color green = { 0, 255, 0, alpha };
+    SDL_Color blue = { 0, 255, 255, alpha };
 
     render_text(window, window->fonts->zero4b_30_small, "SUMMARY", orange, 150, 150);
 
     char str[128] = { 0 };
-    sprintf(str, "Mode: %d Player%s %s", window->num_players,
-                                   window->num_players == 2 ? "s" : "",
-                                   window->is_lan ? "(Network)" :
-                                   window->num_players == 2 ? "(Local)" : "");
+    sprintf(str, window->txt[MODE_S], window->is_lan ? window->txt[TWO_PLAYERS_NETWORK] :
+                                      window->num_players == 2 ? window->txt[TWO_PLAYERS_LOCAL] : window->txt[ONE_PLAYER]);
 
     render_text(window, window->fonts->zero4b_30_extra_small, str,
                 white, 150, 300);
 
     if (selected_level != NUM_LEVELS + 1)
-        sprintf(str, "Mission: %d.%d - %s", selected_level, window->num_players, mission_name);
+        sprintf(str, window->txt[MISSION_D_D___S], selected_level, window->num_players, mission_name);
     else
-        sprintf(str, "Mission: Arcade Mode");
+        sprintf(str, window->txt[ARCADE_MODE]);
 
     render_text(window, window->fonts->zero4b_30_extra_small, str,
                 white, 150, 370);
 
-    switch (selected_difficulty)
-    {
-        case 1:
-            render_text(window, window->fonts->zero4b_30_extra_small, "Difficulty: Easy", white, 150, 440);
-            break;
+    snprintf(str, strlen(window->txt[EASY__ + selected_difficulty - 1]) - 2, "%s", window->txt[EASY__+ selected_difficulty - 1]);
+    str[strlen(window->txt[EASY__ + selected_difficulty - 1]) - 2] = '\0';
 
-        case 2:
-            render_text(window, window->fonts->zero4b_30_extra_small, "Difficulty: Hard", white, 150, 440);
-            break;
+    render_text(window, window->fonts->zero4b_30_extra_small, str, white, 150, 440);
 
-        case 3:
-            render_text(window, window->fonts->zero4b_30_extra_small, "Difficulty: Really Hard", white, 150, 440);
-            break;
-
-        default:
-            error("Unknown difficulty", "Unknown difficulty level", window->window, window->renderer);
-            break;
-    }
-
-    render_text(window, window->fonts->zero4b_30_extra_small, "Weapon:",
+    render_text(window, window->fonts->zero4b_30_extra_small, window->txt[WEAPON],
                 white, 150, 510);
 
-    SDL_Rect pos = { .x = 400, .y = 523, .w = 0, .h = 0 };
+    SDL_Rect pos = { .x = 425, .y = 523, .w = 0, .h = 0 };
     SDL_QueryTexture(window->img->shot[window->weapon]->texture, NULL, NULL, &pos.w, &pos.h);
 
     resize_pos_for_resolution(window, &pos);
@@ -68,8 +55,11 @@ static void render_ok(struct window *window, int selected_level,
     SDL_RenderCopy(window->renderer, window->img->shot[window->weapon]->texture,
                    NULL, &pos);
 
-    render_text(window, window->fonts->zero4b_30_small, "Press enter!",
-                purple, 150, 750);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[START_MISSION],
+                selected_item == 1 ? green : blue, 150, 750);
+
+    render_text(window, window->fonts->zero4b_30_small, window->txt[BACK_5],
+                selected_item == 2 ? green : blue, 150, 850);
 }
 
 
@@ -78,20 +68,35 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
+    unsigned selected_item = 0;
+    SDL_Rect areas[2];
+
+    for (unsigned i = 0; i < 2; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 750 + i * 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[START_MISSION + i], &areas[i].w, &areas[i].h);
+    }
 
     while (!escape)
     {
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
+        handle_select_arrow_event(window, &selected_item, 2, areas);
 
-        if (handle_play_event(window))
+        if (selected_item > 0 && handle_play_event(window))
         {
-            play_game(window, selected_level, selected_difficulty);
-            return 1;
+            if (selected_item == 1)
+            {
+                play_game(window, selected_level, selected_difficulty);
+                return 1;
+            }
+            else
+                escape = 1;
         }
 
-        escape = handle_escape_event(window);
+        escape = escape || handle_escape_event(window);
 
         // Display black bachground
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
@@ -99,7 +104,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
 
         // Process/Draw all the things
         render_stars(window);
-        render_ok(window, selected_level, selected_difficulty, begin, str);
+        render_ok(window, selected_level, selected_difficulty, begin, str, selected_item);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
