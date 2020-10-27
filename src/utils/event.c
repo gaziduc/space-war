@@ -229,6 +229,11 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
             (*selected)--;
             Mix_PlayChannel(-1, window->sounds->select, 0);
         }
+        else if (*selected == 0)
+        {
+            *selected = 1;
+            Mix_PlayChannel(-1, window->sounds->select, 0);
+        }
     }
 
     // Down
@@ -250,6 +255,7 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     // Mouse and touch screen
     if (window->in->last_input_type == MOUSE)
     {
+        unsigned last_selected = *selected;
         *selected = 0;
 
         for (unsigned i = 0; i < max; i++)
@@ -260,9 +266,13 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
                 && window->in->mouse_pos.y < areas[i].y + areas[i].h)
                 *selected = i + 1;
         }
+
+        if (*selected != 0 && last_selected != *selected)
+            Mix_PlayChannel(-1, window->sounds->select, 0);
     }
     else if (window->in->last_input_type == TOUCH)
     {
+        unsigned last_selected = *selected;
         *selected = 0;
 
         for (unsigned i = 0; i < max; i++)
@@ -273,6 +283,9 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
                 && window->in->touch_pos[0].y < areas[i].y + areas[i].h)
                 *selected = i + 1;
         }
+
+        if (*selected != 0 && last_selected != *selected)
+            Mix_PlayChannel(-1, window->sounds->select, 0);
     }
 }
 
