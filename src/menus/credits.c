@@ -13,7 +13,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
     static SDL_Color green = { 0, 255, 0, TITLE_ALPHA_MAX };
 
     // Handle events
-    update_events(window->in, window);
+    update_events(window->in, window, 0);
     handle_quit_event(window, 0);
     if (handle_play_event(window) || handle_escape_event(window))
         return 1;

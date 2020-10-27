@@ -138,7 +138,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         if (selected_difficulty > 0 && handle_play_event(window))
@@ -275,7 +275,7 @@ void select_level(struct window *window)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         if (selected_level > 0 && handle_play_event(window))

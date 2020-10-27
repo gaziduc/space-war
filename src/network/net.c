@@ -73,7 +73,7 @@ void create_or_join(struct window *window)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, 3, areas);
         escape = handle_escape_event(window);
@@ -171,7 +171,7 @@ static void accept_client(struct window *window, char *ip_str)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, 2, areas);
         escape = handle_escape_event(window);
@@ -274,7 +274,7 @@ void create_server(struct window *window)
         }
 
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         escape = handle_escape_event(window);
 
@@ -429,7 +429,7 @@ void connect_to_server(struct window *window)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         if (!is_connecting && !is_connected)
         {

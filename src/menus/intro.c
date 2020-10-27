@@ -18,7 +18,7 @@ void intro(struct window *window)
 
     for (int i = 255; i >= 0; i -= 6)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         // Black screen
@@ -42,7 +42,7 @@ void intro(struct window *window)
 
     for (int i = 0; i < 256; i += 6)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         // Black screen
@@ -70,7 +70,7 @@ void intro(struct window *window)
 
     for (int i = 0; i < 100; i++)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         escape = handle_escape_event(window) || handle_play_event(window);
@@ -101,7 +101,7 @@ void intro(struct window *window)
 
     for (int i = 255; i >= 0; i -= 6)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         // Black screen

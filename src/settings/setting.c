@@ -465,7 +465,7 @@ void settings(struct window *window)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][128] = { 0 };

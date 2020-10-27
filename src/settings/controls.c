@@ -45,7 +45,7 @@ void controls(struct window *window)
 
     while (!escape)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
         for (unsigned i = 0; i < NUM_CONTROLS; i++)

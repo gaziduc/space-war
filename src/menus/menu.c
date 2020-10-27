@@ -101,7 +101,7 @@ void menu(struct window *window)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, NUM_ITEMS, areas);
 
@@ -186,7 +186,7 @@ void select_num_players(struct window *window)
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &window->num_players, MAX_PLAYERS + 2, areas);
         escape = handle_escape_event(window);

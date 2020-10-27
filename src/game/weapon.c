@@ -198,7 +198,7 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &window->weapon, 4, areas);
 

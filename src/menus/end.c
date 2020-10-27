@@ -111,7 +111,7 @@ void success(struct window *window, const int level_num, const int difficulty)
 
     while (!escape)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 1);
 
         if (!window->is_lan || window->server)
@@ -222,7 +222,7 @@ int failure(struct window *window, int level_num, int level_difficulty)
 
     while (!escape)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 1);
         if (!window->is_lan || window->server)
         {

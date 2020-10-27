@@ -451,6 +451,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
         mission_num = 1;
     }
 
+    SDL_ShowCursor(SDL_DISABLE);
+
     // Load enemy paths and set enemy timer
     char s[50] = { 0 };
     sprintf(s, "data/level%d.txt", mission_num);
@@ -483,7 +485,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
         while (!escape && !dead && !won)
         {
             // Get and handle events
-            update_events(window->in, window);
+            update_events(window->in, window, 1);
             handle_quit_event(window, 1);
             if (handle_focus_lost_event(window))
                escape = pause(window);

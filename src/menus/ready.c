@@ -81,7 +81,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
     while (!escape)
     {
         // Get and handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, 2, areas);
 

@@ -5,13 +5,11 @@
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
-void update_events(struct input *in, struct window *window)
+void update_events(struct input *in, struct window *window, int is_in_level)
 {
     in->quit = 0;
     memset(in->text, '\0', sizeof(in->text));
     SDL_Event event;
-
-    enum input_type before = in->last_input_type;
 
     // Reset axis state
     for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
@@ -151,7 +149,7 @@ void update_events(struct input *in, struct window *window)
         }
     }
 
-    if (before != MOUSE && in->last_input_type == MOUSE)
+    if (!is_in_level && in->last_input_type == MOUSE)
         SDL_ShowCursor(SDL_ENABLE);
     else if (in->last_input_type != MOUSE)
         SDL_ShowCursor(SDL_DISABLE);
@@ -314,7 +312,7 @@ int handle_focus_lost_event(struct window *window)
 
     while (window->in->focus_lost)
     {
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 1); // 1 because else handle_quit_event calls
                                       // handle_focus_lost_event
         SDL_framerateDelay(window->fps);

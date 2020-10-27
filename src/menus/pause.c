@@ -59,7 +59,7 @@ int pause(struct window *window)
     while (!escape)
     {
         // Handle events
-        update_events(window->in, window);
+        update_events(window->in, window, 0);
         handle_quit_event(window, 1);
         handle_focus_lost_event(window);
         handle_select_arrow_event(window, &selected, NUM_CHOICES_PAUSE, areas);
@@ -100,6 +100,7 @@ int pause(struct window *window)
     }
 
     delay_times(window, first_begin);
+    SDL_ShowCursor(SDL_DISABLE);
 
     SDL_DestroyTexture(bg);
     return escape - 1;
