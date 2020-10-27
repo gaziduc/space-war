@@ -31,7 +31,7 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
 
     // Render score
     char str[50] = { 0 };
-    sprintf(str, "Best: %d", score);
+    sprintf(str, window->txt[BEST_D], score);
     texture = get_text_texture(window, window->fonts->zero4b_30_small, str, yellow);
     SDL_Rect pos_score = { .x = 1300, .y = 420, .w = 0, .h = 0 };
     SDL_QueryTexture(texture, NULL, NULL, &pos_score.w, &pos_score.h);

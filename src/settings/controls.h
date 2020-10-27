@@ -6,7 +6,7 @@
 
 void controls(struct window *window);
 
-SDL_Scancode get_key(struct window *window, int selected_item, char *names[NUM_CONTROLS]);
+SDL_Scancode get_key(struct window *window, int selected_item);
 
 void reset_controls(struct window *window);
 

@@ -91,7 +91,7 @@ static void render_life(struct window *window, struct player *player, int player
 static void render_score(struct window *window)
 {
     char s[50] = { 0 };
-    sprintf(s, "SCORE %d", window->score);
+    sprintf(s, window->txt[SCORE_D], window->score);
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
 
@@ -101,7 +101,7 @@ static void render_score(struct window *window)
 static void render_bombs(struct window *window)
 {
     char s[50] = { 0 };
-    sprintf(s, "BOMBS %d", window->num_bombs);
+    sprintf(s, window->txt[BOMBS_D], window->num_bombs);
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
 
@@ -114,9 +114,9 @@ static void render_ammo(struct window *window, struct player *player, int player
     char s[50] = { 0 };
 
     if (player->ammo >= 0)
-        sprintf(s, "AMMO  %d", player->ammo);
+        sprintf(s, window->txt[AMMO_D], player->ammo);
     else
-        sprintf(s, "AMMO  999+");
+        sprintf(s, window->txt[AMMO_999]);
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
@@ -149,11 +149,11 @@ void render_hud(struct window *window)
     for (unsigned i = 0; i < window->num_players; i++)
     {
         char s[32] = { 0 };
-        sprintf(s, "P%d: %s", i + 1, window->is_lan && i == 1 ? "NETWORK"
-                                     : window->player[i].input_type == KEYBOARD ? "KEYBOARD"
-                                     : window->player[i].input_type == MOUSE ? "MOUSE"
-                                     : window->player[i].input_type == CONTROLLER ? "CONTROLLER"
-                                     : "TOUCH SCREEN");
+        sprintf(s, "P%d: %s", i + 1, window->is_lan && i == 1 ? window->txt[NETWORK]
+                                     : window->player[i].input_type == KEYBOARD ? window->txt[KEYBOARD_TXT]
+                                     : window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT]
+                                     : window->player[i].input_type == CONTROLLER ? window->txt[CONTROLLER_TXT]
+                                     : window->txt[TOUCH_SCREEN_TXT]);
         render_text(window, window->fonts->pixel_small_bold, s, i == 0 ? blue : red, 10 + i * 220, 10);
 
         if (alpha > 0)

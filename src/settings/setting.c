@@ -17,6 +17,27 @@ static int is_fullscreen(struct window *window)
     return (flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN;
 }
 
+static void populate_settings_texts(struct window *window, char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][128])
+{
+    strcpy(s_list[AUDIO - 1], window->txt[AUDIO_TXT]);
+    sprintf(s_list[1], window->txt[MUSIC_VOLUME_S], window->settings->music_volume / 8, "----------------", 128 / 8 - window->settings->music_volume / 8, "                ");
+    sprintf(s_list[2], window->txt[SFX_VOLUME_S], window->settings->sfx_volume / 8, "----------------", 128 / 8 - window->settings->sfx_volume / 8, "                ");
+    strcpy(s_list[VIDEO - 1], window->txt[VIDEO_TXT]);
+    sprintf(s_list[4], window->txt[FULLSCREEN_S], is_fullscreen(window) ? "Yes" : "No");
+    sprintf(s_list[5], window->txt[RESOLUTION_DXD_S], window->w, window->h, window->resolution_index == 0 ? "(Native) " : "");
+    strcpy(s_list[INPUTS - 1], window->txt[INPUTS_TXT]);
+    sprintf(s_list[7], window->txt[P1_INPUT_S], window->player[0].input_type == KEYBOARD ? "Keyboard" :
+                                           window->player[0].input_type == MOUSE ? "Mouse" :
+                                           window->player[0].input_type == CONTROLLER ? "Controller" : "Touch screen");
+    sprintf(s_list[8], window->txt[P2_INPUT_S], window->player[1].input_type == KEYBOARD ? "Keyboard" :
+                                           window->player[1].input_type == MOUSE ? "Mouse" :
+                                           window->player[1].input_type == CONTROLLER ? "Controller" : "Touch screen");
+    strcpy(s_list[9], window->txt[KEYBOARD_CONTROLS]);
+    sprintf(s_list[10], window->txt[MOUSE_SENSITIVITY_S], window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
+    sprintf(s_list[11], window->txt[CONTROLLER_FORCE_FEEDBACK_S], window->settings->is_force_feedback ? "Yes" : "No");
+    strcpy(s_list[12], window->txt[BACK_7]);
+}
+
 
 static void render_settings(struct window *window, Uint32 begin, int selected_item)
 {
@@ -32,44 +53,27 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
     SDL_Color white = { .r = 255, .g = 255, .b = 255, .a = alpha };
 
-    render_text(window, window->fonts->zero4b_30_small, "SETTINGS", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[SETTINGS], orange, 150, 150);
 
-    char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][64] = { 0 };
-    strcpy(s_list[AUDIO - 1], "Audio:");
-    sprintf(s_list[1], "< Music Volume: %.*s >", window->settings->music_volume / 8, "----------------");
-    sprintf(s_list[2], "< SFX Volume: %.*s >", window->settings->sfx_volume / 8, "----------------");
-    strcpy(s_list[VIDEO - 1], "Video:");
-    sprintf(s_list[4], "Fullscreen: %s", is_fullscreen(window) ? "Yes" : "No");
-    sprintf(s_list[5], "< Resolution: %dx%d %s>", window->w, window->h, window->resolution_index == 0 ? "(Native) " : "");
-    strcpy(s_list[INPUTS - 1], "Inputs:");
-    sprintf(s_list[7], "< P1 Input: %s >", window->player[0].input_type == KEYBOARD ? "Keyboard" :
-                                           window->player[0].input_type == MOUSE ? "Mouse" :
-                                           window->player[0].input_type == CONTROLLER ? "Controller" : "Touch screen");
-    sprintf(s_list[8], "< P2 Input: %s >", window->player[1].input_type == KEYBOARD ? "Keyboard" :
-                                           window->player[1].input_type == MOUSE ? "Mouse" :
-                                           window->player[1].input_type == CONTROLLER ? "Controller" : "Touch screen");
-    strcpy(s_list[9], "Keyboard Controls...");
-    sprintf(s_list[10], "Mouse Sensitivity: %s", window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
-    sprintf(s_list[11], "Controller Force Feedback: %s", window->settings->is_force_feedback ? "Yes" : "No");
+    char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS + 1][128] = { 0 };
+    populate_settings_texts(window, s_list);
 
     int setting_index = 1;
 
     // Render items
-    for (int i = 1; i <= NUM_SETTINGS + NUM_TITLES_SETTINGS; i++)
+    for (int i = 1; i <= NUM_SETTINGS + NUM_TITLES_SETTINGS + 1; i++)
     {
         if (i == AUDIO || i == VIDEO || i == INPUTS)
         {
             render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], white,
-                        150, 280 + (i - 1) * 55);
+                        150, 280 + (setting_index - 1) * 55 + (i - setting_index) * 30);
 
-            setting_index--;
+            continue;
         }
-        else if (selected_item != setting_index)
-            render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], blue,
-                        200, 280 + (i - 1) * 55);
         else
-            render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1], green,
-                        200, 280 + (i - 1) * 55);
+            render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1],
+                        selected_item != setting_index ? blue : green,
+                        i != 13 ? 450 : 150, i != 13 ? 280 + (setting_index - 1) * 55 + (i - setting_index - 1) * 30 : 900);
 
         setting_index++;
     }
@@ -263,7 +267,7 @@ void load_settings(struct window *window)
 }
 
 
-static void handle_arrow_event(struct window *window, const int selected_item, Uint32 *begin)
+static int handle_arrow_event(struct window *window, const int selected_item, Uint32 *begin)
 {
     if (window->in->key[SDL_SCANCODE_LEFT]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
@@ -438,10 +442,15 @@ static void handle_arrow_event(struct window *window, const int selected_item, U
                 write_settings(window);
                 break;
 
+            case 10:
+                return 0;
+
             default:
                 break;
         }
     }
+
+    return 1;
 }
 
 
@@ -450,31 +459,7 @@ void settings(struct window *window)
     int escape = 0;
     unsigned selected_item = 0;
     Uint32 begin = SDL_GetTicks();
-    SDL_Rect areas[NUM_SETTINGS];
-
-    for (unsigned i = 0; i < 2; i++)
-    {
-        areas[i].x = 200;
-        areas[i].y = 280 + (i + 1) * 55;
-        areas[i].w = 1500;
-        areas[i].h = 55;
-    }
-
-    for (unsigned i = 2; i < 4; i++)
-    {
-        areas[i].x = 200;
-        areas[i].y = 280 + (i + 2) * 55;
-        areas[i].w = 1500;
-        areas[i].h = 55;
-    }
-
-    for (unsigned i = 4; i < 9; i++)
-    {
-        areas[i].x = 200;
-        areas[i].y = 280 + (i + 3) * 55;
-        areas[i].w = 1500;
-        areas[i].h = 55;
-    }
+    SDL_Rect areas[NUM_SETTINGS + 1];
 
 
     while (!escape)
@@ -482,10 +467,29 @@ void settings(struct window *window)
         // Get and handle events
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, NUM_SETTINGS, areas);
 
-        handle_arrow_event(window, selected_item, &begin);
-        escape = handle_escape_event(window);
+        char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][128] = { 0 };
+        populate_settings_texts(window, s_list);
+
+        int setting_index = 0;
+
+        for (int i = 1; i <= NUM_SETTINGS + NUM_TITLES_SETTINGS + 1; i++)
+        {
+            if (i == AUDIO || i == VIDEO || i == INPUTS)
+                continue;
+
+            areas[setting_index].x = i != 13 ? 450 : 150;
+            areas[setting_index].y = i != 13 ? 280 + setting_index * 55 + (i - setting_index - 2) * 30 : 900;
+            TTF_SizeText(window->fonts->zero4b_30_extra_small, s_list[i - 1], &areas[setting_index].w, &areas[setting_index].h);
+            setting_index++;
+        }
+
+        handle_select_arrow_event(window, &selected_item, NUM_SETTINGS + 1, areas);
+
+        if (!handle_arrow_event(window, selected_item, &begin))
+            escape = 1;
+
+        escape = escape || handle_escape_event(window);
 
         // Display black background
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);

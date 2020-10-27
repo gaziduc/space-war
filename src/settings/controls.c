@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
-static void render_controls(struct window *window, Uint32 begin, int selected_item, char *names[NUM_CONTROLS])
+static void render_controls(struct window *window, Uint32 begin, int selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -21,18 +21,18 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
     SDL_Color orange = { 255, 128, 0, alpha };
     SDL_Color blue = { 0, 255, 255, alpha };
 
-    render_text(window, window->fonts->zero4b_30_small, "Keyboard Controls...", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[KEYBOARD_CONTROLS], orange, 150, 150);
 
     char s[64] = { 0 };
 
     for (enum control i = 0; i < NUM_CONTROLS; i++)
     {
-        sprintf(s, "%s: %s", names[i], SDL_GetScancodeName(window->settings->controls[i]));
-        render_text(window, window->fonts->zero4b_30_small, s, selected_item - 1 == (int) i ? green : white, 150, 300 + i * 80);
+        sprintf(s, "%s: %s", window->txt[UP_TXT + i], SDL_GetScancodeName(window->settings->controls[i]));
+        render_text(window, window->fonts->zero4b_30_small, s, selected_item - 1 == (int) i ? green : white, 150, 300 + i * 75);
     }
 
-    char *str = "Reset inputs";
-    render_text(window, window->fonts->zero4b_30_small, str, selected_item == (int) NUM_CONTROLS + 1 ? green : blue, 150, 360 + NUM_CONTROLS * 80);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[RESET_INPUTS], selected_item == (int) NUM_CONTROLS + 1 ? green : blue, 150, 340 + NUM_CONTROLS * 75);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[BACK_8], selected_item == (int) NUM_CONTROLS + 2 ? green : blue, 150, 340 + (NUM_CONTROLS + 1) * 75);
 }
 
 
@@ -41,28 +41,31 @@ void controls(struct window *window)
     int escape = 0;
     unsigned selected_item = 0;
     Uint32 begin = SDL_GetTicks();
-    char *names[NUM_CONTROLS] = { "Up", "Left", "Down", "Right", "Shoot", "Bomb" };
-    SDL_Rect areas[NUM_CONTROLS + 1];
-
-    for (unsigned i = 0; i < NUM_CONTROLS; i++)
-    {
-        areas[i].x = 150;
-        areas[i].y = 300 + i * 80;
-        areas[i].w = 1000;
-        areas[i].h = 80;
-    }
-
-    areas[NUM_CONTROLS].x = 150;
-    areas[NUM_CONTROLS].y = 360 + NUM_CONTROLS * 80;
-    areas[NUM_CONTROLS].w = 1000;
-    areas[NUM_CONTROLS].h = 80;
+    SDL_Rect areas[NUM_CONTROLS + 2];
 
     while (!escape)
     {
         update_events(window->in, window);
         handle_quit_event(window, 0);
-        handle_select_arrow_event(window, &selected_item, NUM_CONTROLS + 1, areas);
-        escape = handle_escape_event(window);
+
+        for (unsigned i = 0; i < NUM_CONTROLS; i++)
+        {
+            areas[i].x = 150;
+            areas[i].y = 300 + i * 75;
+
+            char s[64] = { 0 };
+            sprintf(s, "%s: %s", window->txt[UP_TXT + i], SDL_GetScancodeName(window->settings->controls[i]));
+            TTF_SizeText(window->fonts->zero4b_30_small, s, &areas[i].w, &areas[i].h);
+        }
+
+        for (unsigned i = 0; i < 2; i++)
+        {
+            areas[NUM_CONTROLS + i].x = 150;
+            areas[NUM_CONTROLS + i].y = 340 + (NUM_CONTROLS + i) * 75;
+            TTF_SizeText(window->fonts->zero4b_30_small, window->txt[RESET_INPUTS + i], &areas[NUM_CONTROLS + i].w, &areas[NUM_CONTROLS + i].h);
+        }
+
+        handle_select_arrow_event(window, &selected_item, NUM_CONTROLS + 2, areas);
 
         if (selected_item > 0 && handle_play_event(window))
         {
@@ -71,9 +74,11 @@ void controls(struct window *window)
                 reset_controls(window);
                 write_settings(window);
             }
+            else if (selected_item == NUM_CONTROLS + 2)
+                escape = 1;
             else
             {
-                SDL_Scancode temp = get_key(window, selected_item, names);
+                SDL_Scancode temp = get_key(window, selected_item);
                 if (temp != SDL_SCANCODE_ESCAPE)
                     window->settings->controls[selected_item - 1] = temp;
                 write_settings(window);
@@ -81,13 +86,15 @@ void controls(struct window *window)
             }
         }
 
+        escape = escape || handle_escape_event(window);
+
         // Display black background
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
         // Process/Draw all the things
         render_stars(window);
-        render_controls(window, begin, selected_item, names);
+        render_controls(window, begin, selected_item);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
@@ -96,17 +103,16 @@ void controls(struct window *window)
 }
 
 
-SDL_Scancode get_key(struct window *window, int selected_item, char *names[NUM_CONTROLS])
+SDL_Scancode get_key(struct window *window, int selected_item)
 {
     SDL_Event event;
     Uint32 begin = SDL_GetTicks();
 
-
     char s1[128] = { 0 };
-    sprintf(s1, "Enter the key for %s...", names[selected_item - 1]);
+    sprintf(s1, window->txt[ENTER_KEY], window->txt[UP_TXT + selected_item - 1]);
 
     char s2[128] = { 0 };
-    sprintf(s2, "Current key: %s", SDL_GetScancodeName(window->settings->controls[selected_item - 1]));
+    sprintf(s2, window->txt[CURRENT_KEY], SDL_GetScancodeName(window->settings->controls[selected_item - 1]));
 
     while (1)
     {

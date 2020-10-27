@@ -8,7 +8,7 @@
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 
-static void render_success_texts(struct window *window, Uint32 begin, int is_best)
+static void render_success_texts(struct window *window, Uint32 begin, int is_best, unsigned selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -18,13 +18,14 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
         alpha = 1;
 
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
+    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
 
-    render_text(window, window->fonts->zero4b_30, "SUCCESS", green,
+    render_text(window, window->fonts->zero4b_30, window->txt[SUCCESS], green,
                 150, 150);
 
     // Print score
     char s[50] = { 0 };
-    sprintf(s, "Score: %d", window->score);
+    sprintf(s, window->txt[SCORE_D_2], window->score);
 
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
@@ -37,25 +38,25 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
     for (unsigned i = 0; i < window->num_players; i++)
         health_bonus += window->player[i].health;
 
-    sprintf(s, "Health Bonus: %d", health_bonus);
+    sprintf(s, window->txt[HEALTH_BONUS_D], health_bonus);
 
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
                 150, 450);
 
     // Bombs Bonus
     int bombs_bonus = window->num_bombs * 100;
-    sprintf(s, "Bombs Bonus: %d", bombs_bonus);
+    sprintf(s, window->txt[BOMBS_BONUS_D], bombs_bonus);
 
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
                 150, 500);
 
     // Difficulty bonus
-    sprintf(s, "Difficulty Bonus: %d", window->bonus);
+    sprintf(s, window->txt[DIFFICULTY_BONUS_D], window->bonus);
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
                 150, 550);
 
     // Total
-    sprintf(s, "TOTAL: %d", window->score + health_bonus + bombs_bonus + window->bonus);
+    sprintf(s, window->txt[TOTAL_D], window->score + health_bonus + bombs_bonus + window->bonus);
 
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 150, 620);
@@ -63,16 +64,16 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
     if (is_best)
     {
         SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
-        render_text(window, window->fonts->zero4b_30_small, "NEW BEST!", yellow, 1000, 620);
+        render_text(window, window->fonts->zero4b_30_small, window->txt[NEW_BEST], yellow, 1000, 620);
     }
 
 
     // Enter to continue
     if (!window->is_lan || window->server)
-        render_text(window, window->fonts->zero4b_30_small, "CONTINUE",
-                    green, 150, 810);
+        render_text(window, window->fonts->zero4b_30_small, window->txt[CONTINUE],
+                    selected_item == 1 ? green : blue, 150, 810);
     else
-        render_text(window, window->fonts->zero4b_30_small, "WAITING FOR THE SERVER...",
+        render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_THE_SERVER],
                     orange, 150, 810);
 }
 
@@ -101,7 +102,10 @@ void success(struct window *window, const int level_num, const int difficulty)
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
     unsigned selected = 0;
-    SDL_Rect areas[] = { { .x = 150, .y = 810, .w = 1620, .h = 150 } };
+    SDL_Rect areas[1];
+    areas[0].x = 150;
+    areas[0].y = 810;
+    TTF_SizeText(window->fonts->zero4b_30_small, window->txt[CONTINUE], &areas[0].w, &areas[0].h);
 
     load_music(window, "data/success.ogg", 1);
 
@@ -112,7 +116,7 @@ void success(struct window *window, const int level_num, const int difficulty)
 
         if (!window->is_lan || window->server)
         {
-            escape = handle_play_event(window);
+            escape = selected > 0 && handle_play_event(window);
             handle_select_arrow_event(window, &selected, 1, areas);
 
             if (window->is_lan && window->server)
@@ -131,7 +135,7 @@ void success(struct window *window, const int level_num, const int difficulty)
         SDL_RenderClear(window->renderer);
 
         render_stars(window);
-        render_success_texts(window, begin, is_best);
+        render_success_texts(window, begin, is_best, selected);
 
         SDL_RenderPresent(window->renderer);
 
@@ -151,11 +155,11 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
 
     SDL_Color red = { .r = 255, .g = 0, .b = 0, .a = alpha };
 
-    render_text(window, window->fonts->zero4b_30, "FAILURE", red,
+    render_text(window, window->fonts->zero4b_30, window->txt[FAILURE], red,
                 150, 150);
 
     char s[50] = { 0 };
-    sprintf(s, "SCORE: %d", window->score);
+    sprintf(s, window->txt[SCORE_D_2], window->score);
 
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
 
@@ -165,14 +169,14 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
     if (is_best)
     {
         SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
-        render_text(window, window->fonts->zero4b_30_small, "NEW BEST!", yellow, 150, 550);
+        render_text(window, window->fonts->zero4b_30_small, window->txt[NEW_BEST], yellow, 150, 550);
     }
 
 
 
     if (!window->is_lan || window->server)
     {
-        char *s_list[2] = { "RETRY", "BACK" };
+        char *s_list[2] = { window->txt[RETRY], window->txt[BACK_9] };
         SDL_Color blue = { 0, 255, 255, alpha };
         SDL_Color green = { 0, 255, 0, alpha };
 
@@ -188,7 +192,7 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
         }
     }
     else
-        render_text(window, window->fonts->zero4b_30_small, "WAITING FOR THE SERVER...",
+        render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_THE_SERVER],
                             orange, 150, 730);
 }
 
@@ -208,9 +212,13 @@ int failure(struct window *window, int level_num, int level_difficulty)
 
     load_music(window, "data/failure.ogg", 1);
 
-    SDL_Rect areas[] = { { .x = 150, .y = 730, .w = 620, .h = 100 },
-                         { .x = 150, .y = 830, .w = 620, .h = 100 }
-                     };
+    SDL_Rect areas[2];
+    for (unsigned i = 0; i < 2; i++)
+    {
+        areas[i].x = 150;
+        areas[i].y = 730 + i * 100;
+        TTF_SizeText(window->fonts->zero4b_30_small, window->txt[RETRY + i], &areas[i].w, &areas[i].h);
+    }
 
     while (!escape)
     {

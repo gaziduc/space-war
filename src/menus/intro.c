@@ -16,7 +16,7 @@ void intro(struct window *window)
     int escape = 0;
 
 
-    for (int i = 255; i >= 0; i -= 4)
+    for (int i = 255; i >= 0; i -= 6)
     {
         update_events(window->in, window);
         handle_quit_event(window, 0);
@@ -40,7 +40,7 @@ void intro(struct window *window)
 
 
 
-    for (int i = 0; i < 256; i += 4)
+    for (int i = 0; i < 256; i += 6)
     {
         update_events(window->in, window);
         handle_quit_event(window, 0);
@@ -99,7 +99,7 @@ void intro(struct window *window)
         SDL_framerateDelay(window->fps);
     }
 
-    for (int i = 255; i >= 0; i -= 4)
+    for (int i = 255; i >= 0; i -= 6)
     {
         update_events(window->in, window);
         handle_quit_event(window, 0);

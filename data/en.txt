@@ -58,3 +58,48 @@ PAUSE
 RESUME
 SETTINGS
 ESCAPE
+Audio:
+< Music Volume: %.*s%.*s >
+< SFX Volume: %.*s%.*s >
+Video:
+Fullscreen: %s
+< Resolution: %dx%d %s>
+Inputs:
+< P1 Input: %s >
+< P2 Input: %s >
+Keyboard Controls...
+Mouse Sensitivity: %s
+Controller Force Feedback: %s
+BACK
+Up
+Left
+Down
+Right
+Shoot
+Bomb
+Reset inputs
+BACK
+SCORE %d
+BOMBS %d
+AMMO  %d
+AMMO  999+
+NETWORK
+KEYBOARD
+MOUSE
+CONTROLLER
+TOUCH SCREEN
+Enter the key for %s...
+Current key: %s
+CONTINUE
+SUCCESS
+Score: %d
+Health Bonus: %d
+Bombs Bonus: %d
+Difficulty Bonus: %d
+TOTAL: %d
+NEW BEST!
+WAITING FOR THE SERVER...
+FAILURE
+RETRY
+BACK
+BEST: %d
