@@ -280,7 +280,7 @@ void render_enemies(struct window *window)
 }
 
 
-void render_enemy_health(struct window *window, struct list *enemy)
+void render_enemy_health(struct window *window, struct list *enemy, Uint8 alpha)
 {
     SDL_Rect pos = { .x = enemy->pos_dst.x + enemy->pos_dst.w / 2 - 50,
                      .y = enemy->pos_dst.y - 25,
@@ -292,7 +292,7 @@ void render_enemy_health(struct window *window, struct list *enemy)
 
     resize_pos_for_resolution(window, &pos);
 
-    SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, 192); // green
+    SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, alpha); // green
     SDL_RenderFillRect(window->renderer, &pos);
 
 
@@ -303,7 +303,7 @@ void render_enemy_health(struct window *window, struct list *enemy)
 
     resize_pos_for_resolution(window, &pos);
 
-    SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, 192); // red
+    SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, alpha); // red
     SDL_RenderFillRect(window->renderer, &pos);
 }
 
@@ -311,11 +311,15 @@ void render_enemy_health(struct window *window, struct list *enemy)
 void render_enemies_health(struct window *window)
 {
     struct list *temp = window->list[ENEMY_LIST]->next;
+    Uint32 ticks = SDL_GetTicks();
 
     while (temp)
     {
-        if (SDL_GetTicks() - temp->last_time_hurt < 1500)
-            render_enemy_health(window, temp);
+        Uint32 diff_ticks = ticks - temp->last_time_hurt;
+        if (diff_ticks < 1500)
+            render_enemy_health(window, temp, 192);
+        else if (diff_ticks < 1692)
+            render_enemy_health(window, temp, 1692 - diff_ticks);
 
         // Go to next enemy
         temp = temp->next;

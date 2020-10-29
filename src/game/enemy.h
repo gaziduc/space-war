@@ -20,7 +20,7 @@ void move_enemies(struct window *window);
 
 void render_enemies(struct window *window);
 
-void render_enemy_health(struct window *window, struct list *enemy);
+void render_enemy_health(struct window *window, struct list *enemy, Uint8 alpha);
 
 void render_enemies_health(struct window *window);
 

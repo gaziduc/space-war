@@ -135,7 +135,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
         SDL_QueryTexture(window->img->shot[i - 1]->texture, NULL, NULL, &w, &h);
 
         SDL_Rect pos_shot = { .x = 225 - w / 2,
-                              .y = 375 - h / 2 + (i - 1) * 200,
+                              .y = 370 - h / 2 + (i - 1) * 200,
                               .w = w,
                               .h = h
                             };
@@ -155,7 +155,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
 
         if (i == choice)
         {
-            SDL_Rect pos = { .x = 150, .y = 325 + (i - 1) * 200, .w = 150, .h = 100 };
+            SDL_Rect pos = { .x = 150, .y = 320 + (i - 1) * 200, .w = 150, .h = 100 };
             resize_pos_for_resolution(window, &pos);
 
             SDL_SetRenderDrawColor(window->renderer, 0, 128, 255, alpha);
@@ -183,7 +183,7 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
 
         if (i < 3)
         {
-            areas[i].y = 325 + i * 200;
+            areas[i].y = 320 + i * 200;
             areas[i].w = 1620;
             areas[i].h = 100;
         }

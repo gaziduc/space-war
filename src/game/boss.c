@@ -79,11 +79,7 @@ void render_boss(struct window *window)
 
     while (temp)
     {
-        SDL_Rect pos = { .x = temp->pos_dst.x,
-                         .y = temp->pos_dst.y,
-                         .w = temp->pos_dst.w,
-                         .h = temp->pos_dst.h
-                       };
+        SDL_Rect pos = temp->pos_dst;
 
         resize_pos_for_resolution(window, &pos);
 
@@ -98,11 +94,15 @@ void render_boss(struct window *window)
 void render_boss_health(struct window *window)
 {
     struct list *temp = window->list[BOSS_LIST]->next;
+    Uint32 ticks = SDL_GetTicks();
 
     while (temp)
     {
-        if (SDL_GetTicks() - temp->last_time_hurt < 1500)
-            render_enemy_health(window, temp);
+        Uint32 diff_ticks = ticks - temp->last_time_hurt;
+        if (diff_ticks < 1500)
+            render_enemy_health(window, temp, 192);
+        else if (diff_ticks < 1692)
+            render_enemy_health(window, temp, 1692 - diff_ticks);
 
         // Go to next enemy
         temp = temp->next;
