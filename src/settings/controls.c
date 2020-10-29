@@ -28,11 +28,11 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
     for (enum control i = 0; i < NUM_CONTROLS; i++)
     {
         sprintf(s, "%s: %s", window->txt[UP_TXT + i], SDL_GetScancodeName(window->settings->controls[i]));
-        render_text(window, window->fonts->zero4b_30_small, s, selected_item - 1 == (int) i ? green : white, 150, 300 + i * 75);
+        render_text(window, window->fonts->zero4b_30_small, s, selected_item - 1 == (int) i ? green : white, 150, 280 + i * 75);
     }
 
-    render_text(window, window->fonts->zero4b_30_small, window->txt[RESET_INPUTS], selected_item == (int) NUM_CONTROLS + 1 ? green : blue, 150, 340 + NUM_CONTROLS * 75);
-    render_text(window, window->fonts->zero4b_30_small, window->txt[BACK_8], selected_item == (int) NUM_CONTROLS + 2 ? green : blue, 150, 340 + (NUM_CONTROLS + 1) * 75);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[RESET_INPUTS], selected_item == (int) NUM_CONTROLS + 1 ? green : blue, 150, 310 + NUM_CONTROLS * 80);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[BACK_8], selected_item == (int) NUM_CONTROLS + 2 ? green : blue, 150, 310 + (NUM_CONTROLS + 1) * 80);
 }
 
 
@@ -51,7 +51,7 @@ void controls(struct window *window)
         for (unsigned i = 0; i < NUM_CONTROLS; i++)
         {
             areas[i].x = 150;
-            areas[i].y = 300 + i * 75;
+            areas[i].y = 280 + i * 80;
 
             char s[64] = { 0 };
             sprintf(s, "%s: %s", window->txt[UP_TXT + i], SDL_GetScancodeName(window->settings->controls[i]));
@@ -61,7 +61,7 @@ void controls(struct window *window)
         for (unsigned i = 0; i < 2; i++)
         {
             areas[NUM_CONTROLS + i].x = 150;
-            areas[NUM_CONTROLS + i].y = 340 + (NUM_CONTROLS + i) * 75;
+            areas[NUM_CONTROLS + i].y = 310 + (NUM_CONTROLS + i) * 80;
             TTF_SizeText(window->fonts->zero4b_30_small, window->txt[RESET_INPUTS + i], &areas[NUM_CONTROLS + i].w, &areas[NUM_CONTROLS + i].h);
         }
 
