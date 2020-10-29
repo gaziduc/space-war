@@ -93,7 +93,13 @@ static void check_collisions_list(struct window *window, struct player *player,
             {
                 // Decrease enemy health
                 temp_enemy->health -= get_weapon_damage(window->weapon);
-                temp_enemy->last_time_hurt = SDL_GetTicks();
+
+                Uint32 ticks = SDL_GetTicks();
+
+                if (ticks - temp_enemy->last_time_hurt >= 1692)
+                    temp_enemy->first_time_hurt = ticks;
+
+                temp_enemy->last_time_hurt = ticks;
 
                 // Add an explosion
                 list_push_front(temp_pos, window, EXPLOSION_LIST,

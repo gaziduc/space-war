@@ -25,6 +25,7 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
     new->health = window->paths->data[window->paths->index].line.enemy_path.health;
     new->max_health = new->health;
     new->last_time_hurt = 0;
+    new->first_time_hurt = 0;
     new->enemy_type = enemy_type;
 
     switch (enemy_type)
@@ -316,10 +317,15 @@ void render_enemies_health(struct window *window)
     while (temp)
     {
         Uint32 diff_ticks = ticks - temp->last_time_hurt;
-        if (diff_ticks < 1500)
+        Uint32 first_diff_ticks = ticks - temp->first_time_hurt;
+
+        if (first_diff_ticks < 192)
+            render_enemy_health(window, temp, first_diff_ticks);
+        else if (diff_ticks < 1500)
             render_enemy_health(window, temp, 192);
         else if (diff_ticks < 1692)
             render_enemy_health(window, temp, 1692 - diff_ticks);
+
 
         // Go to next enemy
         temp = temp->next;

@@ -110,6 +110,7 @@ struct list
     int health;
     int max_health;
     Uint32 last_time_hurt;
+    Uint32 first_time_hurt;
     enum object_type type;
     char enemy_type;
     int rotating;
