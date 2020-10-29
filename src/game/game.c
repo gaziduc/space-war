@@ -401,11 +401,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 
 static void render_ship(struct window *window, SDL_Rect *temp_pos)
 {
-    SDL_Rect pos = { .x = temp_pos->x,
-                     .y = temp_pos->y,
-                     .w = temp_pos->w,
-                     .h = temp_pos->h
-                   };
+    SDL_Rect pos = *temp_pos;
 
     resize_pos_for_resolution(window, &pos);
 
@@ -527,7 +523,9 @@ void play_game(struct window *window, int mission_num, int difficulty)
             // LAN only
             if (window->is_lan)
             {
-                send_state(&window->player[0], window, is_shooting, is_throwing_bomb, 0, 1, mission_num, difficulty);
+                send_state(&window->player[0], window, is_shooting, is_throwing_bomb,
+                           SDL_GetTicks() - window->player[0].shield_time < SHIELD_TIME,
+                           1, mission_num, difficulty);
 
                 if ((!window->server || has_recv_once) && window->state.state == 0) // Go back to menu
                 {
@@ -543,6 +541,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 window->player[1].pos.y = window->state.pos_y;
                 window->player[1].health = window->state.health;
                 window->player[1].ammo = window->state.ammo;
+                window->weapon = window->state.weapon;
                 if (window->player[1].ammo == 1000)
                     window->player[1].ammo = -1;
 
