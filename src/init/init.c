@@ -8,6 +8,7 @@
 #include "save.h"
 #include "event.h"
 #include "language.h"
+#include "msg_list.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -59,12 +60,13 @@ static struct window *init_window(void)
         error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
 
     add_resolution(window, 0, dm.w, dm.h);
-    add_resolution(window, 1, 1280, 720);
-    add_resolution(window, 2, 1366, 768);
-    add_resolution(window, 3, 1600, 900);
-    add_resolution(window, 4, DEFAULT_W, DEFAULT_H);
-    add_resolution(window, 5, 2560, 1440);
-    add_resolution(window, 6, 3840, 2160);
+    add_resolution(window, 1, 1024, 576);
+    add_resolution(window, 2, 1280, 720);
+    add_resolution(window, 3, 1366, 768);
+    add_resolution(window, 4, 1600, 900);
+    add_resolution(window, 5, DEFAULT_W, DEFAULT_H);
+    add_resolution(window, 6, 2560, 1440);
+    add_resolution(window, 7, 3840, 2160);
 
     load_settings(window);
 
@@ -268,6 +270,10 @@ struct window *init_all(void)
 
     // Load save file and progress
     read_save(window);
+
+    // LAN meesages
+    window->msg_list = xmalloc(sizeof(struct msg_list), window->window, window->renderer);
+    window->msg_list->next = NULL;
 
     return window;
 }

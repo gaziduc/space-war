@@ -7,14 +7,15 @@
 #include "event.h"
 #include "game.h"
 #include "ready.h"
+#include "net.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
-int shoot(struct window *window, struct player *player)
+int shoot(struct window *window, struct player *player, int provoked_by_me)
 {
     if (player->ammo == -1 || player->ammo > 0)
     {
-        if (player->missile_around)
+        if (player->missile_around) // double missile
         {
             SDL_Rect missile_pos = player->pos;
 
@@ -34,6 +35,13 @@ int shoot(struct window *window, struct player *player)
                 if (player->ammo > 0)
                     player->ammo--;
             }
+
+            if (window->is_lan && provoked_by_me)
+            {
+                struct msg msg = { .type = SHOOT_MSG };
+                msg.content.boolean = 2;
+                send_msg(window, &msg);
+            }
         }
         else
         {
@@ -43,6 +51,13 @@ int shoot(struct window *window, struct player *player)
 
             if (player->ammo > 0)
                 player->ammo--;
+
+            if (window->is_lan && provoked_by_me)
+            {
+                struct msg msg = { .type = SHOOT_MSG };
+                msg.content.boolean = 1;
+                send_msg(window, &msg);
+            }
         }
 
         return 1;
@@ -52,7 +67,7 @@ int shoot(struct window *window, struct player *player)
 }
 
 
-void bomb(struct window *window)
+void bomb(struct window *window, int provoked_by_me)
 {
     /* NORMAL ENEMY */
     struct list *sentinel = window->list[ENEMY_LIST];
@@ -107,6 +122,12 @@ void bomb(struct window *window)
             sentinel->next->last_time_hurt = SDL_GetTicks();
             sentinel = sentinel->next;
         }
+    }
+
+    if (window->is_lan && provoked_by_me)
+    {
+        struct msg msg = { .type = BOMB_MSG };
+        send_msg(window, &msg);
     }
 }
 

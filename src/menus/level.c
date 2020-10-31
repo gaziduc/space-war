@@ -5,6 +5,7 @@
 #include "utils.h"
 #include "level.h"
 #include "weapon.h"
+#include "net.h"
 #include <stdio.h>
 #include <string.h>
 #include <SDL2/SDL.h>
@@ -239,6 +240,9 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
 
 void select_level(struct window *window)
 {
+    if (window->is_lan)
+        SDL_CreateThread(recv_thread, "recv_thread", window);
+
     int escape = 0;
     unsigned selected_level = 0;
     Uint32 begin = SDL_GetTicks();
@@ -310,8 +314,8 @@ void select_level(struct window *window)
 
     if (window->is_lan)
     {
-         char data[15] = { 0 };
-         data[11] = 2;
-         SDLNet_TCP_Send(window->client, data, sizeof(data));
+         struct msg msg = { .type = QUIT_MSG };
+         msg.content.boolean = 0;
+         send_msg(window, &msg);
     }
 }

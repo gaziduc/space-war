@@ -119,13 +119,18 @@ void success(struct window *window, const int level_num, const int difficulty)
             escape = selected > 0 && handle_play_event(window);
             handle_select_arrow_event(window, &selected, 1, areas);
 
-            if (window->is_lan && window->server)
-                send_state(&window->player[0], window, 0, 0, 0, 3, level_num, difficulty);
+            if (escape)
+            {
+                struct msg msg = { .type = MENU_MSG };
+                send_msg(window, &msg);
+            }
         }
         else
         {
-            if (window->state.state == 0)
-                return;
+            handle_messages(window, "M");
+
+            if (window->restart > 0)
+                break;
         }
 
         SDL_RenderClear(window->renderer);
@@ -141,6 +146,8 @@ void success(struct window *window, const int level_num, const int difficulty)
 
         SDL_framerateDelay(window->fps);
     }
+
+    window->restart = 0;
 }
 
 
@@ -197,7 +204,7 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
 }
 
 
-int failure(struct window *window, int level_num, int level_difficulty)
+int failure(struct window *window, int level_num)
 {
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
@@ -230,23 +237,34 @@ int failure(struct window *window, int level_num, int level_difficulty)
             if (selected > 0 && handle_play_event(window))
             {
                 if (selected == 2)
+                {
+                    struct msg msg = { .type = MENU_MSG };
+                    send_msg(window, &msg);
+
                     escape = 1;
+                }
+                else
+                {
+                    struct msg msg = { .type = RESTART_MSG };
+                    send_msg(window, &msg);
+                }
+
                 break;
             }
 
             handle_select_arrow_event(window, &selected, 2, areas);
-
-            if (window->is_lan && window->server)
-                send_state(&window->player[0], window, 0, 0, 0, 3, level_num, level_difficulty);
         }
         else
         {
-            if (window->state.state == 0)
-                return 1;
-            else if (window->state.state == 1)
-                return 0;
-        }
+            handle_messages(window, "RM");
 
+            if (window->restart > 0)
+            {
+                if (window->restart == 2)
+                    escape = 1;
+                break;
+            }
+        }
 
 
         SDL_RenderClear(window->renderer);
@@ -261,6 +279,8 @@ int failure(struct window *window, int level_num, int level_difficulty)
 
         SDL_framerateDelay(window->fps);
     }
+
+    window->restart = 0;
 
     return escape;
 }

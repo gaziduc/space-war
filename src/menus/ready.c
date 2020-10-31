@@ -3,6 +3,7 @@
 #include "event.h"
 #include "game.h"
 #include "menu.h"
+#include "net.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -89,6 +90,12 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
         {
             if (selected_item == 1)
             {
+                struct msg msg = { .type =  LEVEL_MSG };
+                msg.content.lvl.level_num = selected_level;
+                msg.content.lvl.level_difficulty = selected_difficulty;
+                msg.content.lvl.weapon = window->weapon;
+                send_msg(window, &msg);
+
                 play_game(window, selected_level, selected_difficulty);
                 return 1;
             }

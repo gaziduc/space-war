@@ -7,7 +7,10 @@
 #include "game.h"
 #include "lobby.h"
 #include "ip.h"
+#include "msg_list.h"
+#include "weapon.h"
 #include <stdio.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
 #include <SDL2/SDL_net.h>
@@ -158,7 +161,6 @@ static void accept_client(struct window *window, char *ip_str)
     int escape = 0;
     unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
-    char buf[1] = { 0 };
     SDL_Rect areas[2];
 
     for (unsigned i = 0; i < 2; i++)
@@ -174,26 +176,24 @@ static void accept_client(struct window *window, char *ip_str)
         update_events(window->in, window, 0);
         handle_quit_event(window, 0);
         handle_select_arrow_event(window, &selected_item, 2, areas);
-        escape = handle_escape_event(window);
-        if (escape)
-        {
-            buf[0] = 2;
-            SDLNet_TCP_Send(window->client, buf, sizeof(buf));
-        }
 
-        if (!escape && selected_item > 0 && handle_play_event(window))
+        if (selected_item > 0 && handle_play_event(window))
         {
             switch (selected_item)
             {
                 case 1: // Accept
-                    buf[0] = 1;
-                    SDLNet_TCP_Send(window->client, buf, sizeof(buf));
+                    ;
+                    struct msg accept_msg = { .type = ACCEPT_MSG };
+                    accept_msg.content.boolean = 1;
+                    send_msg(window, &accept_msg);
                     select_level(window);
                     return;
 
                 case 2: // Decline
-                    buf[0] = 2;
-                    SDLNet_TCP_Send(window->client, buf, sizeof(buf));
+                    ;
+                    struct msg decline_msg = { .type = ACCEPT_MSG };
+                    decline_msg.content.boolean = 2;
+                    send_msg(window, &decline_msg);
                     break;
 
                 default:
@@ -237,6 +237,9 @@ void create_server(struct window *window)
     IPaddress server_ip;
     SDLNet_ResolveHost(&server_ip, NULL, 4321);
     window->server = SDLNet_TCP_Open(&server_ip);
+
+    if (!window->server)
+        return;
 
     // Get server IP
     IPaddress *local_ips = xmalloc(sizeof(IPaddress) * MAX_IP_TO_SHOW, window->window, window->renderer);
@@ -420,6 +423,7 @@ void connect_to_server(struct window *window)
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
+    window->accepted = 0;
 
     memset(buf, '\0', sizeof(buf));
     memset(err, '\0', sizeof(err));
@@ -490,25 +494,27 @@ void connect_to_server(struct window *window)
                         white, 150 + strlen(buf) * 18, 350);
 
         if (is_connecting)
+        {
             render_text(window, window->fonts->pixel,
                         window->txt[CONNECTING], green, 150, 470);
+        }
 
         if (is_connected)
         {
-            if (!accepted && !accepting)
+            if (!window->accepted && !accepting)
             {
-                SDL_CreateThread(accepting_thread, "accepting_thread", window);
                 accepting = 1;
             }
-            else if (!accepted && accepting)
+            else if (!window->accepted && accepting)
             {
+                handle_messages(window, "A");
                 render_text(window, window->fonts->pixel,
                             window->txt[WAITING_FOR_OTHER],
                             green, 150, 470);
             }
             else // if accepted (or declined)
             {
-                if (accepted == 1) // Do not remove == 1
+                if (window->accepted == 1) // Do not remove == 1
                 {
                     lobby(window);
                     begin = SDL_GetTicks();
@@ -517,7 +523,6 @@ void connect_to_server(struct window *window)
                 reset_global_vars();
             }
         }
-
         else if (err[0])
             render_text(window, window->fonts->pixel, err, red, 150, 470);
 
@@ -531,55 +536,150 @@ void connect_to_server(struct window *window)
 }
 
 
-void send_state(struct player *player, struct window *window,
-                char is_shooting, char throw_bomb, char has_shield,
-                char state, char level_num, char level_difficulty)
+
+void send_msg(struct window *window, struct msg *msg)
 {
-    char data[15] = { 0 }; // 15 = 4 * sizeof(Uint16) + 7 * sizeof(char)
+    char protocol_msg[128] = { 0 };
 
-    SDLNet_Write16((Uint16) player->pos.x, data);
-    SDLNet_Write16((Uint16) player->pos.y, data + 2);
-    if (player->health > 0)
-        SDLNet_Write16((Uint16) player->health, data + 4);
-    else
-        SDLNet_Write16((Uint16) 0, data + 4);
+    switch (msg->type)
+    {
+        case ACCEPT_MSG:
+            protocol_msg[0] = 2;
+            protocol_msg[1] = 'A';
+            protocol_msg[2] = msg->content.boolean;
+            break;
 
-    if (player->ammo == -1)
-        SDLNet_Write16((Uint16) 1000, data + 6);
-    else
-        SDLNet_Write16((Uint16) player->ammo, data + 6);
+        case RESTART_MSG:
+            protocol_msg[0] = 1;
+            protocol_msg[1] = 'R';
+            break;
 
-    data[8] = is_shooting;
-    data[9] = throw_bomb;
-    data[10] = has_shield;
-    data[11] = state;
-    data[12] = level_num;
-    data[13] = level_difficulty;
-    data[14] = window->weapon;
+        case MENU_MSG:
+            protocol_msg[0] = 1;
+            protocol_msg[1] = 'M';
+            break;
 
-    SDLNet_TCP_Send(window->client, data, sizeof(data));
+        case LEVEL_MSG:
+            protocol_msg[0] = 7; // strlen("L") + sizeof(Uint16) * 3
+            protocol_msg[1] = 'L';
+            SDLNet_Write16(msg->content.lvl.level_num, protocol_msg + 2);
+            SDLNet_Write16(msg->content.lvl.level_difficulty, protocol_msg + 4);
+            SDLNet_Write16(msg->content.lvl.weapon, protocol_msg + 6);
+            break;
+
+        case POSITION_MSG:
+            protocol_msg[0] = 5; // strlen("L") + sizeof(Uint16) * 2
+            protocol_msg[1] = 'P';
+            SDLNet_Write16(msg->content.point.x, protocol_msg + 2);
+            SDLNet_Write16(msg->content.point.y, protocol_msg + 4);
+            break;
+
+        case SHOOT_MSG:
+            protocol_msg[0] = 1; // strlen("L") + sizeof(Uint16) * 2
+            protocol_msg[1] = 'S';
+            break;
+
+        case BOMB_MSG:
+            protocol_msg[0] = 1;
+            protocol_msg[1] = 'B';
+            break;
+
+        case QUIT_MSG:
+            protocol_msg[0] = 1;
+            protocol_msg[1] = 'Q';
+            break;
+    }
+
+    SDLNet_TCP_Send(window->client, protocol_msg, 1 + protocol_msg[0]);
 }
 
 
-void recv_state(struct window *window, struct state *state)
+void recv_msg(struct window *window, char *msg)
 {
-    char data[15] = { 0 }; // 15 = 4 * sizeof(Uin16) + 7 * sizeof(char)
+    Uint8 msg_len = 0;
 
-    SDLNet_TCP_Recv(window->client, data, sizeof(data));
-
-    state->pos_x = SDLNet_Read16(data);
-    state->pos_y = SDLNet_Read16(data + 2);
-    state->health = SDLNet_Read16(data + 4);
-    state->ammo = SDLNet_Read16(data + 6);
-    state->is_shooting = data[8];
-    state->throw_bomb = data[9];
-    state->has_shield = data[10];
-    state->state = data[11];
-    state->level_num = data[12];
-    state->level_difficulty = data[13];
-    state->weapon = data[14];
+    SDLNet_TCP_Recv(window->client, &msg_len, sizeof(msg_len));
+    SDLNet_TCP_Recv(window->client, msg, msg_len);
+    msg[msg_len] = '\0';
 }
 
+
+static int handle_msg(struct window *window, const char *msg, char *msg_prefixes_to_handle)
+{
+    if (strchr(msg_prefixes_to_handle, msg[0]))
+    {
+        switch (msg[0])
+        {
+            case 'A':
+                window->accepted = msg[1];
+                break;
+
+            case 'L':
+                ;
+                Uint16 level_num = SDLNet_Read16(msg + 1);
+                Uint16 level_difficulty = SDLNet_Read16(msg + 3);
+                window->weapon = SDLNet_Read16(msg + 5);
+                play_game(window, level_num, level_difficulty);
+                break;
+
+            case 'R': // Restart when in success/failure screen
+                window->restart = 1;
+                break;
+
+            case 'M': // Go back to menu when in success/failure screen
+                window->restart = 2;
+                break;
+
+            case 'P':
+                window->player[1].pos.x = SDLNet_Read16(msg + 1);
+                window->player[1].pos.y = SDLNet_Read16(msg + 3);
+                break;
+
+            case 'S':
+                ;
+                if (msg[1] == 2)
+                    window->player[1].missile_around = 1;
+
+                shoot(window, &window->player[1], 0);
+                break;
+
+            case 'B':
+                bomb(window, 0);
+                window->num_bombs--;
+                break;
+
+            case 'Q': // Quit level
+                free_background(window->stars);
+                free_vector(window->paths);
+                window->paths = NULL; // important, see free_all in free.c
+                load_music(window, "data/endgame.ogg", 1);
+                return 0;
+        }
+    }
+
+    return 1;
+}
+
+
+int handle_messages(struct window *window, char *msg_prefixes_to_handle)
+{
+    struct msg_list *curr_msg = window->msg_list->next;
+
+    while (curr_msg)
+    {
+        if (!handle_msg(window, curr_msg->msg, msg_prefixes_to_handle))
+        {
+            clear_msg_list(window->msg_list);
+            return 0;
+        }
+
+        curr_msg = curr_msg->next;
+    }
+
+    clear_msg_list(window->msg_list);
+
+    return 1;
+}
 
 int connecting_thread(void *data)
 {
@@ -595,7 +695,10 @@ int connecting_thread(void *data)
             window->client = SDLNet_TCP_Open(&ip);
 
             if (window->client)
+            {
                 is_connected = 1;
+                SDL_CreateThread(recv_thread, "recv_thread", window);
+            }
             else
                 strcpy(err, SDLNet_GetError());
         }
@@ -610,13 +713,17 @@ int connecting_thread(void *data)
 }
 
 
-int accepting_thread(void *data)
+
+int recv_thread(void *data)
 {
     struct window *window = data;
-    char data_received[1] = { 0 };
+    char msg[128] = { 0 };
 
-    SDLNet_TCP_Recv(window->client, data_received, sizeof(data_received));
-    accepted = data_received[0];
+    do
+    {
+        recv_msg(window, msg);
+        add_to_msg_list(window, window->msg_list, msg);
+    } while (msg[0] != 'Q' || msg[1] != 0);
 
     return 0;
 }

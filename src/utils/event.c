@@ -308,6 +308,9 @@ int handle_focus_lost_event(struct window *window)
     if (!window->in->focus_lost)
         return 0;
 
+    if (!is_fullscreen(window))
+        return 0;
+
     Uint32 begin = SDL_GetTicks();
 
     while (window->in->focus_lost)

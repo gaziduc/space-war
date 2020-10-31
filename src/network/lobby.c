@@ -8,22 +8,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_net.h>
 
-int selected;
-int quit;
-
-static void reset_global_vars()
-{
-    selected = 0;
-    quit = 0;
-}
 
 void lobby(struct window *window)
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
-    reset_global_vars();
-
-    SDL_CreateThread(waiting_thread_client, "waiting_thread_client", window);
 
     while (!escape)
     {
@@ -36,16 +25,7 @@ void lobby(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
-        if (selected)
-        {
-            if (quit)
-                escape = 1;
-            else
-            {
-                play_game(window, window->state.level_num, window->state.level_difficulty);
-                selected = 0;
-            }
-        }
+        handle_messages(window, "LQ");
 
         // Process/Draw all the things
         render_stars(window);
@@ -65,24 +45,4 @@ void lobby(struct window *window)
         // Wait a frame
         SDL_framerateDelay(window->fps);
     }
-}
-
-
-int waiting_thread_client(void *data)
-{
-    struct window *window = data;
-
-    do
-    {
-        recv_state(window, &window->state);
-
-        if (window->state.state == 1) // If server plays a level
-            selected = 1;
-
-    } while (window->state.state != 2); // while (!quit)
-
-    selected = 1;
-    quit = 1;
-
-    return 0;
 }

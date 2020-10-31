@@ -12,7 +12,7 @@
 #define DEFAULT_W 1920
 #define DEFAULT_H 1080
 #define MAX_PLAYERS 2
-#define NUM_RESOLUTIONS 7
+#define NUM_RESOLUTIONS 8
 #define MAX_NUM_FINGERS 2
 
 enum object_type
@@ -213,9 +213,42 @@ struct state
     char throw_bomb;
     char has_shield;
     char state; // 0 = is_in_menu, 1 = is_in_level, 2 = quit, 3 = end screen
+
+};
+
+
+enum msg_type
+{
+    ACCEPT_MSG,
+    RESTART_MSG,
+    MENU_MSG,
+    LEVEL_MSG,
+    POSITION_MSG,
+    SHOOT_MSG,
+    BOMB_MSG,
+    QUIT_MSG
+};
+
+struct level
+{
     char level_num;
     char level_difficulty;
     char weapon;
+};
+
+union msg_content
+{
+    struct level lvl;
+    SDL_Point point;
+    // Uint16 number;
+    char boolean;
+};
+
+
+struct msg
+{
+    enum msg_type type;
+    union msg_content content;
 };
 
 
@@ -359,13 +392,15 @@ struct window
     int is_lan;
     TCPsocket server;
     TCPsocket client;
-    struct state state;
     unsigned weapon;
     int touched_anim;
     SDL_Point resolutions[NUM_RESOLUTIONS];
     int resolution_index;
     Uint32 mission_start_time;
     char *txt[NUM_TXT];
+    struct msg_list *msg_list;
+    int accepted;
+    int restart;
 };
 
 void render_loading_screen(struct window *window);

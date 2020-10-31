@@ -11,6 +11,8 @@ enum settings_titles
     INPUTS = 7
 };
 
+int is_fullscreen(struct window *window);
+
 void load_settings(struct window *window);
 
 void write_settings(struct window *window);

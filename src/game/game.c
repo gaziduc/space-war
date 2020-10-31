@@ -18,16 +18,18 @@
 #include "pause.h"
 #include "net.h"
 #include "effect.h"
+#include "msg_list.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
 
-int has_recv_once;
+
 
 static void handle_arrow_event(struct window *window, struct player *player)
 {
     /* Move ship */
+    SDL_Point last_player_pos = { .x = player->pos.x, .y = player->pos.y };
 
     switch (player->input_type)
     {
@@ -138,6 +140,14 @@ static void handle_arrow_event(struct window *window, struct player *player)
         player->pos.x = 0;
     else if (player->pos.x > DEFAULT_W - player->pos.w)
         player->pos.x = DEFAULT_W - player->pos.w;
+
+    if (window->is_lan && (player->pos.x != last_player_pos.x || player->pos.y != last_player_pos.y))
+    {
+        struct msg msg = { .type = POSITION_MSG };
+        msg.content.point.x = player->pos.x;
+        msg.content.point.y = player->pos.y;
+        send_msg(window, &msg);
+    }
 }
 
 
@@ -150,7 +160,7 @@ static int try_to_shoot(struct window *window, struct player *player)
     {
         // Shot
         player->last_shot_time = current_time;
-        return shoot(window, player);
+        return shoot(window, player, 1);
     }
 
     return 0;
@@ -204,7 +214,7 @@ static int handle_bomb_event(struct window *window, struct player *player)
                     window->in->c.button[SDL_CONTROLLER_BUTTON_B] = 0;
 
                     // Bomb: erase all visible enemies
-                    bomb(window);
+                    bomb(window, 1);
                     window->num_bombs--;
                     return 1;
                 }
@@ -216,7 +226,7 @@ static int handle_bomb_event(struct window *window, struct player *player)
                     window->in->key[window->settings->controls[BOMB]] = 0;
 
                     // Bomb: erase all visible enemies
-                    bomb(window);
+                    bomb(window, 1);
                     window->num_bombs--;
                     return 1;
                 }
@@ -228,7 +238,7 @@ static int handle_bomb_event(struct window *window, struct player *player)
                     window->in->mouse_button[SDL_BUTTON_RIGHT] = 0;
 
                     // Bomb: erase all visible enemies
-                    bomb(window);
+                    bomb(window, 1);
                     window->num_bombs--;
                     return 1;
                 }
@@ -434,11 +444,8 @@ static void load_correct_music(struct window *window, int mission_num, int is_ar
 
 void play_game(struct window *window, int mission_num, int difficulty)
 {
-    has_recv_once = 0;
     int is_arcade = 0;
-
-    if (window->is_lan && window->server)
-        SDL_CreateThread(recv_thread_server, "recv_thread_server", window);
+    window->restart = 0;
 
     // Set mode to arcade if necessary
     if (mission_num == NUM_LEVELS + 1)
@@ -467,7 +474,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             init_background(window);
 
             for (unsigned i = 0; i < window->num_players; i++)
-                init_position(120, 250 + i * 500, window->img->ship->texture, &window->player[i].pos);
+                init_position(120, POS_CENTERED, window->img->ship->texture, &window->player[i].pos);
 
             retry = 0;
         }
@@ -491,8 +498,12 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     escape = pause(window);
                 else
                 {
-                    send_state(&window->player[0], window, 0, 0, 0, 0, mission_num, difficulty);
+                    // Send quit message
+                    struct msg msg = { .type = QUIT_MSG };
+                    msg.content.boolean = 1;
+                    send_msg(window, &msg);
 
+                    // Quit game
                     free_background(window->stars);
                     free_vector(window->paths);
                     window->paths = NULL; // important, see free_all in free.c
@@ -501,14 +512,15 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 }
             }
 
-            int is_shooting = 0;
-            int is_throwing_bomb = 0;
 
             for (unsigned i = 0; i < window->num_players; i++)
             {
-                handle_arrow_event(window, &window->player[i]);
-                is_shooting += handle_shot_event(window, &window->player[i]);
-                is_throwing_bomb += handle_bomb_event(window, &window->player[i]);
+                if (i == 0 || (i == 1 && !window->is_lan))
+                {
+                    handle_arrow_event(window, &window->player[i]);
+                    handle_shot_event(window, &window->player[i]);
+                    handle_bomb_event(window, &window->player[i]);
+                }
             }
 
             // Move elements and background
@@ -522,44 +534,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
             // LAN only
             if (window->is_lan)
-            {
-                send_state(&window->player[0], window, is_shooting, is_throwing_bomb,
-                           SDL_GetTicks() - window->player[0].shield_time < SHIELD_TIME,
-                           1, mission_num, difficulty);
-
-                if ((!window->server || has_recv_once) && window->state.state == 0) // Go back to menu
-                {
-                    // Quit
-                    free_background(window->stars);
-                    free_vector(window->paths);
-                    window->paths = NULL; // important, see free_all in free.c
-                    load_music(window, "data/endgame.ogg", 1);
+                if (!handle_messages(window, "PSBQ"))
                     return;
-                }
-
-                window->player[1].pos.x = window->state.pos_x;
-                window->player[1].pos.y = window->state.pos_y;
-                window->player[1].health = window->state.health;
-                window->player[1].ammo = window->state.ammo;
-                window->weapon = window->state.weapon;
-                if (window->player[1].ammo == 1000)
-                    window->player[1].ammo = -1;
-
-                if (window->state.is_shooting)
-                {
-                    shoot(window, &window->player[1]);
-                    window->state.is_shooting = 0;
-                }
-
-                if (window->state.throw_bomb)
-                {
-                    bomb(window);
-                    window->num_bombs--;
-                }
-
-                if (window->state.has_shield)
-                    window->player[1].shield_time = SDL_GetTicks();
-            }
 
             for (unsigned i = 0; i < window->num_players; i++)
             {
@@ -658,20 +634,5 @@ void play_game(struct window *window, int mission_num, int difficulty)
     free_vector(window->paths);
     window->paths = NULL; // important, see free_all in free.c
     load_music(window, "data/endgame.ogg", 1);
-}
-
-
-
-int recv_thread_server(void *data)
-{
-    struct window *window = data;
-
-    do
-    {
-        recv_state(window, &window->state);
-        has_recv_once = 1;
-    } while (window->state.state == 1); // while (playing a level)
-
-    return 0;
 }
 

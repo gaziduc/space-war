@@ -10,14 +10,14 @@
 #include <SDL2/SDL.h>
 
 
-static int is_fullscreen(struct window *window)
+int is_fullscreen(struct window *window)
 {
     Uint32 flags = SDL_GetWindowFlags(window->window);
 
     return (flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN;
 }
 
-static void populate_settings_texts(struct window *window, char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][128])
+static void populate_settings_texts(struct window *window, char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS + 1][128])
 {
     strcpy(s_list[AUDIO - 1], window->txt[AUDIO_TXT]);
     sprintf(s_list[1], window->txt[MUSIC_VOLUME_S], window->settings->music_volume / 8, "----------------", 128 / 8 - window->settings->music_volume / 8, "                ");
@@ -468,7 +468,7 @@ void settings(struct window *window)
         update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
-        char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS][128] = { 0 };
+        char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS + 1][128] = { 0 };
         populate_settings_texts(window, s_list);
 
         int setting_index = 0;
