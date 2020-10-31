@@ -61,7 +61,6 @@ int pause(struct window *window)
         // Handle events
         update_events(window->in, window, 0);
         handle_quit_event(window, 1);
-        handle_focus_lost_event(window);
         handle_select_arrow_event(window, &selected, NUM_CHOICES_PAUSE, areas);
         if (handle_escape_event(window))
             escape = 1;

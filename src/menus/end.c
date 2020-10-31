@@ -119,7 +119,7 @@ void success(struct window *window, const int level_num, const int difficulty)
             escape = selected > 0 && handle_play_event(window);
             handle_select_arrow_event(window, &selected, 1, areas);
 
-            if (escape)
+            if (escape && window->server)
             {
                 struct msg msg = { .type = MENU_MSG };
                 send_msg(window, &msg);
@@ -238,12 +238,15 @@ int failure(struct window *window, int level_num)
             {
                 if (selected == 2)
                 {
-                    struct msg msg = { .type = MENU_MSG };
-                    send_msg(window, &msg);
+                    if (window->is_lan)
+                    {
+                        struct msg msg = { .type = MENU_MSG };
+                        send_msg(window, &msg);
+                    }
 
                     escape = 1;
                 }
-                else
+                else if (window->is_lan)
                 {
                     struct msg msg = { .type = RESTART_MSG };
                     send_msg(window, &msg);

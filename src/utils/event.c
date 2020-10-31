@@ -163,10 +163,6 @@ void handle_quit_event(struct window *window, int is_in_level)
         free_all(window, is_in_level);
         exit(EXIT_SUCCESS);
     }
-
-    /* If is in level, than you have to call handle_focus_lost_event explictly */
-    if (!is_in_level)
-        handle_focus_lost_event(window);
 }
 
 int handle_escape_event(struct window *window)
@@ -303,27 +299,4 @@ void init_controller(struct input *in, Sint32 which)
         SDL_HapticRumbleInit(in->c.haptic);
 }
 
-
-int handle_focus_lost_event(struct window *window)
-{
-    if (!window->in->focus_lost)
-        return 0;
-
-    if (!is_fullscreen(window))
-        return 0;
-
-    Uint32 begin = SDL_GetTicks();
-
-    while (window->in->focus_lost)
-    {
-        update_events(window->in, window, 0);
-        handle_quit_event(window, 1); // 1 because else handle_quit_event calls
-                                      // handle_focus_lost_event
-        SDL_framerateDelay(window->fps);
-    }
-
-    delay_times(window, begin);
-
-    return 1;
-}
 

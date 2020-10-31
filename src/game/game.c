@@ -490,9 +490,11 @@ void play_game(struct window *window, int mission_num, int difficulty)
             // Get and handle events
             update_events(window->in, window, 1);
             handle_quit_event(window, 1);
-            if (handle_focus_lost_event(window))
-               escape = pause(window);
-            else if (handle_escape_event(window))
+
+            if (!window->is_lan && window->in->focus_lost)
+                pause(window);
+
+            if (handle_escape_event(window))
             {
                 if (!window->is_lan)
                     escape = pause(window);
@@ -548,40 +550,47 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     break;
             }
 
-            // Display textures
-            if (mission_num <= 3)
-                SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
-            else if (mission_num <= 6)
-                SDL_SetRenderDrawColor(window->renderer, 32, 32, 128, 255);
-            else
-                SDL_SetRenderDrawColor(window->renderer, 192, 128, 0, 255);
-            SDL_RenderClear(window->renderer);
-            render_background(window);
-            render_objects(window);
-            for (unsigned i = 0; i < window->num_players; i++)
-                render_trail(window, &window->player[i], &window->player[i].pos, 0, 0);
-            render_enemies_health(window);
-            render_shots(window);
-            render_enemy_shots(window);
-            render_enemies(window);
-            for (unsigned i = 0; i < window->num_players; i++)
+            if (!window->in->focus_lost)
             {
-                if (window->player[i].health > 0)
+                // Display textures
+                if (mission_num <= 3)
+                    SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
+                else if (mission_num <= 6)
+                    SDL_SetRenderDrawColor(window->renderer, 32, 32, 128, 255);
+                else
+                    SDL_SetRenderDrawColor(window->renderer, 192, 128, 0, 255);
+                SDL_RenderClear(window->renderer);
+                render_background(window);
+                render_objects(window);
+                for (unsigned i = 0; i < window->num_players; i++)
+                    render_trail(window, &window->player[i], &window->player[i].pos, 0, 0);
+                render_enemies_health(window);
+                render_shots(window);
+                render_enemy_shots(window);
+                render_enemies(window);
+                for (unsigned i = 0; i < window->num_players; i++)
                 {
-                    render_shield_aura(window, &window->player[i]);
-                    render_ship(window, &window->player[i].pos);
+                    if (window->player[i].health > 0)
+                    {
+                        render_shield_aura(window, &window->player[i]);
+                        render_ship(window, &window->player[i].pos);
+                    }
                 }
+
+                render_explosions(window);
+                render_touched_effect(window);
+                render_hud_texts(window);
+                render_hud(window);
             }
 
-            render_explosions(window);
-            render_touched_effect(window);
-            render_hud_texts(window);
-            render_hud(window);
 
             // Create enemies, display wave titles...
             won = execute_path_action(window) && !window->list[BOSS_LIST]->next
                                               && !window->list[EXPLOSION_LIST]->next;
-            SDL_RenderPresent(window->renderer);
+
+
+            if (!window->in->focus_lost)
+                SDL_RenderPresent(window->renderer);
 
             // Wait a frame
             SDL_framerateDelay(window->fps);

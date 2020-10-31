@@ -18,7 +18,6 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
 
 void init_controller(struct input *in, Sint32 which);
 
-int handle_focus_lost_event(struct window *window);
 
 #endif /* !INPUT_H */
 

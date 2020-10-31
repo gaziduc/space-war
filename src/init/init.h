@@ -49,6 +49,7 @@ struct textures
     struct collision_texture *drone;
     struct collision_texture *final_boss;
     struct collision_texture *wall;
+    SDL_Texture *text_error;
 };
 
 
