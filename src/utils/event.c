@@ -2,6 +2,7 @@
 #include "init.h"
 #include "free.h"
 #include "pause.h"
+#include "setting.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 

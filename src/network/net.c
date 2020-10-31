@@ -9,6 +9,8 @@
 #include "ip.h"
 #include "msg_list.h"
 #include "weapon.h"
+#include "background.h"
+#include "vector.h"
 #include <stdio.h>
 #include <string.h>
 #include <SDL2/SDL.h>
