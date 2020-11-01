@@ -23,7 +23,6 @@ int is_connecting;
 int is_connected;
 char err[256];
 int accepting;
-int accepted;
 int has_online_ip;
 char *online_ip;
 
@@ -188,7 +187,13 @@ static void accept_client(struct window *window, char *ip_str)
                     struct msg accept_msg = { .type = ACCEPT_MSG };
                     accept_msg.content.boolean = 1;
                     send_msg(window, &accept_msg);
+
+                    SDL_CreateThread(recv_thread, "recv_thread", window);
+
                     select_level(window);
+
+                    struct msg msg = { .type = Z_MSG };
+                    send_msg(window, &msg);
                     return;
 
                 case 2: // Decline
@@ -272,10 +277,6 @@ void create_server(struct window *window)
 
             // Accept client and play
             accept_client(window, buf);
-
-            // Then close socket
-            SDLNet_TCP_Close(window->client);
-            window->client = NULL;
         }
 
         // Get and handle events
@@ -415,7 +416,6 @@ int is_correct_ip(char *str)
 static void reset_global_vars(void)
 {
     accepting = 0;
-    accepted = 0;
     is_connecting = 0;
     is_connected = 0;
 }
@@ -523,6 +523,7 @@ void connect_to_server(struct window *window)
                 }
 
                 reset_global_vars();
+                window->accepted = 0;
             }
         }
         else if (err[0])
@@ -590,6 +591,11 @@ void send_msg(struct window *window, struct msg *msg)
             protocol_msg[0] = 1;
             protocol_msg[1] = 'Q';
             break;
+
+        case Z_MSG:
+            protocol_msg[0] = 1;
+            protocol_msg[1] = 'Z';
+            break;
     }
 
     SDLNet_TCP_Send(window->client, protocol_msg, 1 + protocol_msg[0]);
@@ -655,6 +661,9 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 free_vector(window->paths);
                 window->paths = NULL; // important, see free_all in free.c
                 load_music(window, "data/endgame.ogg", 1);
+                return 0;
+
+            case 'Z': // Quit online
                 return 0;
         }
     }
@@ -725,7 +734,17 @@ int recv_thread(void *data)
     {
         recv_msg(window, msg);
         add_to_msg_list(window, window->msg_list, msg);
-    } while (msg[0] != 'Q' || msg[1] != 0);
+    } while (msg[0] != 'Z');
+
+    // If server told client to shut down, then client tells server to shut down
+    if (!window->server)
+    {
+        struct msg msg = { .type = Z_MSG };
+        send_msg(window, &msg);
+    }
+
+    SDLNet_TCP_Close(window->client);
+    window->client = NULL;
 
     return 0;
 }

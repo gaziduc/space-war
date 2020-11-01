@@ -19,13 +19,13 @@ void lobby(struct window *window)
         // Get and handle events
         update_events(window->in, window, 0);
         handle_quit_event(window, 0);
-        escape = handle_escape_event(window);
 
         // Display black background
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
-        handle_messages(window, "LQ");
+        if (!handle_messages(window, "LZ"))
+            escape = 1;
 
         // Process/Draw all the things
         render_stars(window);

@@ -226,7 +226,8 @@ enum msg_type
     POSITION_MSG,
     SHOOT_MSG,
     BOMB_MSG,
-    QUIT_MSG
+    QUIT_MSG,
+    Z_MSG
 };
 
 struct level
