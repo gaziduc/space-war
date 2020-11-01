@@ -36,12 +36,16 @@ static void render_pause_texts(struct window *window, Uint32 begin, int selected
 
 int pause(struct window *window)
 {
-    // take a screenshot of background
-    SDL_Surface *sshot = SDL_CreateRGBSurface(0, window->w, window->h, 32, 0, 0, 0, 0);
-    SDL_RenderReadPixels(window->renderer, NULL, sshot->format->format, sshot->pixels, sshot->pitch);
-    SDL_Texture *bg = SDL_CreateTextureFromSurface(window->renderer, sshot);
-    SDL_FreeSurface(sshot);
+    SDL_Texture *bg = NULL;
 
+    if (!window->in->focus_lost)
+    {
+        // take a screenshot of background
+        SDL_Surface *sshot = SDL_CreateRGBSurface(0, window->w, window->h, 32, 0, 0, 0, 0);
+        SDL_RenderReadPixels(window->renderer, NULL, sshot->format->format, sshot->pixels, sshot->pitch);
+        bg = SDL_CreateTextureFromSurface(window->renderer, sshot);
+        SDL_FreeSurface(sshot);
+    }
 
     int escape = 0;
     unsigned selected = 0;
@@ -83,10 +87,11 @@ int pause(struct window *window)
         SDL_RenderClear(window->renderer);
 
         // Copy screenshot on background and add transparency
-        SDL_RenderCopy(window->renderer, bg, NULL, NULL);
+        if (bg)
+            SDL_RenderCopy(window->renderer, bg, NULL, NULL);
+
         SDL_SetRenderDrawColor(window->renderer, 0, 0, 0, 160);
         SDL_RenderFillRect(window->renderer, NULL);
-
 
         // Render menu options
         render_pause_texts(window, begin, selected);

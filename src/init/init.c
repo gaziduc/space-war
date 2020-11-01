@@ -137,7 +137,6 @@ static void load_textures(struct window *window)
     window->img->drone = load_texture_collision("data/drone.png", window);
     window->img->final_boss = load_texture_collision("data/final_boss.png", window);
     window->img->wall = load_texture_collision("data/wall.png", window);
-    window->img->text_error = load_texture("data/text_error.png", window);
 }
 
 

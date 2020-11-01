@@ -12,19 +12,9 @@ static void render_title(struct window *window, Uint8 alpha)
     {
         SDL_Color fg = { 0, 255, 255, alpha };
 
-        SDL_Texture *texture = get_text_texture(
-                               window, window->fonts->zero4b_30_small,
-                               window->paths->data[window->paths->index].line.title,
-                               fg);
-
-        SDL_Rect pos;
-        init_position(POS_CENTERED, 40, texture, &pos);
-
-        resize_pos_for_resolution(window, &pos);
-
-        SDL_RenderCopy(window->renderer, texture, NULL, &pos);
-
-        SDL_DestroyTexture(texture);
+        render_text(window, window->fonts->zero4b_30_small,
+                    window->paths->data[window->paths->index].line.title,
+                    fg, POS_CENTERED, 40);
     }
 }
 

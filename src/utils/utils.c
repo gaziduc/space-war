@@ -152,11 +152,7 @@ SDL_Texture *get_text_texture(struct window *window, TTF_Font *font,
 
     SDL_Texture *texture = SDL_CreateTextureFromSurface(window->renderer, surface);
 
-    /*
-    if (!texture)
-        texture = window->img->text_error;
-        error("Could not create text texture", SDL_GetError(), window->window, window->renderer);
-    */
+    // Texture can be NULL if SDL_CreateTextureFromSurface fails
 
     SDL_FreeSurface(surface);
     return texture;
@@ -167,6 +163,9 @@ void render_text(struct window *window, TTF_Font *font, const char *text, SDL_Co
                  int x, int y)
 {
     SDL_Texture *texture = get_text_texture(window, font, text, fg);
+
+    if (!texture)
+        return;
 
     int w = 0;
     int h = 0;

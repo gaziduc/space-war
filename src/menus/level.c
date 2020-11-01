@@ -18,14 +18,18 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
 
     SDL_Texture *texture = get_text_texture(window, window->fonts->zero4b_30_small,
                                             s, orange);
-    SDL_Rect pos = { .x = 1300, .y = 320, .w = 0, .h = 0 };
-    SDL_QueryTexture(texture, NULL, NULL, &pos.w, &pos.h);
-    pos.x -= pos.w / 2;
 
-    resize_pos_for_resolution(window, &pos);
+    if (texture)
+    {
+        SDL_Rect pos = { .x = 1300, .y = 320, .w = 0, .h = 0 };
+        SDL_QueryTexture(texture, NULL, NULL, &pos.w, &pos.h);
+        pos.x -= pos.w / 2;
 
-    SDL_RenderCopy(window->renderer, texture, NULL, &pos);
-    SDL_DestroyTexture(texture);
+        resize_pos_for_resolution(window, &pos);
+
+        SDL_RenderCopy(window->renderer, texture, NULL, &pos);
+        SDL_DestroyTexture(texture);
+    }
 
 
     SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
@@ -34,14 +38,18 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
     char str[50] = { 0 };
     sprintf(str, window->txt[BEST_D], score);
     texture = get_text_texture(window, window->fonts->zero4b_30_small, str, yellow);
-    SDL_Rect pos_score = { .x = 1300, .y = 420, .w = 0, .h = 0 };
-    SDL_QueryTexture(texture, NULL, NULL, &pos_score.w, &pos_score.h);
-    pos_score.x -= pos_score.w / 2;
 
-    resize_pos_for_resolution(window, &pos_score);
+    if (texture)
+    {
+        SDL_Rect pos_score = { .x = 1300, .y = 420, .w = 0, .h = 0 };
+        SDL_QueryTexture(texture, NULL, NULL, &pos_score.w, &pos_score.h);
+        pos_score.x -= pos_score.w / 2;
 
-    SDL_RenderCopy(window->renderer, texture, NULL, &pos_score);
-    SDL_DestroyTexture(texture);
+        resize_pos_for_resolution(window, &pos_score);
+
+        SDL_RenderCopy(window->renderer, texture, NULL, &pos_score);
+        SDL_DestroyTexture(texture);
+    }
 }
 
 
