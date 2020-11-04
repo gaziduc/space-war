@@ -62,8 +62,8 @@ void render_objects(struct window *window)
 
     while (temp)
     {
-        SDL_Rect pos = { .x = temp->pos_dst.x,
-                         .y = temp->pos_dst.y,
+        SDL_Rect pos = { .x = temp->pos_dst.x + window->shake.x,
+                         .y = temp->pos_dst.y + window->shake.y,
                          .w = temp->pos_dst.w,
                          .h = temp->pos_dst.h
                        };
@@ -86,11 +86,10 @@ void render_shield_aura(struct window *window, struct player *player)
         int h = 0;
         SDL_QueryTexture(window->img->aura, NULL, NULL, &w, &h);
 
-        SDL_Rect pos = {
-                        .x = player->pos.x + player->pos.w / 2 - w / 2,
-                        .y = player->pos.y + player->pos.h / 2 - h / 2,
-                        .w = w,
-                        .h = h
+        SDL_Rect pos = { .x = player->pos.x + player->pos.w / 2 - w / 2,
+                         .y = player->pos.y + player->pos.h / 2 - h / 2,
+                         .w = w,
+                         .h = h
                        };
 
         resize_pos_for_resolution(window, &pos);

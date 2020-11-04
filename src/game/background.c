@@ -56,6 +56,16 @@ void move_background(struct window *window, unsigned long framecount)
 }
 
 
+void set_next_shake(int *curr_shake)
+{
+    *curr_shake = -(*curr_shake);
+
+    if (*curr_shake > 0)
+        (*curr_shake)--;
+    else if (*curr_shake < 0)
+        (*curr_shake)++;
+}
+
 void render_background(struct window *window)
 {
     struct point *p = window->stars->next;
@@ -65,7 +75,11 @@ void render_background(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, p->opacity,
                                p->opacity, p->opacity, p->opacity);
 
-        SDL_Rect pos = { .x = p->x, .y = p->y, .w = 3, .h = 3 };
+        SDL_Rect pos = { .x = p->x + window->shake.x,
+                         .y = p->y + window->shake.y,
+                         .w = 3,
+                         .h = 3
+                       };
 
         resize_pos_for_resolution(window, &pos);
 
@@ -80,6 +94,9 @@ void render_background(struct window *window)
 
         p = p->next;
     }
+
+    set_next_shake(&window->shake.x);
+    set_next_shake(&window->shake.y);
 }
 
 

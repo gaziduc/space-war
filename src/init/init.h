@@ -402,6 +402,7 @@ struct window
     struct msg_list *msg_list;
     int accepted;
     int restart;
+    SDL_Point shake;
 };
 
 void render_loading_screen(struct window *window);

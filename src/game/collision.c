@@ -128,6 +128,9 @@ static void check_collisions_list(struct window *window, struct player *player,
                     // Increase score
                     window->score += SCORE_TO_INCREASE;
 
+                    // Set shake effect
+                    set_shake_effect(window);
+
                     // Exit shot loop
                     deleted_enemy = 1;
                     break;
@@ -169,6 +172,9 @@ static void check_collisions_list(struct window *window, struct player *player,
                 // Increase score
                 window->score += SCORE_TO_INCREASE;
 
+                // Set shake effect
+                set_shake_effect(window);
+
                 // Decrease health
                 if (SDL_GetTicks() - window->player[0].shield_time < SHIELD_TIME) // If shield
                     player->shield_time = 0;
@@ -190,6 +196,9 @@ static void check_collisions_list(struct window *window, struct player *player,
 
                 player->health = 0;
                 window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
+
+                // Set shake effect
+                set_shake_effect(window);
 
                 // Force feedback
                 if (window->settings->is_force_feedback && window->in->c.haptic)
@@ -237,6 +246,9 @@ static void check_collisions_list(struct window *window, struct player *player,
 
                     player->health -= HEALTH_TO_DECREASE_WHEN_HURT;
                     window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
+
+                    // Set shake effect
+                    set_shake_effect(window);
 
                     // force feedback
                     if (window->settings->is_force_feedback && window->in->c.haptic)
