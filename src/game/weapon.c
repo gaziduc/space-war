@@ -120,7 +120,13 @@ void bomb(struct window *window, int provoked_by_me)
         }
         else
         {
-            sentinel->next->last_time_hurt = SDL_GetTicks();
+            Uint32 ticks = SDL_GetTicks();
+
+            if (ticks - sentinel->last_time_hurt >= 1692)
+                sentinel->next->first_time_hurt = ticks;
+
+            sentinel->next->last_time_hurt = ticks;
+
             sentinel = sentinel->next;
         }
     }
