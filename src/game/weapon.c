@@ -8,6 +8,7 @@
 #include "game.h"
 #include "ready.h"
 #include "net.h"
+#include "effect.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -123,6 +124,10 @@ void bomb(struct window *window, int provoked_by_me)
             sentinel = sentinel->next;
         }
     }
+
+
+    // Set quake effect
+    set_shake_effect(window);
 
     if (window->is_lan && provoked_by_me)
     {
