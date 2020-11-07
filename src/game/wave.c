@@ -8,14 +8,11 @@
 
 static void render_title(struct window *window, Uint8 alpha)
 {
-    if (!window->in->focus_lost)
-    {
-        SDL_Color fg = { 0, 255, 255, alpha };
+    SDL_Color fg = { 0, 255, 255, alpha };
 
-        render_text(window, window->fonts->zero4b_30_small,
-                    window->paths->data[window->paths->index].line.title,
-                    fg, POS_CENTERED, 40);
-    }
+    render_text(window, window->fonts->zero4b_30_small,
+                window->paths->data[window->paths->index].line.title,
+                fg, POS_CENTERED, 40);
 }
 
 

@@ -9,8 +9,8 @@
 void intro(struct window *window)
 {
     char *s[3] = { "SPACE WAR",
-                   "Made by David 'Gazi' Ghiassi",
-                   "Compatible with game controllers."
+                   window->txt[MADE_BY_DAVID],
+                   window->txt[COMPATIBLE_WITH_CONTROLLERS]
                  };
 
     int escape = 0;

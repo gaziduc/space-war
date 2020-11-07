@@ -23,18 +23,18 @@ static void populate_settings_texts(struct window *window, char s_list[NUM_SETTI
     sprintf(s_list[1], window->txt[MUSIC_VOLUME_S], window->settings->music_volume / 8, "----------------", 128 / 8 - window->settings->music_volume / 8, "                ");
     sprintf(s_list[2], window->txt[SFX_VOLUME_S], window->settings->sfx_volume / 8, "----------------", 128 / 8 - window->settings->sfx_volume / 8, "                ");
     strcpy(s_list[VIDEO - 1], window->txt[VIDEO_TXT]);
-    sprintf(s_list[4], window->txt[FULLSCREEN_S], is_fullscreen(window) ? "Yes" : "No");
-    sprintf(s_list[5], window->txt[RESOLUTION_DXD_S], window->w, window->h, window->resolution_index == 0 ? "(Native) " : "");
+    sprintf(s_list[4], window->txt[FULLSCREEN_S], is_fullscreen(window) ? window->txt[YES] : window->txt[NO]);
+    sprintf(s_list[5], window->txt[RESOLUTION_DXD_S], window->w, window->h, window->resolution_index == 0 ? window->txt[NATIVE] : "");
     strcpy(s_list[INPUTS - 1], window->txt[INPUTS_TXT]);
-    sprintf(s_list[7], window->txt[P1_INPUT_S], window->player[0].input_type == KEYBOARD ? "Keyboard" :
-                                           window->player[0].input_type == MOUSE ? "Mouse" :
-                                           window->player[0].input_type == CONTROLLER ? "Controller" : "Touch screen");
-    sprintf(s_list[8], window->txt[P2_INPUT_S], window->player[1].input_type == KEYBOARD ? "Keyboard" :
-                                           window->player[1].input_type == MOUSE ? "Mouse" :
-                                           window->player[1].input_type == CONTROLLER ? "Controller" : "Touch screen");
+
+    for (unsigned i = 0; i < MAX_PLAYERS; i++)
+        sprintf(s_list[7 + i], window->txt[P1_INPUT_S + i], window->player[i].input_type == KEYBOARD ? window->txt[KEYBOARD_TXT] :
+                                           window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT] :
+                                           window->txt[CONTROLLER_TXT]);
+
     strcpy(s_list[9], window->txt[KEYBOARD_CONTROLS]);
-    sprintf(s_list[10], window->txt[MOUSE_SENSITIVITY_S], window->settings->mouse_sensitivity == 0 ? "Low (x1)" : "High (x2)");
-    sprintf(s_list[11], window->txt[CONTROLLER_FORCE_FEEDBACK_S], window->settings->is_force_feedback ? "Yes" : "No");
+    sprintf(s_list[10], window->txt[MOUSE_SENSITIVITY_S], window->settings->mouse_sensitivity == 0 ? window->txt[LOW_X1] : window->txt[HIGH_X2]);
+    sprintf(s_list[11], window->txt[CONTROLLER_FORCE_FEEDBACK_S], window->settings->is_force_feedback ? window->txt[YES] : window->txt[NO]);
     strcpy(s_list[12], window->txt[BACK_7]);
 }
 

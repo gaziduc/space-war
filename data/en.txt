@@ -87,7 +87,6 @@ NETWORK
 KEYBOARD
 MOUSE
 CONTROLLER
-TOUCH SCREEN
 Enter the key for %s...
 Current key: %s
 CONTINUE
@@ -103,3 +102,10 @@ FAILURE
 RETRY
 BACK
 BEST: %d
+Yes
+No
+(Native) 
+Low (x1)
+High (x2)
+Made by David 'Gazi' Ghiassi
+Compatible with game controllers.

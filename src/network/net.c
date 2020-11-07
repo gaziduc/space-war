@@ -599,6 +599,9 @@ void send_msg(struct window *window, struct msg *msg)
     }
 
     SDLNet_TCP_Send(window->client, protocol_msg, 1 + protocol_msg[0]);
+
+    if (protocol_msg[1] == 'Z')
+        SDLNet_TCP_Send(window->server, protocol_msg, 1 + protocol_msg[0]);
 }
 
 
@@ -608,6 +611,7 @@ void recv_msg(struct window *window, char *msg)
 
     SDLNet_TCP_Recv(window->client, &msg_len, sizeof(msg_len));
     SDLNet_TCP_Recv(window->client, msg, msg_len);
+
     msg[msg_len] = '\0';
 }
 
@@ -736,15 +740,11 @@ int recv_thread(void *data)
         add_to_msg_list(window, window->msg_list, msg);
     } while (msg[0] != 'Z');
 
-    // If server told client to shut down, then client tells server to shut down
-    if (!window->server)
+    if (window->server)
     {
-        struct msg msg = { .type = Z_MSG };
-        send_msg(window, &msg);
+        SDLNet_TCP_Close(window->client);
+        window->client = NULL;
     }
-
-    SDLNet_TCP_Close(window->client);
-    window->client = NULL;
 
     return 0;
 }

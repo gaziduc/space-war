@@ -116,35 +116,6 @@ void update_events(struct input *in, struct window *window, int is_in_level)
             in->mouse_button[event.button.button] = 0;
             break;
 
-        /* Touch events */
-        case SDL_FINGERDOWN:
-            if (event.tfinger.fingerId < MAX_NUM_FINGERS)
-            {
-                in->finger[event.tfinger.fingerId] = 1;
-                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * DEFAULT_W;
-                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * DEFAULT_H;
-                in->last_input_type = TOUCH;
-            }
-            break;
-
-        case SDL_FINGERMOTION:
-            if (event.tfinger.fingerId < MAX_NUM_FINGERS)
-            {
-                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * DEFAULT_W;
-                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * DEFAULT_H;
-                in->last_input_type = TOUCH;
-            }
-            break;
-
-        case SDL_FINGERUP:
-            if (event.tfinger.fingerId < MAX_NUM_FINGERS)
-            {
-                in->finger[event.tfinger.fingerId] = 0;
-                in->touch_pos[event.tfinger.fingerId].x = event.tfinger.x * DEFAULT_W;
-                in->touch_pos[event.tfinger.fingerId].y = event.tfinger.y * DEFAULT_H;
-            }
-            break;
-
         default:
             break;
         }
@@ -259,23 +230,6 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
                 && window->in->mouse_pos.x < areas[i].x + areas[i].w
                 && window->in->mouse_pos.y >= areas[i].y
                 && window->in->mouse_pos.y < areas[i].y + areas[i].h)
-                *selected = i + 1;
-        }
-
-        if (*selected != 0 && last_selected != *selected)
-            Mix_PlayChannel(-1, window->sounds->select, 0);
-    }
-    else if (window->in->last_input_type == TOUCH)
-    {
-        unsigned last_selected = *selected;
-        *selected = 0;
-
-        for (unsigned i = 0; i < max; i++)
-        {
-            if (window->in->touch_pos[0].x >= areas[i].x
-                && window->in->touch_pos[0].x < areas[i].x + areas[i].w
-                && window->in->touch_pos[0].y >= areas[i].y
-                && window->in->touch_pos[0].y < areas[i].y + areas[i].h)
                 *selected = i + 1;
         }
 

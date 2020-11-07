@@ -152,8 +152,8 @@ void render_hud(struct window *window)
         sprintf(s, "P%d: %s", i + 1, window->is_lan && i == 1 ? window->txt[NETWORK]
                                      : window->player[i].input_type == KEYBOARD ? window->txt[KEYBOARD_TXT]
                                      : window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT]
-                                     : window->player[i].input_type == CONTROLLER ? window->txt[CONTROLLER_TXT]
-                                     : window->txt[TOUCH_SCREEN_TXT]);
+                                     : window->txt[CONTROLLER_TXT]);
+
         render_text(window, window->fonts->pixel_small_bold, s, i == 0 ? blue : red, 10 + i * 220, 10);
 
         if (alpha > 0)
