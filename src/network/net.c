@@ -518,6 +518,11 @@ void connect_to_server(struct window *window)
             {
                 if (window->accepted == 1) // Do not remove == 1
                 {
+                    // Query server time
+                    struct msg msg = { .type = GET_TIME_MSG };
+                    window->client_request_time = SDL_GetTicks();
+                    send_msg(window, &msg);
+
                     lobby(window);
                     begin = SDL_GetTicks();
                 }
@@ -563,11 +568,12 @@ void send_msg(struct window *window, struct msg *msg)
             break;
 
         case LEVEL_MSG:
-            protocol_msg[0] = 7; // strlen("L") + sizeof(Uint16) * 3
+            protocol_msg[0] = 11; // strlen("L") + sizeof(Uint16) * 3
             protocol_msg[1] = 'L';
             SDLNet_Write16(msg->content.lvl.level_num, protocol_msg + 2);
             SDLNet_Write16(msg->content.lvl.level_difficulty, protocol_msg + 4);
             SDLNet_Write16(msg->content.lvl.weapon, protocol_msg + 6);
+            SDLNet_Write32(msg->content.lvl.start_mission_ticks, protocol_msg + 8);
             break;
 
         case POSITION_MSG:
@@ -595,6 +601,17 @@ void send_msg(struct window *window, struct msg *msg)
         case Z_MSG:
             protocol_msg[0] = 1;
             protocol_msg[1] = 'Z';
+            break;
+
+        case GET_TIME_MSG:
+            protocol_msg[0] = 1;
+            protocol_msg[1] = 'G';
+            break;
+
+        case TIME_MSG:
+            protocol_msg[0] = 5;
+            protocol_msg[1] = 'T';
+            SDLNet_Write32(msg->content.ticks, protocol_msg + 2);
             break;
     }
 
@@ -631,6 +648,10 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 Uint16 level_num = SDLNet_Read16(msg + 1);
                 Uint16 level_difficulty = SDLNet_Read16(msg + 3);
                 window->weapon = SDLNet_Read16(msg + 5);
+                Uint32 start_mission_ticks = SDLNet_Read32(msg + 7);
+
+                SDL_Delay(start_mission_ticks - window->client_time);
+
                 play_game(window, level_num, level_difficulty);
                 break;
 
@@ -669,6 +690,21 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
 
             case 'Z': // Quit online
                 return 0;
+
+            case 'G':
+                ;
+                struct msg send_time_msg = { .type = TIME_MSG };
+                send_time_msg.content.ticks = SDL_GetTicks();
+                send_msg(window, &send_time_msg);
+                break;
+
+            case 'T':
+                ;
+                Uint32 server_time = SDLNet_Read32(msg + 1);
+                window->ticks = SDL_GetTicks();
+                Uint32 latency = (window->ticks - window->client_request_time) / 2;
+                window->last_sync_time = server_time + latency;
+                break;
         }
     }
 

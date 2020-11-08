@@ -224,6 +224,8 @@ enum msg_type
     POSITION_MSG,
     SHOOT_MSG,
     BOMB_MSG,
+    GET_TIME_MSG,
+    TIME_MSG,
     QUIT_MSG,
     Z_MSG
 };
@@ -233,13 +235,14 @@ struct level
     char level_num;
     char level_difficulty;
     char weapon;
+    Uint32 start_mission_ticks;
 };
 
 union msg_content
 {
     struct level lvl;
     SDL_Point point;
-    // Uint16 number;
+    Uint32 ticks;
     char boolean;
 };
 
@@ -407,6 +410,10 @@ struct window
     int accepted;
     int restart;
     SDL_Point shake;
+    Uint32 client_request_time;
+    Uint32 ticks;
+    Uint32 client_time;
+    Uint32 last_sync_time;
 };
 
 void render_loading_screen(struct window *window);
