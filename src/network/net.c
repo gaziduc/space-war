@@ -192,7 +192,28 @@ static void accept_client(struct window *window, char *ip_str)
                     SDL_CreateThread(recv_thread, "recv_thread", window);
 
                     while (handle_messages(window, "G"))
-                        SDL_Delay(10);
+                    {
+                        Uint32 alpha = SDL_GetTicks() - begin;
+
+                        if (alpha > TITLE_ALPHA_MAX)
+                            alpha = TITLE_ALPHA_MAX;
+                        else if (alpha == 0)
+                            alpha = 1;
+
+                        SDL_Color white = { 255, 255, 255, alpha };
+
+                        // Render Background
+                        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
+                        SDL_RenderClear(window->renderer);
+                        render_stars(window);
+                        render_text(window, window->fonts->pixel, window->txt[SYNC_CLIENT_SERVER],
+                                    white, 150, 150);
+                        SDL_RenderPresent(window->renderer);
+
+                        // Wait a frame
+                        SDL_framerateDelay(window->fps);
+                    }
+
 
                     select_level(window);
 
@@ -639,8 +660,17 @@ void recv_msg(struct window *window, char *msg)
 {
     Uint8 msg_len = 0;
 
-    SDLNet_TCP_Recv(window->client, &msg_len, sizeof(msg_len));
-    SDLNet_TCP_Recv(window->client, msg, msg_len);
+    if (SDLNet_TCP_Recv(window->client, &msg_len, sizeof(msg_len)) <= 0)
+    {
+        msg[0] = '\0';
+        return;
+    }
+
+    if (SDLNet_TCP_Recv(window->client, msg, msg_len) <= 0)
+    {
+        msg[0] = '\0';
+        return;
+    }
 
     msg[msg_len] = '\0';
 }
@@ -793,8 +823,11 @@ int recv_thread(void *data)
     do
     {
         recv_msg(window, msg);
-        add_to_msg_list(window, window->msg_list, msg);
-    } while (msg[0] != 'Z');
+
+        if (msg[0]) // msg[0] != '\0'
+            add_to_msg_list(window, window->msg_list, msg);
+
+    } while (msg[0] && msg[0] != 'Z');
 
     if (window->server)
     {

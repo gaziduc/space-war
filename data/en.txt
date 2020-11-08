@@ -110,3 +110,4 @@ High (x2)
 Made by David 'Gazi' Ghiassi
 Compatible with game controllers.
 Press F7 to see your online IP
+Synchronizing client with server...

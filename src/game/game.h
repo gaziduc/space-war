@@ -16,6 +16,4 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 
 void play_game(struct window *window, int mission_num, int difficulty);
 
-int recv_thread_server(void *data);
-
 #endif /* !GAME_H */
