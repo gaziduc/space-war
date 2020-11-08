@@ -26,7 +26,7 @@ void lobby(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
-        if (!handle_messages(window, "LZ"))
+        if (!handle_messages(window, "LZT"))
             escape = 1;
 
         // Process/Draw all the things

@@ -65,6 +65,31 @@ static void render_ok(struct window *window, int selected_level,
 
 
 
+void waiting_screen(struct window *window, Uint32 start_mission_ticks)
+{
+    SDL_Color white = { 255, 255, 255, 255 };
+
+    while (SDL_GetTicks() < start_mission_ticks)
+    {
+        // Display black bachground
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
+        SDL_RenderClear(window->renderer);
+
+        // Process/Draw all the things
+        render_stars(window);
+
+        char s[8] = { 0 };
+        sprintf(s, "%d", (start_mission_ticks - SDL_GetTicks()) / 1000 + 1);
+        render_text(window, window->fonts->zero4b_30, s, white, POS_CENTERED, POS_CENTERED);
+
+        SDL_RenderPresent(window->renderer);
+
+        // Wait a frame
+        SDL_framerateDelay(window->fps);
+    }
+}
+
+
 int ready(struct window *window, int selected_level, int selected_difficulty, const char *str)
 {
     int escape = 0;
@@ -96,11 +121,13 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
                     msg.content.lvl.level_num = selected_level;
                     msg.content.lvl.level_difficulty = selected_difficulty;
                     msg.content.lvl.weapon = window->weapon;
-                    msg.content.lvl.start_mission_ticks = SDL_GetTicks() + 3000; // Start mission in 3 sec
+                    Uint32 ticks = SDL_GetTicks() + 3000;
+                    msg.content.lvl.start_mission_ticks = ticks; // Start mission in 3 sec
                     send_msg(window, &msg);
-                }
 
-                SDL_Delay(3000);
+                    waiting_screen(window, ticks);
+
+                }
 
                 play_game(window, selected_level, selected_difficulty);
                 return 1;

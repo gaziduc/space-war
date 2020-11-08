@@ -11,6 +11,7 @@
 #include "weapon.h"
 #include "background.h"
 #include "vector.h"
+#include "ready.h"
 #include <stdio.h>
 #include <string.h>
 #include <SDL2/SDL.h>
@@ -189,6 +190,9 @@ static void accept_client(struct window *window, char *ip_str)
                     send_msg(window, &accept_msg);
 
                     SDL_CreateThread(recv_thread, "recv_thread", window);
+
+                    while (handle_messages(window, "G"))
+                        SDL_Delay(10);
 
                     select_level(window);
 
@@ -650,7 +654,7 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 window->weapon = SDLNet_Read16(msg + 5);
                 Uint32 start_mission_ticks = SDLNet_Read32(msg + 7);
 
-                SDL_Delay(start_mission_ticks - window->client_time);
+                waiting_screen(window, SDL_GetTicks() + start_mission_ticks - window->client_time);
 
                 play_game(window, level_num, level_difficulty);
                 break;
@@ -696,7 +700,7 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 struct msg send_time_msg = { .type = TIME_MSG };
                 send_time_msg.content.ticks = SDL_GetTicks();
                 send_msg(window, &send_time_msg);
-                break;
+                return 0;
 
             case 'T':
                 ;

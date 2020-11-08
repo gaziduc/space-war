@@ -11,8 +11,6 @@ int main(int argc, char *argv[])
     (void) argc;
     (void) argv;
 
-    printf("%s", argv[0]);
-
     // Init SDL2, window, renderer and load textures, events, ...
     struct window *window = init_all();
 
