@@ -20,8 +20,8 @@ int is_fullscreen(struct window *window)
 static void populate_settings_texts(struct window *window, char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS + 1][128])
 {
     strcpy(s_list[AUDIO - 1], window->txt[AUDIO_TXT]);
-    sprintf(s_list[1], window->txt[MUSIC_VOLUME_S], window->settings->music_volume / 8, "----------------", 128 / 8 - window->settings->music_volume / 8, "                ");
-    sprintf(s_list[2], window->txt[SFX_VOLUME_S], window->settings->sfx_volume / 8, "----------------", 128 / 8 - window->settings->sfx_volume / 8, "                ");
+    sprintf(s_list[1], window->txt[MUSIC_VOLUME_S], window->settings->music_volume / 8, "----------------", MIX_MAX_VOLUME / 8 - window->settings->music_volume / 8, "                ");
+    sprintf(s_list[2], window->txt[SFX_VOLUME_S], window->settings->sfx_volume / 8, "----------------", MIX_MAX_VOLUME / 8 - window->settings->sfx_volume / 8, "                ");
     strcpy(s_list[VIDEO - 1], window->txt[VIDEO_TXT]);
     sprintf(s_list[4], window->txt[FULLSCREEN_S], is_fullscreen(window) ? window->txt[YES] : window->txt[NO]);
     sprintf(s_list[5], window->txt[RESOLUTION_DXD_S], window->w, window->h, window->resolution_index == 0 ? window->txt[NATIVE] : "");
@@ -172,8 +172,8 @@ void load_settings(struct window *window)
     if (!str)
     {
         window->settings->is_fullscreen = 0;
-        window->settings->music_volume = MIX_MAX_VOLUME;
-        window->settings->sfx_volume = MIX_MAX_VOLUME;
+        window->settings->music_volume = MIX_MAX_VOLUME / 2;
+        window->settings->sfx_volume = MIX_MAX_VOLUME / 2;
         window->settings->is_force_feedback = 1;
 
         window->resolution_index = 0;
