@@ -454,6 +454,14 @@ void play_game(struct window *window, int mission_num, int difficulty)
         int won = 0;
         unsigned long framecount = 0;
 
+        if (window->is_lan)
+        {
+            struct msg msg = { .type = POSITION_MSG };
+            msg.content.point.x = player->pos.x;
+            msg.content.point.y = player->pos.y;
+            send_msg(window, &msg);
+        }
+
         while (!escape && !dead && !won)
         {
             // Get and handle events

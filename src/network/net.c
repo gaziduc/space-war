@@ -281,6 +281,8 @@ void create_server(struct window *window)
 
             // Accept client and play
             accept_client(window, buf);
+
+            begin = SDL_GetTicks();
         }
 
         // Get and handle events
@@ -562,8 +564,9 @@ void send_msg(struct window *window, struct msg *msg)
             break;
 
         case RESTART_MSG:
-            protocol_msg[0] = 1;
+            protocol_msg[0] = 5;
             protocol_msg[1] = 'R';
+            SDLNet_Write32(msg->content.ticks, protocol_msg + 2);
             break;
 
         case MENU_MSG:
@@ -654,6 +657,8 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 window->weapon = SDLNet_Read16(msg + 5);
                 Uint32 start_mission_ticks = SDLNet_Read32(msg + 7);
 
+                window->client_time = window->last_sync_time + SDL_GetTicks() - window->ticks;
+
                 waiting_screen(window, SDL_GetTicks() + start_mission_ticks - window->client_time);
 
                 play_game(window, level_num, level_difficulty);
@@ -661,6 +666,11 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
 
             case 'R': // Restart when in success/failure screen
                 window->restart = 1;
+                Uint32 retry_mission_ticks = SDLNet_Read32(msg + 1);
+
+                window->client_time = window->last_sync_time + SDL_GetTicks() - window->ticks;
+
+                waiting_screen(window, SDL_GetTicks() + retry_mission_ticks - window->client_time);
                 break;
 
             case 'M': // Go back to menu when in success/failure screen

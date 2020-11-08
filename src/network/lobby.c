@@ -20,8 +20,6 @@ void lobby(struct window *window)
         update_events(window->in, window, 0);
         handle_quit_event(window, 0);
 
-        window->client_time = window->last_sync_time + SDL_GetTicks() - window->ticks;
-
         // Display black background
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);

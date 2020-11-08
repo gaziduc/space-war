@@ -249,7 +249,10 @@ int failure(struct window *window, int level_num)
                 else if (window->is_lan)
                 {
                     struct msg msg = { .type = RESTART_MSG };
+                    msg.content.ticks = SDL_GetTicks() + 3000;
                     send_msg(window, &msg);
+
+                    waiting_screen(window, msg.content.ticks);
                 }
 
                 break;
