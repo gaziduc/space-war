@@ -367,6 +367,7 @@ enum texts
     HIGH_X2,
     MADE_BY_DAVID,
     COMPATIBLE_WITH_CONTROLLERS,
+    PRESS_TO_GET_IP,
     NUM_TXT
 };
 

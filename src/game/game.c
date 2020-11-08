@@ -457,8 +457,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
         if (window->is_lan)
         {
             struct msg msg = { .type = POSITION_MSG };
-            msg.content.point.x = player->pos.x;
-            msg.content.point.y = player->pos.y;
+            msg.content.point.x = window->player[0].pos.x;
+            msg.content.point.y = window->player[0].pos.y;
             send_msg(window, &msg);
         }
 

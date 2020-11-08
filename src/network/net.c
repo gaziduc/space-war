@@ -257,8 +257,6 @@ void create_server(struct window *window)
     int num_ips = SDLNet_GetLocalAddresses(local_ips, MAX_IP_TO_SHOW);
 
     has_online_ip = 0;
-    SDL_CreateThread(get_online_ip_thread, "get_online_ip_thread", NULL);
-
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
 
@@ -290,6 +288,12 @@ void create_server(struct window *window)
         handle_quit_event(window, 0);
         escape = handle_escape_event(window);
 
+        if (has_online_ip == 0 && window->in->key[SDL_SCANCODE_F7])
+        {
+            has_online_ip = 1;
+            SDL_CreateThread(get_online_ip_thread, "get_online_ip_thread", NULL);
+        }
+
         // Display black background
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
@@ -312,6 +316,7 @@ void create_server(struct window *window)
 
         render_text(window, window->fonts->zero4b_30_extra_small, window->txt[YOUR_IP_LOCAL],
                     white, 150, 300);
+
 
         int index = 0;
 
@@ -342,8 +347,9 @@ void create_server(struct window *window)
         render_text(window, window->fonts->zero4b_30_extra_small, window->txt[YOUR_IP_ONLINE],
                     white, 1060, 300);
 
-        render_text(window, window->fonts->pixel, has_online_ip ? online_ip : window->txt[SEARCHING_FOR_ONLINE_IP],
-                    white, 1060, 400);
+        render_text(window, window->fonts->pixel, has_online_ip == 2 ? online_ip
+                                                  : has_online_ip == 1 ? window->txt[SEARCHING_FOR_ONLINE_IP]
+                                                  : window->txt[PRESS_TO_GET_IP], has_online_ip == 0 ? orange : white, 1060, 400);
 
         render_text(window, window->fonts->pixel, window->txt[TO_PLAY_ONLINE_1],
                     white, 150, 800);
@@ -805,7 +811,7 @@ int get_online_ip_thread(void *data)
     (void) data;
 
     online_ip = get_online_ip();
-    has_online_ip = 1;
+    has_online_ip = 2;
 
     return 0;
 }
