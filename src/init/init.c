@@ -144,8 +144,7 @@ static void load_fonts(struct window *window)
 {
     window->fonts = xmalloc(sizeof(struct fonts), window->window, window->renderer);
 
-    window->fonts->pixel_small_bold = load_font(window, "data/pixel.ttf", 17);
-    TTF_SetFontStyle(window->fonts->pixel_small_bold, TTF_STYLE_BOLD);
+    window->fonts->pixel_small_bold = load_font(window, "data/pixel.ttf", 18);
     window->fonts->pixel = load_font(window, "data/pixel.ttf", 30);
     window->fonts->pixel_large = load_font(window, "data/pixel.ttf", 37);
     window->fonts->zero4b_30 = load_font(window, "data/04b_30.ttf", 120);

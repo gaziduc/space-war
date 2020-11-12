@@ -81,8 +81,8 @@ Reset inputs
 BACK
 SCORE %d
 BOMBS %d
-AMMO  %d
-AMMO  999+
+AMMO   %d
+AMMO   999+
 NETWORK
 KEYBOARD
 MOUSE

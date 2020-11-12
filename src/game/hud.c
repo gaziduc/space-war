@@ -27,7 +27,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_Rect pos = { .x = 15 + player_num * 220,
                          .y = 37,
                          .w = anim_health_low,
-                         .h = 30
+                         .h = 25
                        };
 
         resize_pos_for_resolution(window, &pos);
@@ -44,7 +44,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_Rect pos = { .x = 17 + anim_health_low + player_num * 220,
                          .y = 37,
                          .w = anim_health_high - anim_health_low,
-                         .h = 30
+                         .h = 25
                        };
 
         resize_pos_for_resolution(window, &pos);
@@ -59,7 +59,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_Rect pos = { .x = 15 + anim_health_high + player_num * 220,
                          .y = 37,
                          .w = window->max_health - anim_health_high,
-                         .h = 30
+                         .h = 25
                        };
 
         resize_pos_for_resolution(window, &pos);
@@ -75,7 +75,7 @@ static void render_life(struct window *window, struct player *player, int player
     else if (anim_health_low > health)
         player->animated_health_low -= 2;
     else if (anim_health_low < anim_health_high)
-        player->animated_health_high--;
+        player->animated_health_high -= 2;
 }
 
 static void render_score(struct window *window)
@@ -85,7 +85,7 @@ static void render_score(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
 
-    render_text(window, window->fonts->pixel, s, color, 15, 105);
+    render_text(window, window->fonts->pixel_large, s, color, 15, 165);
 }
 
 static void render_bombs(struct window *window)
@@ -95,7 +95,7 @@ static void render_bombs(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
 
-    render_text(window, window->fonts->pixel, s, color, 15, 75);
+    render_text(window, window->fonts->pixel_large, s, color, 15, 125);
 }
 
 
@@ -108,7 +108,7 @@ static void render_combo(struct window *window)
 
         SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = 224 };
 
-        render_text(window, window->fonts->pixel, s, orange, 15, 155);
+        render_text(window, window->fonts->pixel_large, s, orange, 15, 230);
     }
 
     if (SDL_GetTicks() - window->last_combo_time < 2500)
@@ -118,7 +118,7 @@ static void render_combo(struct window *window)
 
         SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = 224 };
 
-        render_text(window, window->fonts->pixel, s, yellow, 15, 185);
+        render_text(window, window->fonts->pixel_large, s, yellow, 15, 270);
     }
 }
 
@@ -133,7 +133,7 @@ static void render_ammo(struct window *window, struct player *player, int player
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
-    render_text(window, window->fonts->pixel, s, color, 25 + player_num * 220, 37);
+    render_text(window, window->fonts->pixel, s, color, 15 + player_num * 220, 65);
 }
 
 void render_hud(struct window *window)
