@@ -4,6 +4,7 @@
 #include "level.h"
 #include "hud.h"
 #include "menu.h"
+#include "shot.h"
 #include <stdio.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -23,8 +24,8 @@ static void render_life(struct window *window, struct player *player, int player
     {
         SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, 192);
 
-        SDL_Rect pos = { .x = 10 + player_num * 220,
-                         .y = 32,
+        SDL_Rect pos = { .x = 15 + player_num * 220,
+                         .y = 37,
                          .w = anim_health_low,
                          .h = 30
                        };
@@ -40,8 +41,8 @@ static void render_life(struct window *window, struct player *player, int player
     {
         SDL_SetRenderDrawColor(window->renderer, 255, 128, 0, 192);
 
-        SDL_Rect pos = { .x = 10 + anim_health_low + player_num * 220,
-                         .y = 32,
+        SDL_Rect pos = { .x = 17 + anim_health_low + player_num * 220,
+                         .y = 37,
                          .w = anim_health_high - anim_health_low,
                          .h = 30
                        };
@@ -55,8 +56,8 @@ static void render_life(struct window *window, struct player *player, int player
     {
         SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, 192);
 
-        SDL_Rect pos = { .x = 10 + anim_health_high + player_num * 220,
-                         .y = 32,
+        SDL_Rect pos = { .x = 15 + anim_health_high + player_num * 220,
+                         .y = 37,
                          .w = window->max_health - anim_health_high,
                          .h = 30
                        };
@@ -75,17 +76,6 @@ static void render_life(struct window *window, struct player *player, int player
         player->animated_health_low -= 2;
     else if (anim_health_low < anim_health_high)
         player->animated_health_high--;
-
-    // Not used in the game
-    if (player->lives > 1)
-    {
-        char s[50] = { 0 };
-        sprintf(s, "+%d SHIP(S)", player->lives - 1);
-
-        SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
-
-        render_text(window, window->fonts->pixel, s, color, 240, 13);
-    }
 }
 
 static void render_score(struct window *window)
@@ -93,9 +83,9 @@ static void render_score(struct window *window)
     char s[50] = { 0 };
     sprintf(s, window->txt[SCORE_D], window->score);
 
-    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
+    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
 
-    render_text(window, window->fonts->pixel, s, color, 10, 100);
+    render_text(window, window->fonts->pixel, s, color, 15, 105);
 }
 
 static void render_bombs(struct window *window)
@@ -103,11 +93,34 @@ static void render_bombs(struct window *window)
     char s[50] = { 0 };
     sprintf(s, window->txt[BOMBS_D], window->num_bombs);
 
-    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 192 };
+    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
 
-    render_text(window, window->fonts->pixel, s, color, 10, 70);
+    render_text(window, window->fonts->pixel, s, color, 15, 75);
 }
 
+
+static void render_combo(struct window *window)
+{
+    if (window->combo >= 2)
+    {
+        char s[50] = { 0 };
+        sprintf(s, "%d COMBO", window->combo);
+
+        SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = 224 };
+
+        render_text(window, window->fonts->pixel, s, orange, 15, 155);
+    }
+
+    if (SDL_GetTicks() - window->last_combo_time < 2500)
+    {
+        char s[50] = { 0 };
+        sprintf(s, "+%d (%d COMBO)", compute_combo_score(window->last_combo), window->last_combo);
+
+        SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = 224 };
+
+        render_text(window, window->fonts->pixel, s, yellow, 15, 185);
+    }
+}
 
 static void render_ammo(struct window *window, struct player *player, int player_num)
 {
@@ -120,13 +133,14 @@ static void render_ammo(struct window *window, struct player *player, int player
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
-    render_text(window, window->fonts->pixel, s, color, 20 + player_num * 220, 32);
+    render_text(window, window->fonts->pixel, s, color, 25 + player_num * 220, 37);
 }
 
 void render_hud(struct window *window)
 {
     render_score(window);
     render_bombs(window);
+    render_combo(window);
 
     static SDL_Color blue = { .r = 0, .g = 128, .b = 255, .a = 255 };
     static SDL_Color red = { .r = 255, .g = 0, .b = 0, .a = 255 };
@@ -154,7 +168,7 @@ void render_hud(struct window *window)
                                      : window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT]
                                      : window->txt[CONTROLLER_TXT]);
 
-        render_text(window, window->fonts->pixel_small_bold, s, i == 0 ? blue : red, 10 + i * 220, 10);
+        render_text(window, window->fonts->pixel_small_bold, s, i == 0 ? blue : red, 15 + i * 220, 15);
 
         if (alpha > 0)
             render_text(window, window->fonts->pixel_small_bold, s,

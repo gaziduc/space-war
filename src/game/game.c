@@ -306,6 +306,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
     window->is_wave_title = 0;
     window->wave_title_time = 0;
     window->mission_start_time = SDL_GetTicks();
+    window->combo = 0;
 
     for (unsigned i = 0; i < window->num_players; i++)
     {
@@ -574,6 +575,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
         if (won)
         {
+            window->score += compute_combo_score(window->combo);
+
             if (is_arcade && mission_num < NUM_LEVELS)
             {
                 free_vector(window->paths);

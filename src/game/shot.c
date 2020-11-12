@@ -21,6 +21,29 @@ void set_shot_pos(struct list *new, SDL_Rect *pos_dst, struct window *window)
 }
 
 
+unsigned compute_combo_score(unsigned combo)
+{
+    unsigned score = 0;
+
+    for (unsigned i = 1; i <= combo; i++)
+        score += i * 10;
+
+    return score;
+}
+
+void end_combo(struct window *window)
+{
+    if (window->combo >= 2)
+    {
+        window->last_combo_time = SDL_GetTicks();
+        window->last_combo = window->combo;
+
+        window->score += compute_combo_score(window->combo);
+    }
+
+    window->combo = 0;
+}
+
 void move_shots(struct window *window)
 {
     struct list *temp = window->list[MY_SHOTS_LIST]->next;
@@ -34,6 +57,9 @@ void move_shots(struct window *window)
         // Prevent out of bounds by deleting the shot if not on screen
         if (temp->pos_dst.x >= DEFAULT_W)
         {
+            // Put combo in score
+            end_combo(window);
+
             struct list *to_delete = temp;
             prev->next = temp->next;
             free(to_delete);

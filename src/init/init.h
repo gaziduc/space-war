@@ -416,6 +416,9 @@ struct window
     Uint32 ticks;
     Uint32 client_time;
     Uint32 last_sync_time;
+    unsigned combo;
+    Uint32 last_combo_time;
+    unsigned last_combo;
 };
 
 void render_loading_screen(struct window *window);

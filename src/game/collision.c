@@ -91,6 +91,8 @@ static void check_collisions_list(struct window *window, struct player *player,
             if (collision(temp_pos, temp,
                           &temp_shot->pos_dst, window->img->shot[window->weapon]))
             {
+                window->combo++;
+
                 // Decrease enemy health
                 temp_enemy->health -= get_weapon_damage(window->weapon);
 
@@ -149,6 +151,9 @@ static void check_collisions_list(struct window *window, struct player *player,
             && collision(temp_pos, temp,
                          &player->pos, window->img->ship))
         {
+            // Put combo in score
+            end_combo(window);
+
             // Add an explosion
             list_push_front(temp_pos, window, EXPLOSION_LIST,
                             temp->texture, NULL, 0, 0);
@@ -238,6 +243,9 @@ static void check_collisions_list(struct window *window, struct player *player,
 
                 if (SDL_GetTicks() - player->shield_time >= SHIELD_TIME)
                 {
+                    // Put combo in score
+                    end_combo(window);
+
                     // Add an explosion
                     list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
                                     NULL, 0, 0);
