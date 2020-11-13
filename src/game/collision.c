@@ -5,6 +5,7 @@
 #include "object.h"
 #include "weapon.h"
 #include "effect.h"
+#include "shot.h"
 
 static int collision_aabb(SDL_Rect *pos1, SDL_Rect *pos2)
 {

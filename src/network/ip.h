@@ -7,6 +7,6 @@ struct string
     size_t len;
 };
 
-char* get_online_ip(void);
+const char* get_online_ip(void);
 
 #endif // IP_H

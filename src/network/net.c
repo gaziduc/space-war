@@ -25,7 +25,7 @@ int is_connected;
 char err[256];
 int accepting;
 int has_online_ip;
-char *online_ip;
+const char *online_ip;
 
 
 static void render_create_or_join_texts(struct window *window, Uint32 begin,
