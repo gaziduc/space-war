@@ -92,12 +92,13 @@ static void check_collisions_list(struct window *window, struct player *player,
             if (collision(temp_pos, temp,
                           &temp_shot->pos_dst, window->img->shot[window->weapon]))
             {
-                window->combo++;
+                Uint32 ticks = SDL_GetTicks();
 
                 // Decrease enemy health
                 temp_enemy->health -= get_weapon_damage(window->weapon);
 
-                Uint32 ticks = SDL_GetTicks();
+                window->combo++;
+                window->combo_time = ticks;
 
                 if (ticks - temp_enemy->last_time_hurt >= 1692)
                     temp_enemy->first_time_hurt = ticks;
