@@ -85,7 +85,7 @@ static void render_score(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
 
-    render_text(window, window->fonts->pixel_large, s, color, 15, 165);
+    render_text(window, window->fonts->pixel_large, s, color, 15, 146);
 }
 
 static void render_bombs(struct window *window)
@@ -95,7 +95,7 @@ static void render_bombs(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
 
-    render_text(window, window->fonts->pixel_large, s, color, 15, 125);
+    render_text(window, window->fonts->pixel_large, s, color, 15, 110);
 }
 
 
@@ -108,7 +108,7 @@ static void render_combo(struct window *window)
 
         SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = 224 };
 
-        render_text(window, window->fonts->pixel_large, s, orange, 15, 230);
+        render_text(window, window->fonts->pixel_large, s, orange, 15, 200);
     }
 
     if (SDL_GetTicks() - window->last_combo_time < 2500)
@@ -118,7 +118,7 @@ static void render_combo(struct window *window)
 
         SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = 224 };
 
-        render_text(window, window->fonts->pixel_large, s, yellow, 15, 270);
+        render_text(window, window->fonts->pixel_large, s, yellow, 15, 240);
     }
 }
 
