@@ -300,13 +300,14 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 
         window->score = 0;
         window->touched_anim = 0;
+        window->combo = 0;
     }
 
     window->last_enemy_time = 0;
     window->is_wave_title = 0;
     window->wave_title_time = 0;
     window->mission_start_time = SDL_GetTicks();
-    window->combo = 0;
+
 
     for (unsigned i = 0; i < window->num_players; i++)
     {
