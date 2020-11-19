@@ -40,8 +40,8 @@ static void render_ok(struct window *window, int selected_level,
     render_text(window, window->fonts->zero4b_30_extra_small, str,
                 white, 150, 370);
 
-    snprintf(str, strlen(window->txt[EASY__ + selected_difficulty - 1]) - 2, "%s", window->txt[EASY__+ selected_difficulty - 1]);
-    str[strlen(window->txt[EASY__ + selected_difficulty - 1]) - 2] = '\0';
+    snprintf(str, strlen(window->txt[EASY__ + selected_difficulty - 1]) - 1, "%s", window->txt[EASY__+ selected_difficulty - 1]);
+    str[strlen(window->txt[EASY__ + selected_difficulty - 1]) - 1] = '\0';
 
     render_text(window, window->fonts->zero4b_30_extra_small, str, white, 150, 440);
 
