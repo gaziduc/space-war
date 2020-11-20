@@ -108,18 +108,20 @@ static void render_combo(struct window *window)
         char s[50] = { 0 };
         sprintf(s, "%d COMBO", window->combo);
 
-        SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = 224 };
-
         Uint32 offset = ticks - window->combo_time;
-        render_text(window, window->fonts->pixel_large, s, orange, 20, offset < 80 ? 320 - offset : 240);
+        SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = offset < 224 ? offset : 224 };
+
+        render_text(window, window->fonts->pixel_large, s, orange, 20, offset < 224 ? 262 - offset / 10 : 240);
     }
 
-    if (ticks - window->last_combo_time < 2500)
+    Uint32 delay = ticks - window->last_combo_time;
+
+    if (delay < 2224)
     {
         char s[50] = { 0 };
         sprintf(s, "+%d (%d COMBO)", compute_combo_score(window->last_combo), window->last_combo);
 
-        SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = 224 };
+        SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = delay < 224 ? delay : delay < 2000 ? 224 : 2224 - delay };
 
         render_text(window, window->fonts->pixel_large, s, yellow, 20, 200);
     }
