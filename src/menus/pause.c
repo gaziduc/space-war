@@ -122,4 +122,6 @@ void delay_times(struct window *window, Uint32 begin)
         window->player[i].last_shot_time += delay;
 
     window->mission_start_time += delay;
+    window->combo_time += delay;
+    window->last_combo_time += delay;
 }
