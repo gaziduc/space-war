@@ -31,7 +31,7 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
 
-        render_text(window, window->fonts->calibri, "100 %", white, POS_CENTERED, 675);
+        render_text(window, window->fonts->pixel_large, "100 %", white, POS_CENTERED, 675);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
@@ -55,10 +55,10 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
 
-        render_text(window, window->fonts->calibri, s[1], white,
+        render_text(window, window->fonts->pixel_large, s[1], white,
                     POS_CENTERED, 600);
 
-        render_text(window, window->fonts->calibri, s[2], white,
+        render_text(window, window->fonts->pixel_large, s[2], white,
                     POS_CENTERED, 750);
 
         SDL_RenderPresent(window->renderer);
@@ -87,10 +87,10 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                 POS_CENTERED, 200);
 
-        render_text(window, window->fonts->calibri, s[1], white,
+        render_text(window, window->fonts->pixel_large, s[1], white,
                 POS_CENTERED, 600);
 
-        render_text(window, window->fonts->calibri, s[2], white,
+        render_text(window, window->fonts->pixel_large, s[2], white,
                 POS_CENTERED, 750);
 
         SDL_RenderPresent(window->renderer);
@@ -114,10 +114,10 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                 POS_CENTERED, 200);
 
-        render_text(window, window->fonts->calibri, s[1], white,
+        render_text(window, window->fonts->pixel_large, s[1], white,
                 POS_CENTERED, 600);
 
-        render_text(window, window->fonts->calibri, s[2], white,
+        render_text(window, window->fonts->pixel_large, s[2], white,
                 POS_CENTERED, 750);
 
         SDL_RenderPresent(window->renderer);

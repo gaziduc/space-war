@@ -59,14 +59,14 @@ RESUME
 SETTINGS
 ESCAPE
 Audio:
-< Music Volume: %.*s%.*s >
-< SFX Volume: %.*s%.*s >
+Music Volume: %.*s%.*s
+SFX Volume: %.*s%.*s
 Video:
 Fullscreen: %s
-< Resolution: %dx%d %s>
+Resolution: %dx%d %s
 Inputs:
-< P1 Input: %s >
-< P2 Input: %s >
+P1 Input: %s
+P2 Input: %s
 Keyboard Controls...
 Mouse Sensitivity: %s
 Controller Force Feedback: %s

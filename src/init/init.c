@@ -39,7 +39,7 @@ void render_loading_screen(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
         render_text(window, window->fonts->zero4b_30, "SPACE WAR", blue, POS_CENTERED, 200);
-        render_text(window, window->fonts->calibri, s, white, POS_CENTERED, 675);
+        render_text(window, window->fonts->pixel_large, s, white, POS_CENTERED, 675);
         SDL_RenderPresent(window->renderer);
     }
 }
@@ -60,13 +60,12 @@ static struct window *init_window(void)
         error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
 
     add_resolution(window, 0, dm.w, dm.h);
-    add_resolution(window, 1, 1024, 576);
-    add_resolution(window, 2, 1280, 720);
-    add_resolution(window, 3, 1366, 768);
-    add_resolution(window, 4, 1600, 900);
-    add_resolution(window, 5, DEFAULT_W, DEFAULT_H);
-    add_resolution(window, 6, 2560, 1440);
-    add_resolution(window, 7, 3840, 2160);
+    add_resolution(window, 1, 1280, 720);
+    add_resolution(window, 2, 1366, 768);
+    add_resolution(window, 3, 1600, 900);
+    add_resolution(window, 4, DEFAULT_W, DEFAULT_H);
+    add_resolution(window, 5, 2560, 1440);
+    add_resolution(window, 6, 3840, 2160);
 
     load_settings(window);
 
@@ -150,7 +149,6 @@ static void load_fonts(struct window *window)
     window->fonts->zero4b_30 = load_font(window, "data/04b_30.ttf", 120);
     window->fonts->zero4b_30_small = load_font(window, "data/04b_30.ttf", 60);
     window->fonts->zero4b_30_extra_small = load_font(window, "data/04b_30.ttf", 40);
-    window->fonts->calibri = load_font(window, "data/calibri.ttf", 45);
 }
 
 void load_music(struct window *window, const char *filename, int must_free)

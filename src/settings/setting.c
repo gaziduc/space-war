@@ -39,6 +39,35 @@ static void populate_settings_texts(struct window *window, char s_list[NUM_SETTI
 }
 
 
+static int get_setting_x_offset(struct window *window, int setting_num)
+{
+    if ((setting_num == 2 && window->settings->music_volume > 0)
+        || (setting_num == 3 && window->settings->sfx_volume > 0)
+        || (setting_num == 6 && window->resolution_index > 0)
+        || (setting_num == 8 && window->player[0].input_type > 0)
+        || (setting_num == 9 && window->player[1].input_type > 0))
+    {
+        return 60;
+    }
+
+    return 0;
+}
+
+
+static int has_setting_x_right_arrow(struct window *window, int setting_num)
+{
+    if ((setting_num == 2 && window->settings->music_volume < MIX_MAX_VOLUME)
+        || (setting_num == 3 && window->settings->sfx_volume < MIX_MAX_VOLUME)
+        || (setting_num == 6 && window->resolution_index < NUM_RESOLUTIONS - 1)
+        || (setting_num == 8 && window->player[0].input_type < NUM_INPUT_TYPE - 1)
+        || (setting_num == 9 && window->player[1].input_type < NUM_INPUT_TYPE - 1))
+    {
+        return 1;
+    }
+
+    return 0;
+}
+
 static void render_settings(struct window *window, Uint32 begin, int selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
@@ -52,6 +81,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
     SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
     SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
     SDL_Color white = { .r = 255, .g = 255, .b = 255, .a = alpha };
+    SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_small, window->txt[SETTINGS], orange, 150, 150);
 
@@ -71,9 +101,26 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
             continue;
         }
         else
+        {
+            int x = i != 13 ? 450 : 150;
+            int y = i != 13 ? 280 + (setting_index - 1) * 55 + (i - setting_index - 1) * 30 : 900;
+            int x_offset = get_setting_x_offset(window, i);
+
+            int w = 0;
+            TTF_SizeText(window->fonts->zero4b_30_extra_small, s_list[i - 1], &w, NULL);
+
             render_text(window, window->fonts->zero4b_30_extra_small, s_list[i - 1],
                         selected_item != setting_index ? blue : green,
-                        i != 13 ? 450 : 150, i != 13 ? 280 + (setting_index - 1) * 55 + (i - setting_index - 1) * 30 : 900);
+                        x + x_offset, y);
+
+            Uint32 ticks_mod = SDL_GetTicks() % 1000;
+
+            if (x_offset)
+                render_text(window, window->fonts->zero4b_30_extra_small, "<", selected_item != setting_index ? yellow : orange, ticks_mod < 500 ? x + ticks_mod / 50 : x + (1000 - ticks_mod) / 50, y);
+            if (has_setting_x_right_arrow(window, i))
+                render_text(window, window->fonts->zero4b_30_extra_small, " >", selected_item != setting_index ? yellow : orange, ticks_mod < 500 ? x + x_offset + w - ticks_mod / 50 : x + x_offset + w - (1000 - ticks_mod) / 50, y);
+        }
+
 
         setting_index++;
     }
@@ -296,6 +343,8 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
             case 4:
                 if (window->resolution_index > 0)
                 {
+                    SDL_Rect mouse_pos = { .x = window->in->mouse_pos.x, .y = window->in->mouse_pos.y, .w = 3, .h = 3 };
+
                     window->resolution_index--;
                     set_resolution_with_index(window);
 
@@ -303,6 +352,10 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                     SDL_SetWindowPosition(window->window,
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED);
+
+                    resize_pos_for_resolution(window, &mouse_pos);
+                    SDL_WarpMouseInWindow(window->window, mouse_pos.x, mouse_pos.y);
+
                     write_settings(window);
                 }
                 break;
@@ -327,44 +380,17 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
     if (window->in->key[SDL_SCANCODE_RETURN]
         || window->in->key[SDL_SCANCODE_KP_ENTER]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_A]
-        || window->in->mouse_button[SDL_BUTTON_LEFT]
-        // Enter or right
-        || window->in->key[SDL_SCANCODE_RIGHT]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
-        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+        || window->in->mouse_button[SDL_BUTTON_LEFT])
     {
         window->in->key[SDL_SCANCODE_RETURN] = 0;
         window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
         window->in->c.button[SDL_CONTROLLER_BUTTON_A] = 0;
         window->in->mouse_button[SDL_BUTTON_LEFT] = 0;
-        window->in->key[SDL_SCANCODE_RIGHT] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
 
         switch (selected_item)
         {
-            case 1:
-                if (window->settings->music_volume < MIX_MAX_VOLUME)
-                    window->settings->music_volume += MIX_MAX_VOLUME / 16; // -= 8
-                else
-                    window->settings->music_volume = 0;
-
-                Mix_VolumeMusic(window->settings->music_volume);
-                write_settings(window);
-                break;
-
-            case 2:
-                if (window->settings->sfx_volume < MIX_MAX_VOLUME)
-                    window->settings->sfx_volume += MIX_MAX_VOLUME / 16; // -= 8
-                else
-                    window->settings->sfx_volume = 0;
-
-                Mix_Volume(-1, window->settings->sfx_volume);
-                Mix_PlayChannel(-1, window->sounds->select, 0);
-                write_settings(window);
-                break;
-
             case 3:
+                Mix_PlayChannel(-1, window->sounds->play, 0);
                 if (is_fullscreen(window))
                 {
                     window->settings->is_fullscreen = 0;
@@ -381,8 +407,63 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 write_settings(window);
                 break;
 
+            case 7:
+                Mix_PlayChannel(-1, window->sounds->play, 0);
+                controls(window);
+                *begin = SDL_GetTicks();
+                break;
+
+            case 8:
+                Mix_PlayChannel(-1, window->sounds->play, 0);
+                window->settings->mouse_sensitivity = !window->settings->mouse_sensitivity;
+                write_settings(window);
+                break;
+
+            case 9:
+                Mix_PlayChannel(-1, window->sounds->play, 0);
+                window->settings->is_force_feedback = !window->settings->is_force_feedback;
+                write_settings(window);
+                break;
+
+            case 10:
+                return 0;
+
+            default:
+                break;
+        }
+    }
+
+    if (window->in->key[SDL_SCANCODE_RIGHT]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
+        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+    {
+        window->in->key[SDL_SCANCODE_RIGHT] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
+
+        switch (selected_item)
+        {
+            case 1:
+                if (window->settings->music_volume < MIX_MAX_VOLUME)
+                    window->settings->music_volume += MIX_MAX_VOLUME / 16; // -= 8
+
+                Mix_VolumeMusic(window->settings->music_volume);
+                write_settings(window);
+                break;
+
+            case 2:
+                if (window->settings->sfx_volume < MIX_MAX_VOLUME)
+                    window->settings->sfx_volume += MIX_MAX_VOLUME / 16; // -= 8
+
+                Mix_Volume(-1, window->settings->sfx_volume);
+                Mix_PlayChannel(-1, window->sounds->select, 0);
+                write_settings(window);
+                break;
+
             case 4:
                 ;
+                SDL_Rect mouse_pos = { .x = window->in->mouse_pos.x, .y = window->in->mouse_pos.y, .w = 3, .h = 3 };
+
                 SDL_DisplayMode dm;
                 if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
                     error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
@@ -392,8 +473,6 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                     && dm.w >= window->resolutions[window->resolution_index + 1].x
                     && dm.h >= window->resolutions[window->resolution_index + 1].y)
                     window->resolution_index++;
-                else
-                    window->resolution_index = 0;
 
                 set_resolution_with_index(window);
 
@@ -401,14 +480,16 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 SDL_SetWindowPosition(window->window,
                                       SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED);
+
+                resize_pos_for_resolution(window, &mouse_pos);
+                SDL_WarpMouseInWindow(window->window, mouse_pos.x, mouse_pos.y);
+
                 write_settings(window);
                 break;
 
             case 5:
                 if (window->player[0].input_type < NUM_INPUT_TYPE - 1)
                     window->player[0].input_type++;
-                else
-                    window->player[0].input_type = 0;
 
                 write_settings(window);
                 break;
@@ -416,29 +497,9 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
             case 6:
                 if (window->player[1].input_type < NUM_INPUT_TYPE - 1)
                     window->player[1].input_type++;
-                else
-                    window->player[1].input_type = 0;
 
                 write_settings(window);
                 break;
-
-            case 7:
-                controls(window);
-                *begin = SDL_GetTicks();
-                break;
-
-            case 8:
-                window->settings->mouse_sensitivity = !window->settings->mouse_sensitivity;
-                write_settings(window);
-                break;
-
-            case 9:
-                window->settings->is_force_feedback = !window->settings->is_force_feedback;
-                write_settings(window);
-                break;
-
-            case 10:
-                return 0;
 
             default:
                 break;
@@ -476,6 +537,9 @@ void settings(struct window *window)
             areas[setting_index].x = i != 13 ? 450 : 150;
             areas[setting_index].y = i != 13 ? 280 + setting_index * 55 + (i - setting_index - 2) * 30 : 900;
             TTF_SizeText(window->fonts->zero4b_30_extra_small, s_list[i - 1], &areas[setting_index].w, &areas[setting_index].h);
+            if (i != 13)
+                areas[setting_index].w += 120;
+
             setting_index++;
         }
 
