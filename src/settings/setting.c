@@ -309,7 +309,7 @@ void load_settings(struct window *window)
 }
 
 
-static int handle_arrow_event(struct window *window, const int selected_item, Uint32 *begin)
+static int handle_arrow_event(struct window *window, const int selected_item, Uint32 *begin, SDL_Rect *area)
 {
     if (window->in->key[SDL_SCANCODE_LEFT]
         || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
@@ -343,8 +343,6 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
             case 4:
                 if (window->resolution_index > 0)
                 {
-                    SDL_Rect mouse_pos = { .x = window->in->mouse_pos.x, .y = window->in->mouse_pos.y, .w = 3, .h = 3 };
-
                     window->resolution_index--;
                     set_resolution_with_index(window);
 
@@ -353,8 +351,9 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED);
 
-                    resize_pos_for_resolution(window, &mouse_pos);
-                    SDL_WarpMouseInWindow(window->window, mouse_pos.x, mouse_pos.y);
+                    SDL_Rect new_mouse_pos = { .x = area->x + 5, .y = area->y + 5, .w = 3, .h = 3 };
+                    resize_pos_for_resolution(window, &new_mouse_pos);
+                    SDL_WarpMouseInWindow(window->window, new_mouse_pos.x, new_mouse_pos.y);
 
                     write_settings(window);
                 }
@@ -462,8 +461,6 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
 
             case 4:
                 ;
-                SDL_Rect mouse_pos = { .x = window->in->mouse_pos.x, .y = window->in->mouse_pos.y, .w = 3, .h = 3 };
-
                 SDL_DisplayMode dm;
                 if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
                     error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
@@ -481,8 +478,9 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                                       SDL_WINDOWPOS_CENTERED,
                                       SDL_WINDOWPOS_CENTERED);
 
-                resize_pos_for_resolution(window, &mouse_pos);
-                SDL_WarpMouseInWindow(window->window, mouse_pos.x, mouse_pos.y);
+                SDL_Rect new_mouse_pos = { .x = area->x + 5, .y = area->y + 5, .w = 3, .h = 3 };
+                resize_pos_for_resolution(window, &new_mouse_pos);
+                SDL_WarpMouseInWindow(window->window, new_mouse_pos.x, new_mouse_pos.y);
 
                 write_settings(window);
                 break;
@@ -545,7 +543,7 @@ void settings(struct window *window)
 
         handle_select_arrow_event(window, &selected_item, NUM_SETTINGS + 1, areas);
 
-        if (!handle_arrow_event(window, selected_item, &begin))
+        if (!handle_arrow_event(window, selected_item, &begin, &areas[3]))
             escape = 1;
 
         escape = escape || handle_escape_event(window);
