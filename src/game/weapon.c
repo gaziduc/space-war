@@ -263,6 +263,7 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
         // Process/Draw all the things
         render_stars(window);
         render_weapons(window, window->weapon, begin);
+        render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

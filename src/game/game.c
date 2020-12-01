@@ -178,9 +178,9 @@ static int handle_bomb_event(struct window *window, struct player *player)
         switch (player->input_type)
         {
             case CONTROLLER:
-                if (window->in->c.button[SDL_CONTROLLER_BUTTON_B])
+                if (window->in->c.button[SDL_CONTROLLER_BUTTON_X])
                 {
-                    window->in->c.button[SDL_CONTROLLER_BUTTON_B] = 0;
+                    window->in->c.button[SDL_CONTROLLER_BUTTON_X] = 0;
 
                     // Bomb: erase all visible enemies
                     bomb(window, 1);

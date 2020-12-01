@@ -13,6 +13,39 @@
 #include <SDL2/SDL.h>
 
 
+void render_controller_input_texts(struct window *window, Uint32 begin, int display_back)
+{
+    if (window->in->last_input_type == CONTROLLER)
+    {
+        Uint32 alpha = SDL_GetTicks() - begin;
+
+        if (alpha > TITLE_ALPHA_MAX)
+            alpha = TITLE_ALPHA_MAX;
+        else if (alpha == 0)
+            alpha = 1;
+
+        SDL_Color white = { 220, 220, 220, alpha };
+
+        SDL_Rect pos_a = { .x = 1430, .y = 150, .w = 0, .h = 0 };
+        SDL_QueryTexture(window->img->a_button, NULL, NULL, &pos_a.w, &pos_a.h);
+        resize_pos_for_resolution(window, &pos_a);
+
+        SDL_RenderCopy(window->renderer, window->img->a_button, NULL, &pos_a);
+        render_text(window, window->fonts->zero4b_30_extra_small, window->txt[SELECT], white, 1500, 154);
+
+        if (display_back)
+        {
+            SDL_Rect pos_b = { .x = 1430, .y = 210, .w = 0, .h = 0 };
+            SDL_QueryTexture(window->img->b_button, NULL, NULL, &pos_b.w, &pos_b.h);
+            resize_pos_for_resolution(window, &pos_b);
+
+            SDL_RenderCopy(window->renderer, window->img->b_button, NULL, &pos_b);
+            render_text(window, window->fonts->zero4b_30_extra_small, window->txt[BACK_LOWERCASE], white, 1500, 214);
+        }
+    }
+}
+
+
 static void render_menu_texts(struct window *window, Uint32 begin, int selected_item)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
@@ -31,13 +64,13 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     render_text(window, window->fonts->zero4b_30, "SPACE WAR", orange, 150, 150);
 
     // Render items
-    char *s_list[NUM_ITEMS] = { window->txt[PLAY], window->txt[SETTINGS], window->txt[CREDITS], window->txt[QUIT] };
+    char *s_list[NUM_ITEMS] = { window->txt[PLAY], window->txt[SETTINGS], window->txt[HELP], window->txt[CREDITS], window->txt[QUIT] };
 
     for (int i = 1; i <= NUM_ITEMS; i++)
     {
         render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                     selected_item != i ? blue : green,
-                    150, 570 + (i - 1) * 100);
+                    150, 470 + (i - 1) * 100);
     }
 
     render_text(window, window->fonts->zero4b_30_small, VERSION_INGAME, white, 1300, 870);
@@ -94,7 +127,7 @@ void menu(struct window *window)
     for (unsigned i = 0; i < NUM_ITEMS; i++)
     {
         areas[i].x = 150;
-        areas[i].y = 570 + i * 100;
+        areas[i].y = 470 + i * 100;
         TTF_SizeText(window->fonts->zero4b_30_small, window->txt[0 + i], &areas[i].w, &areas[i].h);
     }
 
@@ -118,10 +151,12 @@ void menu(struct window *window)
                     begin = SDL_GetTicks();
                     break;
                 case 3:
+                    break;
+                case 4:
                     credits(window);
                     begin = SDL_GetTicks();
                     break;
-                case 4:
+                case 5:
                     escape = 1;
                     break;
             }
@@ -134,6 +169,7 @@ void menu(struct window *window)
         // Process/Draw all the things
         render_stars(window);
         render_menu_texts(window, begin, selected_item);
+        render_controller_input_texts(window, begin, 0);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
@@ -220,6 +256,7 @@ void select_num_players(struct window *window)
         // Process/Draw all the things
         render_stars(window);
         render_num_players(window, begin, window->num_players);
+        render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

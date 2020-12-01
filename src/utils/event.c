@@ -54,7 +54,10 @@ void update_events(struct input *in, struct window *window, int is_in_level)
             if (!in->c.controller)
             {
                 if (SDL_IsGameController(event.cdevice.which))
+                {
                     init_controller(in, event.cdevice.which);
+                    in->last_input_type = CONTROLLER;
+                }
             }
             break;
 
@@ -70,6 +73,8 @@ void update_events(struct input *in, struct window *window, int is_in_level)
 
                 SDL_GameControllerClose(in->c.controller);
                 in->c.controller = NULL;
+
+                in->last_input_type = KEYBOARD;
             }
             break;
 
@@ -139,14 +144,12 @@ void handle_quit_event(struct window *window, int is_in_level)
 int handle_escape_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_ESCAPE]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_BACK]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_START]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_B]
         || window->in->mouse_button[SDL_BUTTON_X1]
         || window->in->key[SDL_SCANCODE_AC_BACK]) // Android back button
     {
         window->in->key[SDL_SCANCODE_ESCAPE] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_BACK] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_START] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_B] = 0;
         window->in->mouse_button[SDL_BUTTON_X1] = 0;
         window->in->key[SDL_SCANCODE_AC_BACK] = 0;
 

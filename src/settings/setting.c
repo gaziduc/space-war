@@ -555,6 +555,7 @@ void settings(struct window *window)
         // Process/Draw all the things
         render_stars(window);
         render_settings(window, begin, selected_item);
+        render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

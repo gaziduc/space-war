@@ -49,6 +49,8 @@ struct textures
     struct collision_texture *drone;
     struct collision_texture *final_boss;
     struct collision_texture *wall;
+    SDL_Texture *a_button;
+    SDL_Texture *b_button;
 };
 
 
@@ -257,6 +259,7 @@ enum texts
 {
     PLAY = 0,
     SETTINGS,
+    HELP,
     CREDITS,
     QUIT,
     SELECT_MODE,
@@ -368,6 +371,8 @@ enum texts
     COMPATIBLE_WITH_CONTROLLERS,
     PRESS_TO_GET_IP,
     SYNC_CLIENT_SERVER,
+    SELECT,
+    BACK_LOWERCASE,
     NUM_TXT
 };
 

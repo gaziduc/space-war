@@ -41,6 +41,9 @@ static void free_textures(struct window *window)
     free_collision_texture(window->img->final_boss);
     free_collision_texture(window->img->wall);
 
+    SDL_DestroyTexture(window->img->a_button);
+    SDL_DestroyTexture(window->img->b_button);
+
     free(window->img);
 }
 

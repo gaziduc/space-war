@@ -145,6 +145,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
         // Process/Draw all the things
         render_stars(window);
         render_ok(window, selected_level, selected_difficulty, begin, str, selected_item);
+        render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

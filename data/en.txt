@@ -1,5 +1,6 @@
 PLAY
 SETTINGS
+HELP
 CREDITS
 QUIT
 SELECT MODE
@@ -111,3 +112,5 @@ Made by David 'Gazi' Ghiassi
 Compatible with game controllers.
 Press F7 to see your online IP
 Synchronizing client with server...
+Select
+Back

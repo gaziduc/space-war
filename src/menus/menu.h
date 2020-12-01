@@ -2,7 +2,9 @@
 #define MENU_H
 
 #define TITLE_ALPHA_MAX 240
-#define NUM_ITEMS 4
+#define NUM_ITEMS 5
+
+void render_controller_input_texts(struct window *window, Uint32 begin, int display_back);
 
 void render_stars(struct window *window);
 
