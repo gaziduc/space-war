@@ -9,6 +9,7 @@
 #include "credits.h"
 #include "net.h"
 #include "version.h"
+#include "help.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -30,6 +31,7 @@ void render_controller_input_texts(struct window *window, Uint32 begin, int disp
         SDL_QueryTexture(window->img->a_button, NULL, NULL, &pos_a.w, &pos_a.h);
         resize_pos_for_resolution(window, &pos_a);
 
+        SDL_SetTextureAlphaMod(window->img->a_button, alpha);
         SDL_RenderCopy(window->renderer, window->img->a_button, NULL, &pos_a);
         render_text(window, window->fonts->zero4b_30_extra_small, window->txt[SELECT], white, 1500, 154);
 
@@ -39,6 +41,7 @@ void render_controller_input_texts(struct window *window, Uint32 begin, int disp
             SDL_QueryTexture(window->img->b_button, NULL, NULL, &pos_b.w, &pos_b.h);
             resize_pos_for_resolution(window, &pos_b);
 
+            SDL_SetTextureAlphaMod(window->img->b_button, alpha);
             SDL_RenderCopy(window->renderer, window->img->b_button, NULL, &pos_b);
             render_text(window, window->fonts->zero4b_30_extra_small, window->txt[BACK_LOWERCASE], white, 1500, 214);
         }
@@ -151,6 +154,8 @@ void menu(struct window *window)
                     begin = SDL_GetTicks();
                     break;
                 case 3:
+                    help(window);
+                    begin = SDL_GetTicks();
                     break;
                 case 4:
                     credits(window);

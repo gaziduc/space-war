@@ -58,6 +58,7 @@ Invalid IP
 PAUSE
 RESUME
 SETTINGS
+HELP
 ESCAPE
 Audio:
 Music Volume: %.*s%.*s
@@ -114,3 +115,4 @@ Press F7 to see your online IP
 Synchronizing client with server...
 Select
 Back
+CHOOSE DIFFICULTY

@@ -181,6 +181,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         SDL_Color orange = { 255, 128, 0, alpha };
 
         render_text(window, window->fonts->zero4b_30_extra_small, s, orange, 150, 150);
+        render_text(window, window->fonts->zero4b_30_extra_small, window->txt[CHOOSE_DIFFICULTY], orange, 150, 225);
         render_level_difficulties(window, begin, selected_level, selected_difficulty);
         render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);

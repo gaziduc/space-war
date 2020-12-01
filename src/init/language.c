@@ -26,9 +26,12 @@ void load_language_file(struct window *window, char *filename)
             j++;
         }
 
-        window->txt[i][j] = '\0';
+        if (str->ptr[index + j] == '\r')
+            index += j + 2;
+        else
+            index += j + 1;
 
-        index += j + 1;
+        window->txt[i][j] = '\0';
     }
 
     free_string(str);

@@ -142,6 +142,7 @@ void success(struct window *window, const int level_num, const int difficulty)
 
         render_stars(window);
         render_success_texts(window, begin, is_best, selected);
+        render_controller_input_texts(window, begin, 0);
 
         SDL_RenderPresent(window->renderer);
 
@@ -282,6 +283,7 @@ int failure(struct window *window, int level_num)
 
         render_stars(window);
         render_failure_texts(window, begin, selected, is_best);
+        render_controller_input_texts(window, begin, 0);
         SDL_RenderPresent(window->renderer);
 
         SDL_framerateDelay(window->fps);

@@ -3,6 +3,7 @@
 #include "setting.h"
 #include "menu.h"
 #include "utils.h"
+#include "help.h"
 #include <SDL2/SDL.h>
 
 
@@ -23,13 +24,13 @@ static void render_pause_texts(struct window *window, Uint32 begin, int selected
     render_text(window, window->fonts->zero4b_30, window->txt[PAUSE], orange, 150, 150);
 
     // Render items
-    char *s_list[NUM_CHOICES_PAUSE] = { window->txt[RESUME], window->txt[SETTINGS_2], window->txt[ESCAPE] };
+    char *s_list[NUM_CHOICES_PAUSE] = { window->txt[RESUME], window->txt[SETTINGS_2], window->txt[HELP_2], window->txt[ESCAPE] };
 
     for (int i = 1; i <= NUM_CHOICES_PAUSE; i++)
     {
         render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                     selected_item != i ? blue : green,
-                    150, 670 + (i - 1) * 100);
+                    150, 570 + (i - 1) * 100);
     }
 }
 
@@ -56,7 +57,7 @@ int pause(struct window *window)
     for (unsigned i = 0; i < NUM_CHOICES_PAUSE; i++)
     {
         areas[i].x = 150;
-        areas[i].y = 670 + i * 100;
+        areas[i].y = 570 + i * 100;
         TTF_SizeText(window->fonts->zero4b_30_small, window->txt[RESUME + i], &areas[i].w, &areas[i].h);
     }
 
@@ -73,12 +74,17 @@ int pause(struct window *window)
         {
             if (selected == 1)
                 escape = 1;
-            if (selected == 2)
+            else if (selected == 2)
             {
                 settings(window);
                 begin = SDL_GetTicks();
             }
-            if (selected == 3)
+            else if (selected == 3)
+            {
+                help(window);
+                begin = SDL_GetTicks();
+            }
+            else if (selected == 4)
                 escape = 2;
         }
 

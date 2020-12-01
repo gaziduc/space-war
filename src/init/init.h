@@ -317,6 +317,7 @@ enum texts
     PAUSE,
     RESUME,
     SETTINGS_2,
+    HELP_2,
     ESCAPE,
     AUDIO_TXT,
     MUSIC_VOLUME_S,
@@ -373,6 +374,7 @@ enum texts
     SYNC_CLIENT_SERVER,
     SELECT,
     BACK_LOWERCASE,
+    CHOOSE_DIFFICULTY,
     NUM_TXT
 };
 
