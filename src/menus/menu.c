@@ -113,7 +113,7 @@ void render_stars(struct window *window)
         }
     }
 
-    for (int c = 0; c < rand() % 128; c++)
+    for (int c = 0; c < rand() % 64; c++)
         new_point(window->universe, window);
 }
 
