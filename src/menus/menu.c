@@ -58,10 +58,10 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
-    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
-    SDL_Color white = { .r = 255, .g = 255, .b = 255, .a = alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
+    SDL_Color white = { .r = 195, .g = 195, .b = 195, .a = alpha };
 
     // Render title
     render_text(window, window->fonts->zero4b_30, "SPACE WAR", orange, 150, 150);
@@ -93,10 +93,10 @@ void render_stars(struct window *window)
         if (return_code == 1)
         {
             SDL_SetRenderDrawColor(window->renderer,
-                                   255 * rp.opacity / OPACITY_MAX,
-                                   255 * rp.opacity / OPACITY_MAX,
-                                   255 * rp.opacity / OPACITY_MAX,
-                                   255 * rp.opacity / OPACITY_MAX);
+                                   192 * rp.opacity / OPACITY_MAX,
+                                   192 * rp.opacity / OPACITY_MAX,
+                                   192 * rp.opacity / OPACITY_MAX,
+                                   192 * rp.opacity / OPACITY_MAX);
 
             if (rp.size > 1)
             {
@@ -191,9 +191,9 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
-    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
 
     // Render title
     render_text(window, window->fonts->zero4b_30_small, window->txt[SELECT_MODE], orange, 150, 150);

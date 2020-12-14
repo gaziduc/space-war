@@ -18,8 +18,8 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
-    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30, window->txt[SUCCESS], green,
                 150, 150);
@@ -28,7 +28,7 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
     char s[50] = { 0 };
     sprintf(s, window->txt[SCORE_D_2], window->score);
 
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color orange = { .r = 255, .g = 127, .b = 39, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_extra_small, s, orange,
                 150, 400);
@@ -170,7 +170,7 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
     char s[50] = { 0 };
     sprintf(s, window->txt[SCORE_D_2], window->score);
 
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color orange = { .r = 255, .g = 127, .b = 39, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_small, s, orange,
                 150, 450);
@@ -186,8 +186,8 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
     if (!window->is_lan || window->server)
     {
         char *s_list[2] = { window->txt[RETRY], window->txt[BACK_9] };
-        SDL_Color blue = { 0, 255, 255, alpha };
-        SDL_Color green = { 0, 255, 0, alpha };
+        SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+        SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
 
 
         for (int i = 1; i <= 2; i++)

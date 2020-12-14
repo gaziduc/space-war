@@ -14,7 +14,7 @@
 
 static void render_selected_level_title(struct window *window, const char *s, Uint32 alpha, int score)
 {
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color orange = { .r = 255, .g = 127, .b = 39, .a = alpha };
 
     SDL_Texture *texture = get_text_texture(window, window->fonts->zero4b_30_small,
                                             s, orange);
@@ -64,8 +64,8 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color blue = { 0, 255, 255, alpha };
-    SDL_Color green = { 0, 255, 0, alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
 
     char *s_list[NUM_DIFFICULTIES + 1] = { window->txt[EASY__], window->txt[HARD__], window->txt[REALLY_HARD__], window->txt[BACK_3] };
 
@@ -97,22 +97,22 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
                 s_list[NUM_DIFFICULTIES],
                 selected_difficulty == NUM_DIFFICULTIES + 1 ? green : blue, 150, 360 + NUM_DIFFICULTIES * 100);
 
-    SDL_Color white = { 255, 255, 255, alpha };
+    SDL_Color white = { 195, 195, 195, alpha };
 
     switch (selected_difficulty)
     {
         case EASY:
-            render_text(window, window->fonts->zero4b_30_extra_small,
+            render_text(window, window->fonts->pixel_large,
                         window->txt[EASY_CONDITIONS], white, 150, 880);
             break;
 
         case HARD:
-            render_text(window, window->fonts->zero4b_30_extra_small,
+            render_text(window, window->fonts->pixel_large,
                         window->txt[HARD_CONDITIONS], white, 150, 880);
             break;
 
         case REALLY_HARD:
-            render_text(window, window->fonts->zero4b_30_extra_small,
+            render_text(window, window->fonts->pixel_large,
                         window->txt[REALLY_HARD_CONDITIONS], white, 150, 880);
             break;
 
@@ -178,7 +178,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         else if (alpha == 0)
             alpha = 1;
 
-        SDL_Color orange = { 255, 128, 0, alpha };
+        SDL_Color orange = { 255, 127, 39, alpha };
 
         render_text(window, window->fonts->zero4b_30_extra_small, s, orange, 150, 150);
         render_text(window, window->fonts->zero4b_30_extra_small, window->txt[CHOOSE_DIFFICULTY], orange, 150, 225);
@@ -202,9 +202,9 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
-    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
-    SDL_Color orange = { 255, 128, 0, alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
     SDL_Color grey = { 128, 128, 128, alpha };
 
     render_text(window, window->fonts->zero4b_30_small, window->txt[SELECT_MISSION], orange, 150, 150);
@@ -219,7 +219,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
             sprintf(s, window->txt[ARCADE_MODE_S], window->save->progress[window->num_players - 1][i - 1], "***");
 
 
-        int y = 320 + (i - 1) * 60;
+        int y = 290 + (i - 1) * 60;
 
         if (i != selected_level)
         {
@@ -244,7 +244,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     render_text(window, window->fonts->zero4b_30_extra_small,
                 window->txt[BACK_2],
                 selected_level == NUM_LEVELS + 2 ? green : blue,
-                150, 320 + (NUM_LEVELS + 1) * 60);
+                150, 290 + (NUM_LEVELS + 1) * 60);
 }
 
 
@@ -270,7 +270,7 @@ void select_level(struct window *window)
     for (unsigned i = 0; i < NUM_LEVELS + 2; i++)
     {
         areas[i].x = 150;
-        areas[i].y = 320 + i * 60;
+        areas[i].y = 290 + i * 60;
         char s[100] = { 0 };
 
         if (i < NUM_LEVELS)

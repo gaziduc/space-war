@@ -16,10 +16,10 @@ static void render_controls(struct window *window, Uint32 begin, int selected_it
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color white = { 255, 255, 255, alpha };
-    SDL_Color green = { 0, 255, 0, alpha };
-    SDL_Color orange = { 255, 128, 0, alpha };
-    SDL_Color blue = { 0, 255, 255, alpha };
+    SDL_Color white = { .r = 195, .g = 195, .b = 195, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_small, window->txt[KEYBOARD_CONTROLS], orange, 150, 150);
 
@@ -139,12 +139,12 @@ SDL_Scancode get_key(struct window *window, int selected_item)
         else if (alpha == 0)
             alpha = 1;
 
-        SDL_Color orange = { 255, 128, 0, alpha };
+        SDL_Color orange = { 255, 127, 39, alpha };
         SDL_Color white = { 255, 255, 255, alpha };
 
         render_text(window, window->fonts->zero4b_30_small, s1, orange, 150, 150);
         render_text(window, window->fonts->pixel_large, s2, orange, 150, 350);
-        render_text(window, window->fonts->zero4b_30_small, "Escape to cancel...", white, 150, 850);
+        render_text(window, window->fonts->zero4b_30_small, window->txt[ESCAPE_TO_CANCEL], white, 150, 850);
 
         SDL_RenderPresent(window->renderer);
 

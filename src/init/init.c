@@ -9,6 +9,7 @@
 #include "event.h"
 #include "language.h"
 #include "msg_list.h"
+#include "menu.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -30,8 +31,8 @@ void render_loading_screen(struct window *window)
     {
         last_time = time;
 
-        SDL_Color white = { 255, 255, 255, 255 };
-        SDL_Color blue = { 0, 255, 255, 255 };
+        SDL_Color white = { 195, 195, 195, 255 };
+        SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = TITLE_ALPHA_MAX };
 
         char s[128] = { 0 };
         sprintf(s, "%d %%", progress);

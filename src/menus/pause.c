@@ -16,9 +16,9 @@ static void render_pause_texts(struct window *window, Uint32 begin, int selected
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
-    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
 
     // Render title
     render_text(window, window->fonts->zero4b_30, window->txt[PAUSE], orange, 150, 150);

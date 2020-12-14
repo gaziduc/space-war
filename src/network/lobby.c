@@ -36,7 +36,7 @@ void lobby(struct window *window)
         else if (alpha == 0)
             alpha = 1;
 
-        SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+        SDL_Color orange = { 255, 127, 39, alpha };
         render_text(window, window->fonts->zero4b_30_small, "WAITING FOR THE SERVER...",
                     orange, 150, 150);
 

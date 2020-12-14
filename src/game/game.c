@@ -341,7 +341,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
                 window->player[i].ammo = -1;
 
             window->num_bombs = 1;
-            window->bonus = 1500;
+            window->bonus = 5000;
             break;
 
         case REALLY_HARD:
@@ -353,7 +353,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
                 window->player[i].ammo = 200;
 
             window->num_bombs = 1;
-            window->bonus = 3000;
+            window->bonus = 20000;
             break;
 
         default:

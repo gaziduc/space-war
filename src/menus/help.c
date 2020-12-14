@@ -12,10 +12,10 @@ static void render_help(struct window *window, Uint32 begin, unsigned selected)
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
-    SDL_Color white = { 220, 220, 220, alpha };
-    SDL_Color blue = { 0, 255, 255, alpha };
-    SDL_Color green = { 0, 255, 0, alpha };
+    SDL_Color orange = { .r = 255, .g = 127, .b = 39, .a = alpha };
+    SDL_Color white = { 195, 195, 195, alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_small, window->txt[HELP], orange, 150, 150);
 

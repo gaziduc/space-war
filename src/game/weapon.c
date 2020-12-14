@@ -153,9 +153,9 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color orange = { 255, 128, 0, alpha };
-    SDL_Color green = { 0, 255, 0, alpha };
-    SDL_Color blue = { 0, 255, 255, alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
+    SDL_Color green = { GREEN_R, GREEN_G, GREEN_B, alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_small, window->txt[CHOOSE_WEAPON],
                 orange, 150, 150);

@@ -38,9 +38,9 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin,
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
-    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
 
     // Render title
     render_text(window, window->fonts->zero4b_30_small, window->txt[CREATE_OR_JOIN],
@@ -132,9 +132,9 @@ static void render_accept_client_texts(struct window *window, Uint32 begin,
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color blue = { .r = 0, .g = 255, .b = 255, .a = alpha };
-    SDL_Color green = { .r = 0, .g = 255, .b = 0, .a = alpha };
-    SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
 
     char text[128] = { 0 };
     sprintf(text, window->txt[USER_AT], ip_str);
@@ -330,7 +330,7 @@ void create_server(struct window *window)
         else if (alpha == 0)
             alpha = 1;
 
-        SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = alpha };
+        SDL_Color orange = { 255, 127, 39, alpha };
         SDL_Color white = { 255, 255, 255, alpha };
 
         render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_SOMEONE],
@@ -514,10 +514,10 @@ void connect_to_server(struct window *window)
         else if (alpha == 0)
             alpha = 1;
 
-        SDL_Color orange = { 255, 128, 0, alpha };
+        SDL_Color orange = { 255, 127, 39, alpha };
         SDL_Color white = { 255, 255, 255, alpha };
         SDL_Color red = { 255, 0, 0, alpha };
-        SDL_Color green = { 0, 255, 0, alpha };
+        SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
 
         render_text(window, window->fonts->zero4b_30_small, "Enter IP:",
                     orange, 150, 150);

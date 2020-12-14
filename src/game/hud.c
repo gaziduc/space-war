@@ -109,7 +109,7 @@ static void render_combo(struct window *window)
         sprintf(s, "%d COMBO", window->combo);
 
         Uint32 offset = ticks - window->combo_time;
-        SDL_Color orange = { .r = 255, .g = 128, .b = 0, .a = offset < 224 ? offset : 224 };
+        SDL_Color orange = { .r = 255, .g = 127, .b = 39, .a = offset < 224 ? offset : 224 };
 
         render_text(window, window->fonts->pixel_large, s, orange, 20, offset < 224 ? 262 - offset / 10 : 240);
     }
@@ -248,7 +248,7 @@ void render_hud_texts(struct window *window)
         else if (alpha > TITLE_ALPHA_MAX)
             alpha = TITLE_ALPHA_MAX;
 
-        SDL_Color blue = { 0, 255, 255, alpha };
+        SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
         render_text(window, window->fonts->pixel, "+100", blue,
                     temp->pos_dst.x, temp->pos_dst.y);
 

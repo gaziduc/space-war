@@ -10,7 +10,7 @@
 static int render_screen(struct window *window, char screen[][CREDITS_COLS],
                           size_t line, size_t col, Uint32 begin, int is_in_menu)
 {
-    static SDL_Color green = { 0, 255, 0, TITLE_ALPHA_MAX };
+    static SDL_Color green = { GREEN_R, GREEN_G, GREEN_B, TITLE_ALPHA_MAX };
 
     // Handle events
     update_events(window->in, window, 0);

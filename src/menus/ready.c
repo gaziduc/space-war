@@ -18,10 +18,10 @@ static void render_ok(struct window *window, int selected_level,
     else if (alpha == 0)
         alpha = 1;
 
-    SDL_Color white = { 255, 255, 255, alpha };
-    SDL_Color orange = { 255, 128, 0, alpha };
-    SDL_Color green = { 0, 255, 0, alpha };
-    SDL_Color blue = { 0, 255, 255, alpha };
+    SDL_Color white = { 195, 195, 195, alpha };
+    SDL_Color orange = { 255, 127, 39, alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
 
     render_text(window, window->fonts->zero4b_30_small, "SUMMARY", orange, 150, 150);
 

@@ -17,11 +17,8 @@ void init_background(struct window *window)
         new->x = rand() % DEFAULT_W;
         new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 1;
-        new->opacity = rand() % 256;
+        new->opacity = rand() % 193;
         new->size = (rand() % 3) + 1;
-
-        if (new->z > 4)
-            new->opacity /= 2;
 
         new->next = window->stars->next;
         window->stars->next = new;
@@ -44,11 +41,8 @@ void move_background(struct window *window, unsigned long framecount)
             p->x = DEFAULT_W - 1;
             p->y = rand() % DEFAULT_H;
             p->z = (rand() % 5) + 1;
-            p->opacity = rand() % 256;
+            p->opacity = rand() % 193;
             p->size = (rand() % 3) + 1;
-
-            if (p->z > 4)
-                p->opacity /= 2;
         }
 
         p = p->next;

@@ -28,8 +28,8 @@ HARD *
 REALLY HARD *
 BACK
 20 HP - 2 Bombs - 999+ Ammo - 0 Bonus
-7 HP - 1 Bomb - 999+ Ammo - 1500 Bonus
-3 HP - 1 Bomb - 200 Ammo - 3000 Bonus
+7 HP - 1 Bomb - 999+ Ammo - 5000 Bonus
+3 HP - 1 Bomb - 200 Ammo - 20000 Bonus
 CHOOSE WEAPON
 DAMAGE: %d - SPEED: %d - SHOTS/SECOND: %d
 BACK
@@ -116,3 +116,4 @@ Synchronizing client with server...
 Select
 Back
 CHOOSE DIFFICULTY
+Escape to cancel...

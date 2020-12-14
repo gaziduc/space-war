@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "event.h"
 #include "credits.h"
+#include "menu.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_framerate.h>
 
@@ -16,7 +17,7 @@ void intro(struct window *window)
     int escape = 0;
 
 
-    for (int i = 255; i >= 0; i -= 6)
+    for (int i = 195; i >= 0; i -= 6)
     {
         update_events(window->in, window, 0);
         handle_quit_event(window, 0);
@@ -26,7 +27,7 @@ void intro(struct window *window)
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { i, i, i, i == 0 ? 1 : i };
-        SDL_Color blue = { 0, 255, 255, 255 };
+        SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = TITLE_ALPHA_MAX };
 
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
@@ -40,7 +41,7 @@ void intro(struct window *window)
 
 
 
-    for (int i = 0; i < 256; i += 6)
+    for (int i = 0; i < 195; i += 6)
     {
         update_events(window->in, window, 0);
         handle_quit_event(window, 0);
@@ -50,7 +51,7 @@ void intro(struct window *window)
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { i, i, i, i == 0 ? 1 : i };
-        SDL_Color blue = { 0, 255, 255, 255 };
+        SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = TITLE_ALPHA_MAX };
 
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
@@ -81,8 +82,8 @@ void intro(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
-        SDL_Color white = { 255, 255, 255, 255 };
-        SDL_Color blue = { 0, 255, 255, 255 };
+        SDL_Color white = { 195, 195, 195, 255 };
+        SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = TITLE_ALPHA_MAX };
 
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                 POS_CENTERED, 200);
@@ -99,7 +100,7 @@ void intro(struct window *window)
         SDL_framerateDelay(window->fps);
     }
 
-    for (int i = 255; i >= 0; i -= 6)
+    for (int i = 195; i >= 0; i -= 6)
     {
         update_events(window->in, window, 0);
         handle_quit_event(window, 0);
@@ -109,7 +110,7 @@ void intro(struct window *window)
         SDL_RenderClear(window->renderer);
 
         SDL_Color white = { i, i, i, i == 0 ? 1 : i };
-        SDL_Color blue = { 0, 255, 255, i == 0 ? 1 : i };
+        SDL_Color blue = { BLUE_R, BLUE_G, BLUE_B, i == 0 ? 1 : i };
 
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                 POS_CENTERED, 200);

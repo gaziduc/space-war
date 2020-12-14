@@ -15,6 +15,15 @@
 #define NUM_RESOLUTIONS 7
 #define MAX_NUM_FINGERS 2
 
+/* Colors */
+#define BLUE_R 0
+#define BLUE_G 162
+#define BLUE_B 232
+
+#define GREEN_R 153
+#define GREEN_G 217
+#define GREEN_B 234
+
 enum object_type
 {
     HEALTH = 0,
@@ -375,6 +384,7 @@ enum texts
     SELECT,
     BACK_LOWERCASE,
     CHOOSE_DIFFICULTY,
+    ESCAPE_TO_CANCEL,
     NUM_TXT
 };
 
