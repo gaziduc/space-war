@@ -42,6 +42,23 @@ struct collision_texture
     char *collision;
 };
 
+enum trophy_value
+{
+    BRONZE = 0,
+    SILVER,
+    GOLD,
+    NUM_TROPHY_VALUES,
+};
+
+enum trophies
+{
+    REALLY_HARD_SUCCESS,
+    ARCADE_SUCCESS,
+    COMBO_LOVER,
+    BOMB_SAVER,
+    NUM_TROPHIES
+};
+
 struct textures
 {
     struct collision_texture *ship;
@@ -60,6 +77,7 @@ struct textures
     struct collision_texture *wall;
     SDL_Texture *a_button;
     SDL_Texture *b_button;
+    SDL_Texture *trophy;
 };
 
 
@@ -165,6 +183,7 @@ struct sounds
     Mix_Chunk *power_up;
     Mix_Chunk *select;
     Mix_Chunk *play;
+    Mix_Chunk *trophy;
 };
 
 enum control
@@ -188,10 +207,14 @@ struct settings
     int mouse_sensitivity;
 };
 
+
+
+
 struct save
 {
     int progress[2][NUM_LEVELS + 1]; // 2 for solo and multi
     int score[2][NUM_LEVELS + 1]; // same goes here
+    int trophies[NUM_TROPHIES];
 };
 
 
@@ -269,6 +292,7 @@ enum texts
     PLAY = 0,
     SETTINGS,
     HELP,
+    TROPHIES,
     CREDITS,
     QUIT,
     SELECT_MODE,
@@ -385,7 +409,30 @@ enum texts
     BACK_LOWERCASE,
     CHOOSE_DIFFICULTY,
     ESCAPE_TO_CANCEL,
+    TROPHY_1_TITLE,
+    TROPHY_1_LINE_1,
+    TROPHY_1_LINE_2,
+    TROPHY_2_TITLE,
+    TROPHY_2_LINE_1,
+    TROPHY_2_LINE_2,
+    TROPHY_3_TITLE,
+    TROPHY_3_LINE_1,
+    TROPHY_3_LINE_2,
+    TROPHY_4_TITLE,
+    TROPHY_4_LINE_1,
+    TROPHY_4_LINE_2,
     NUM_TXT
+};
+
+struct trophy
+{
+    int is_unlocking_trophies;
+    int is_unlocking_fade_in;
+    int is_unlocking_idleing;
+    int is_unlocking_fade_out;
+    int offset_x;
+    int trophy_unlocked;
+    int id[NUM_TROPHIES];
 };
 
 struct window
@@ -407,6 +454,7 @@ struct window
     int is_wave_title;
     Uint32 wave_title_time;
     int num_bombs;
+    int initial_bombs;
     struct universe *universe;
     struct point *stars;
     int bonus;
@@ -436,6 +484,8 @@ struct window
     Uint32 combo_time;
     unsigned last_combo;
     Uint32 last_combo_time;
+    struct trophy trophy;
+    int combo_lover;
 };
 
 void render_loading_screen(struct window *window);

@@ -1,6 +1,7 @@
 PLAY
 SETTINGS
 HELP
+TROPHIES
 CREDITS
 QUIT
 SELECT MODE
@@ -117,3 +118,15 @@ Select
 Back
 CHOOSE DIFFICULTY
 Escape to cancel...
+Really hard
+Finish a level in really
+hard mode.
+Arcade gaming
+Finish arcade mode
+alive.
+Combo lover
+Finish a level without breaking
+a combo sequence.
+Bomb saver
+Finish a level without using
+a bomb.

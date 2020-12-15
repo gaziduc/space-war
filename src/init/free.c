@@ -43,6 +43,7 @@ static void free_textures(struct window *window)
 
     SDL_DestroyTexture(window->img->a_button);
     SDL_DestroyTexture(window->img->b_button);
+    SDL_DestroyTexture(window->img->trophy);
 
     free(window->img);
 }
@@ -75,6 +76,7 @@ static void free_sounds(struct window *window)
     Mix_FreeChunk(window->sounds->power_up);
     Mix_FreeChunk(window->sounds->select);
     Mix_FreeChunk(window->sounds->play);
+    Mix_FreeChunk(window->sounds->trophy);
     free(window->sounds);
 }
 

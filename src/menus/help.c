@@ -20,20 +20,20 @@ static void render_help(struct window *window, Uint32 begin, unsigned selected)
     render_text(window, window->fonts->zero4b_30_small, window->txt[HELP], orange, 150, 150);
 
     TTF_SetFontStyle(window->fonts->pixel, TTF_STYLE_UNDERLINE);
-    render_text(window, window->fonts->pixel, "Goal: Kill all enemies", white, 150, 300);
+    render_text(window, window->fonts->pixel, "Goal: Kill all enemies", white, 150, 280);
     TTF_SetFontStyle(window->fonts->pixel, TTF_STYLE_NORMAL);
 
-    render_text(window, window->fonts->pixel, "You loose if:", white, 150, 380);
-    render_text(window, window->fonts->pixel, "  - An enemy pass on the left of the screen", white, 150, 420);
-    render_text(window, window->fonts->pixel, "  - Your health points reach 0", white, 150, 460);
+    render_text(window, window->fonts->pixel, "You loose if:", white, 150, 360);
+    render_text(window, window->fonts->pixel, "  - An enemy pass on the left of the screen", white, 150, 400);
+    render_text(window, window->fonts->pixel, "  - Your health points reach 0", white, 150, 440);
 
-    render_text(window, window->fonts->pixel, "You can throw a bomb to destroy all enemies on screen", white, 150, 540);
+    render_text(window, window->fonts->pixel, "You can throw a bomb to destroy all enemies on screen", white, 150, 520);
 
-    render_text(window, window->fonts->pixel, "              | Keyboard (can be modified) |     Mouse     |       Controller", white, 150, 620);
-    render_text(window, window->fonts->pixel, "-----------------------------------------------------------------------------------------", white, 150, 660);
-    render_text(window, window->fonts->pixel, "Move:         |          Arrows            |   Move mouse  |     Move Left joystick", white, 150, 700);
-    render_text(window, window->fonts->pixel, "Shoot:        |          Space             |   Left click  |  RT (second right trigger)", white, 150, 740);
-    render_text(window, window->fonts->pixel, "Throw a bomb: |            B               |  Right click  |            X", white, 150, 780);
+    render_text(window, window->fonts->pixel, "              | Keyboard (can be modified) |     Mouse     |       Controller", white, 150, 600);
+    render_text(window, window->fonts->pixel, "-----------------------------------------------------------------------------------------", white, 150, 640);
+    render_text(window, window->fonts->pixel, "Move:         |          Arrows            |   Move mouse  |     Move Left joystick", white, 150, 680);
+    render_text(window, window->fonts->pixel, "Shoot:        |          Space             |   Left click  |  RT (second right trigger)", white, 150, 720);
+    render_text(window, window->fonts->pixel, "Throw a bomb: |            B               |  Right click  |            X", white, 150, 760);
 
     render_text(window, window->fonts->zero4b_30_extra_small, window->txt[BACK_1],
                 selected == 1 ? green : blue, 150, 880);

@@ -3,7 +3,7 @@
 #include <string.h>
 #include <curl/curl.h>
 
-static int init_string(struct string *str)
+int init_string(struct string *str)
 {
     str->len = 0;
 
@@ -15,7 +15,7 @@ static int init_string(struct string *str)
     return 1;
 }
 
-static size_t write_function(void *ptr, size_t size, size_t nmemb, struct string *s)
+size_t write_function(void *ptr, size_t size, size_t nmemb, struct string *s)
 {
     size_t new_len = s->len + size * nmemb;
 

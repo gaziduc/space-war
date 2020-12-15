@@ -139,6 +139,7 @@ static void load_textures(struct window *window)
     window->img->wall = load_texture_collision("data/wall.png", window);
     window->img->a_button = load_texture("data/a_button.png", window);
     window->img->b_button = load_texture("data/b_button.png", window);
+    window->img->trophy = load_texture("data/trophy_gold.png", window);
 }
 
 
@@ -176,6 +177,7 @@ static void load_sounds(struct window *window)
     window->sounds->power_up = load_sound(window, "data/power_up.wav");
     window->sounds->select = load_sound(window, "data/select.wav");
     window->sounds->play = load_sound(window, "data/play.wav");
+    window->sounds->trophy = load_sound(window, "data/trophy.wav");
 }
 
 
@@ -274,6 +276,9 @@ struct window *init_all(void)
     // LAN meesages
     window->msg_list = xmalloc(sizeof(struct msg_list), window->window, window->renderer);
     window->msg_list->next = NULL;
+
+    // Trophies
+    window->trophy.id[0] = -1;
 
     return window;
 }

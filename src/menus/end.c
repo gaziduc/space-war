@@ -4,6 +4,8 @@
 #include "save.h"
 #include "net.h"
 #include "ready.h"
+#include "trophies.h"
+#include "level.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL2_gfxPrimitives.h>
@@ -96,6 +98,20 @@ void success(struct window *window, const int level_num, const int difficulty)
         window->save->score[window->num_players - 1][level_num - 1] = final_score;
         is_best = 1;
     }
+
+    // Trophies
+    if (window->combo_lover && !window->save->trophies[COMBO_LOVER])
+        achieve_trophy(window, COMBO_LOVER);
+
+    if (difficulty == REALLY_HARD && !window->save->trophies[REALLY_HARD_SUCCESS])
+        achieve_trophy(window, REALLY_HARD_SUCCESS);
+
+    if (level_num == NUM_LEVELS + 1 && !window->save->trophies[ARCADE_SUCCESS])
+        achieve_trophy(window, ARCADE_SUCCESS);
+
+    if (window->num_bombs == window->initial_bombs && !window->save->trophies[BOMB_SAVER])
+        achieve_trophy(window, BOMB_SAVER);
+
 
     // Save
     write_save(window, window->save);

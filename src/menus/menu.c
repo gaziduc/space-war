@@ -10,6 +10,7 @@
 #include "net.h"
 #include "version.h"
 #include "help.h"
+#include "trophies.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -67,17 +68,18 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     render_text(window, window->fonts->zero4b_30, "SPACE WAR", orange, 150, 150);
 
     // Render items
-    char *s_list[NUM_ITEMS] = { window->txt[PLAY], window->txt[SETTINGS], window->txt[HELP], window->txt[CREDITS], window->txt[QUIT] };
+    char *s_list[NUM_ITEMS] = { window->txt[PLAY], window->txt[SETTINGS], window->txt[HELP], window->txt[TROPHIES], window->txt[CREDITS], window->txt[QUIT] };
 
     for (int i = 1; i <= NUM_ITEMS; i++)
     {
         render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                     selected_item != i ? blue : green,
-                    150, 470 + (i - 1) * 100);
+                    150, 370 + (i - 1) * 100);
     }
 
     render_text(window, window->fonts->zero4b_30_small, VERSION_INGAME, white, 1300, 870);
 }
+
 
 
 void render_stars(struct window *window)
@@ -115,6 +117,9 @@ void render_stars(struct window *window)
 
     for (int c = 0; c < rand() % 64; c++)
         new_point(window->universe, window);
+
+    if (window->trophy.is_unlocking_trophies)
+        render_trophy_pop_up(window);
 }
 
 
@@ -130,7 +135,7 @@ void menu(struct window *window)
     for (unsigned i = 0; i < NUM_ITEMS; i++)
     {
         areas[i].x = 150;
-        areas[i].y = 470 + i * 100;
+        areas[i].y = 370 + i * 100;
         TTF_SizeText(window->fonts->zero4b_30_small, window->txt[0 + i], &areas[i].w, &areas[i].h);
     }
 
@@ -158,10 +163,14 @@ void menu(struct window *window)
                     begin = SDL_GetTicks();
                     break;
                 case 4:
-                    credits(window);
+                    view_trophies(window);
                     begin = SDL_GetTicks();
                     break;
                 case 5:
+                    credits(window);
+                    begin = SDL_GetTicks();
+                    break;
+                case 6:
                     escape = 1;
                     break;
             }

@@ -27,6 +27,9 @@ void read_save(struct window *window)
             }
         }
 
+        for (int i = 0; i < NUM_TROPHIES; i++)
+            window->save->trophies[i] = 0;
+
         return;
     }
 
@@ -39,6 +42,9 @@ void read_save(struct window *window)
             SDL_RWread(f, &window->save->score[i][j], sizeof(window->save->score[i][j]), 1);
         }
     }
+
+    for (int i = 0; i < NUM_TROPHIES; i++)
+        SDL_RWread(f, &window->save->trophies[i], sizeof(window->save->trophies[i]), 1);
 
     SDL_RWclose(f);
 }
@@ -58,6 +64,9 @@ void write_save(struct window *window, struct save *save)
             SDL_RWwrite(f, &save->score[i][j], sizeof(save->score[i][j]), 1);
         }
     }
+
+    for (int i = 0; i < NUM_TROPHIES; i++)
+        SDL_RWwrite(f, &save->trophies[i], sizeof(window->save->trophies[i]), 1);
 
     SDL_RWclose(f);
 }

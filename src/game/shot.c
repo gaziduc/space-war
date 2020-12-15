@@ -39,6 +39,8 @@ void end_combo(struct window *window)
         window->last_combo = window->combo;
 
         window->score += compute_combo_score(window->combo);
+
+        window->combo_lover = 0;
     }
 
     window->combo = 0;

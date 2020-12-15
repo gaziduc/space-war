@@ -361,6 +361,8 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
             break;
     }
 
+    window->initial_bombs = window->num_bombs;
+
     if (all_reset)
     {
         window->max_health = window->player[0].health;
@@ -377,6 +379,9 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
         window->player[i].lives = 1;
         window->player[i].shield_time = -SHIELD_TIME;
     }
+
+    // Trophies
+    window->combo_lover = 1;
 }
 
 
