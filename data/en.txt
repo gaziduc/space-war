@@ -130,3 +130,21 @@ a combo sequence.
 Bomb saver
 Finish a level without using
 a bomb.
+Perfect Bomb
+Kill at least 20 enemies by
+using one bomb.
+Speedrun
+Finish a level in less
+than 1 minute.
+United we stand
+Finish a level in 2-players
+mode.
+Is it possible?
+Collide with 4 enemies in a
+level, and stay alive.
+Ammo collector
+Finish a level (1P, really hard)
+with more than 100 ammo.
+Over the world
+Finish a level in
+network mode.

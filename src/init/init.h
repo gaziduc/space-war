@@ -56,6 +56,12 @@ enum trophies
     ARCADE_SUCCESS,
     COMBO_LOVER,
     BOMB_SAVER,
+    PERFECT_BOMB,
+    SPEEDRUN,
+    UNITED_WE_STAND,
+    IS_IT_POSSIBLE,
+    AMMO_COLLECTOR,
+    OVER_THE_WORLD,
     NUM_TROPHIES
 };
 
@@ -421,6 +427,24 @@ enum texts
     TROPHY_4_TITLE,
     TROPHY_4_LINE_1,
     TROPHY_4_LINE_2,
+    TROPHY_5_TITLE,
+    TROPHY_5_LINE_1,
+    TROPHY_5_LINE_2,
+    TROPHY_6_TITLE,
+    TROPHY_6_LINE_1,
+    TROPHY_6_LINE_2,
+    TROPHY_7_TITLE,
+    TROPHY_7_LINE_1,
+    TROPHY_7_LINE_2,
+    TROPHY_8_TITLE,
+    TROPHY_8_LINE_1,
+    TROPHY_8_LINE_2,
+    TROPHY_9_TITLE,
+    TROPHY_9_LINE_1,
+    TROPHY_9_LINE_2,
+    TROPHY_10_TITLE,
+    TROPHY_10_LINE_1,
+    TROPHY_10_LINE_2,
     NUM_TXT
 };
 
@@ -486,6 +510,7 @@ struct window
     Uint32 last_combo_time;
     struct trophy trophy;
     int combo_lover;
+    int num_enemies_collided;
 };
 
 void render_loading_screen(struct window *window);

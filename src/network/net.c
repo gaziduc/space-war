@@ -331,7 +331,7 @@ void create_server(struct window *window)
             alpha = 1;
 
         SDL_Color orange = { 255, 127, 39, alpha };
-        SDL_Color white = { 255, 255, 255, alpha };
+        SDL_Color white = { 195, 195, 195, alpha };
 
         render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_SOMEONE],
                     orange, 150, 150);
@@ -515,7 +515,7 @@ void connect_to_server(struct window *window)
             alpha = 1;
 
         SDL_Color orange = { 255, 127, 39, alpha };
-        SDL_Color white = { 255, 255, 255, alpha };
+        SDL_Color white = { 195, 195, 195, alpha };
         SDL_Color red = { 255, 0, 0, alpha };
         SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
 

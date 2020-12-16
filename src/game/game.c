@@ -382,6 +382,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 
     // Trophies
     window->combo_lover = 1;
+    window->num_enemies_collided = 0;
 }
 
 

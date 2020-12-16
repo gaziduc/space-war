@@ -23,9 +23,9 @@ void render_loading_screen(struct window *window)
     static Uint32 last_time = 0;
     Uint32 time = SDL_GetTicks();
 
-    static int progress = 0;
+    static int progress = 10;
 
-    progress += 4;
+    progress += 3;
 
     if (time - last_time > 16)
     {

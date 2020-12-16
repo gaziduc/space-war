@@ -1,6 +1,7 @@
 #include "init.h"
 #include "background.h"
 #include "utils.h"
+#include "trophies.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -17,7 +18,7 @@ void init_background(struct window *window)
         new->x = rand() % DEFAULT_W;
         new->y = rand() % DEFAULT_H;
         new->z = (rand() % 5) + 1;
-        new->opacity = rand() % 193;
+        new->opacity = rand() % 213;
         new->size = (rand() % 3) + 1;
 
         new->next = window->stars->next;
@@ -41,7 +42,7 @@ void move_background(struct window *window, unsigned long framecount)
             p->x = DEFAULT_W - 1;
             p->y = rand() % DEFAULT_H;
             p->z = (rand() % 5) + 1;
-            p->opacity = rand() % 193;
+            p->opacity = rand() % 213;
             p->size = (rand() % 3) + 1;
         }
 
@@ -91,6 +92,9 @@ void render_background(struct window *window)
 
     set_next_shake(&window->shake.x);
     set_next_shake(&window->shake.y);
+
+    if (window->trophy.is_unlocking_trophies)
+        render_trophy_pop_up(window);
 }
 
 

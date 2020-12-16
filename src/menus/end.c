@@ -22,8 +22,9 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
 
     SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
     SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color title_color = { .r = 0, .g = 200, .b = 0, .a = alpha };
 
-    render_text(window, window->fonts->zero4b_30, window->txt[SUCCESS], green,
+    render_text(window, window->fonts->zero4b_30, window->txt[SUCCESS], title_color,
                 150, 150);
 
     // Print score
@@ -112,6 +113,20 @@ void success(struct window *window, const int level_num, const int difficulty)
     if (window->num_bombs == window->initial_bombs && !window->save->trophies[BOMB_SAVER])
         achieve_trophy(window, BOMB_SAVER);
 
+    if (SDL_GetTicks() - window->mission_start_time <= 60000 && !window->save->trophies[SPEEDRUN])
+        achieve_trophy(window, SPEEDRUN);
+
+    if (window->num_players == 2 && !window->save->trophies[UNITED_WE_STAND])
+        achieve_trophy(window, UNITED_WE_STAND);
+
+    if (window->num_enemies_collided >= 4 && !window->save->trophies[IS_IT_POSSIBLE])
+        achieve_trophy(window, IS_IT_POSSIBLE);
+
+    if (difficulty == REALLY_HARD && window->player[0].ammo >= 100 && !window->save->trophies[AMMO_COLLECTOR])
+        achieve_trophy(window, AMMO_COLLECTOR);
+
+    if (window->is_lan && !window->save->trophies[OVER_THE_WORLD])
+        achieve_trophy(window, OVER_THE_WORLD);
 
     // Save
     write_save(window, window->save);

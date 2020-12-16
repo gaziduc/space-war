@@ -9,6 +9,8 @@
 #include "ready.h"
 #include "net.h"
 #include "effect.h"
+#include "trophies.h"
+#include "save.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -73,6 +75,8 @@ void bomb(struct window *window, int provoked_by_me)
     /* NORMAL ENEMY */
     struct list *sentinel = window->list[ENEMY_LIST];
 
+    int num_enemies_destroyed = 0;
+
     while (sentinel->next)
     {
         struct list *enemy_to_delete = sentinel->next;
@@ -89,6 +93,7 @@ void bomb(struct window *window, int provoked_by_me)
 
         // Increase score
         window->score += SCORE_TO_INCREASE;
+        num_enemies_destroyed++;
     }
 
 
@@ -117,6 +122,7 @@ void bomb(struct window *window, int provoked_by_me)
 
             // Increase score
             window->score += SCORE_TO_INCREASE;
+            num_enemies_destroyed++;
         }
         else
         {
@@ -129,6 +135,12 @@ void bomb(struct window *window, int provoked_by_me)
 
             sentinel = sentinel->next;
         }
+    }
+
+    if (num_enemies_destroyed >= 20 && !window->save->trophies[PERFECT_BOMB])
+    {
+        achieve_trophy(window, PERFECT_BOMB);
+        write_save(window, window->save);
     }
 
 

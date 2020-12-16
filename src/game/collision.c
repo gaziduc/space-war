@@ -153,6 +153,8 @@ static void check_collisions_list(struct window *window, struct player *player,
             && collision(temp_pos, temp,
                          &player->pos, window->img->ship))
         {
+            window->num_enemies_collided++;
+
             // Put combo in score
             end_combo(window);
 

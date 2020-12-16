@@ -88,7 +88,34 @@ void render_trophy_pop_up(struct window *window)
 }
 
 
-static void render_view_trophies(struct window *window, Uint32 begin, unsigned selected)
+static void handle_arrow_event(struct window *window, int *page)
+{
+    // Left
+    if (window->in->key[SDL_SCANCODE_LEFT]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
+        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+    {
+        window->in->key[SDL_SCANCODE_LEFT] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = 0;
+
+        if (*page > 0)
+            (*page)--;
+    }
+    if (window->in->key[SDL_SCANCODE_RIGHT]
+        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
+        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+    {
+        window->in->key[SDL_SCANCODE_RIGHT] = 0;
+        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
+
+        if (*page < NUM_TROPHIES / 5 - 1)
+            (*page)++;
+    }
+}
+
+static void render_view_trophies(struct window *window, Uint32 begin, unsigned selected, int page)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -99,29 +126,41 @@ static void render_view_trophies(struct window *window, Uint32 begin, unsigned s
 
     SDL_Color orange = { 255, 127, 39, alpha };
 
-    render_text(window, window->fonts->zero4b_30_small, window->txt[TROPHIES], orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_extra_small, window->txt[TROPHIES], orange, 150, 150);
 
     SDL_Color title_color = { GREEN_R, GREEN_G, GREEN_B, alpha };
     SDL_Color blue = { BLUE_R, BLUE_G, BLUE_B, alpha };
     SDL_Color white = { 195, 195, 195, alpha };
+    SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
 
-    for (int i = 0; i < NUM_TROPHIES; i++)
+    SDL_SetTextureAlphaMod(window->img->trophy, alpha);
+
+    int initial_i = page * 5;
+    for (int i = initial_i; i < initial_i + 5; i++)
     {
-        render_text(window, window->fonts->pixel_large, window->txt[TROPHY_1_TITLE + i * 3], title_color, 290, 308 + i * 130);
+        render_text(window, window->fonts->pixel_large, window->txt[TROPHY_1_TITLE + i * 3], title_color, 490, 248 + (i - initial_i) * 125);
         char s[256] = { 0 };
         strcpy(s, window->txt[TROPHY_1_LINE_1 + i * 3]);
         strcat(s, " ");
         strcat(s, window->txt[TROPHY_1_LINE_2 + i * 3]);
-        render_text(window, window->fonts->pixel, s, white, 290, 358 + i * 130);
+        render_text(window, window->fonts->pixel, s, white, 490, 298 + (i - initial_i) * 125);
 
         if (window->save->trophies[i])
         {
-            SDL_Rect pos = { .x = 150, .y = 290 + i * 130, .w = 0, .h = 0 };
+            SDL_Rect pos = { .x = 350, .y = 230 + (i - initial_i) * 125, .w = 0, .h = 0 };
             SDL_QueryTexture(window->img->trophy, NULL, NULL, &pos.w, &pos.h);
             resize_pos_for_resolution(window, &pos);
+
             SDL_RenderCopy(window->renderer, window->img->trophy, NULL, &pos);
         }
     }
+
+    Uint32 ticks_mod = SDL_GetTicks() % 1000;
+
+    if (page > 0)
+        render_text(window, window->fonts->zero4b_30, "<", yellow, ticks_mod < 500 ? 150 + ticks_mod / 50 : 150 + (1000 - ticks_mod) / 50, POS_CENTERED);
+    if (page < NUM_TROPHIES / 5 - 1)
+        render_text(window, window->fonts->zero4b_30, ">", yellow, ticks_mod < 500 ? 1600 + ticks_mod / 50 : 1600 + (1000 - ticks_mod) / 50, POS_CENTERED);
 
     render_text(window, window->fonts->zero4b_30_extra_small, window->txt[BACK_1],
                 selected == 1 ? title_color : blue, 150, 880);
@@ -137,6 +176,7 @@ void view_trophies(struct window *window)
     areas[0].x = 150;
     areas[0].y = 880;
     TTF_SizeText(window->fonts->zero4b_30_extra_small, window->txt[BACK_1], &areas[0].w, &areas[0].h);
+    int page = 0;
 
     while (!escape)
     {
@@ -145,6 +185,7 @@ void view_trophies(struct window *window)
 
         escape = handle_escape_event(window) || (selected > 0 && handle_play_event(window));
         handle_select_arrow_event(window, &selected, 1, areas);
+        handle_arrow_event(window, &page);
 
         // Display black background
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
@@ -152,7 +193,7 @@ void view_trophies(struct window *window)
 
         // Process/Draw all the things
         render_stars(window);
-        render_view_trophies(window, begin, selected);
+        render_view_trophies(window, begin, selected, page);
         render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 
