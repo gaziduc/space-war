@@ -13,17 +13,17 @@ SELECT MISSION
 MISSION %d.%d %.*s
 ARCADE MODE %.*s
 BACK
-The Milky Way
-Andromeda Galaxy
-Hyperspace
-New Universe
-Spatial Army
-Bosses
-New Planet
-Space Tunnel
-The End
-Arcade Mode
-Mission %d.%d - %s
+THE MILKY WAY
+ANDROMEDA GALAXY
+HYPERSAPCE
+NEW UNIVERSE
+SPATIAL ARMY
+BOSSES
+NEW PLANET
+SPACE TUNNEL
+THE END
+ARCADE MODE
+MISSION %d.%d - %s
 EASY *
 HARD *
 REALLY HARD *
