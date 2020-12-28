@@ -338,8 +338,8 @@ void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst,
                                SDL_Rect *ship_pos, char enemy_type)
 {
     // Setting shot initial position
-    new->pos_dst.x = pos_dst->x + 16;
-    new->pos_dst.y = pos_dst->y + 48;
+    new->pos_dst.x = pos_dst->x + pos_dst->w / 2;
+    new->pos_dst.y = pos_dst->y + pos_dst->h / 2 - 16;
     new->pos_dst.w = 32;
     new->pos_dst.h = 32;
 
@@ -370,9 +370,9 @@ void move_enemy_shots(struct window *window)
         temp->pos_dst.y += temp->speed.y;
 
         // Go to next frame
-        temp->pos_src.x += 32;
-        if (temp->pos_src.x >= 28 * 32)
-            temp->pos_src.x = 0;
+        temp->pos_src.y += 32;
+        if (temp->pos_src.y >= 28 * 32)
+            temp->pos_src.y = 0;
 
         // Prevent out of bounds by deleting the shot if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0
