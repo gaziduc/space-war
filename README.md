@@ -1,6 +1,6 @@
 # space-war
 Space War is a shoot'em up game where you pilot a spaceship and your goal is to destroy all the enemies ship.
-[![Watch Trailer](https://imgur.com/a/yXcCSQK)](https://www.youtube.com/watch?v=gADgjABsoNw)
+[![Watch trailer](https://img.youtube.com/vi/gADgjABsoNw/0.jpgK)](https://www.youtube.com/watch?v=gADgjABsoNw)
 
 ## Prerequisites to play
 ### Hardware
