@@ -334,16 +334,19 @@ void render_enemies_health(struct window *window)
     render_boss_health(window);
 }
 
-void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst, struct window *window,
+void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst,
                                SDL_Rect *ship_pos, char enemy_type)
 {
     // Setting shot initial position
-    new->pos_dst.x = pos_dst->x + pos_dst->w / 2;
-    new->pos_dst.y = pos_dst->y + pos_dst->h / 2;
+    new->pos_dst.x = pos_dst->x + 16;
+    new->pos_dst.y = pos_dst->y + 48;
+    new->pos_dst.w = 32;
+    new->pos_dst.h = 32;
 
-    SDL_QueryTexture(window->img->enemy_shot->texture, NULL, NULL, &new->pos_dst.w, &new->pos_dst.h);
-    new->pos_dst.y -= new->pos_dst.h / 2;
-    new->pos_dst.x += new->pos_dst.w;
+    new->pos_src.x = 0;
+    new->pos_src.y = 0;
+    new->pos_src.w = 32;
+    new->pos_src.h = 32;
 
     // Setting shot speed (horizontal and vertical)
     int gap_x = new->pos_dst.x + new->pos_dst.w / 2 - (ship_pos->x + ship_pos->w / 2);
@@ -365,6 +368,11 @@ void move_enemy_shots(struct window *window)
         // Move shot
         temp->pos_dst.x -= temp->speed.x;
         temp->pos_dst.y += temp->speed.y;
+
+        // Go to next frame
+        temp->pos_src.x += 32;
+        if (temp->pos_src.x >= 28 * 32)
+            temp->pos_src.x = 0;
 
         // Prevent out of bounds by deleting the shot if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0
@@ -393,16 +401,12 @@ void render_enemy_shots(struct window *window)
 
     while (temp)
     {
-        SDL_Rect pos = { .x = temp->pos_dst.x,
-                         .y = temp->pos_dst.y,
-                         .w = temp->pos_dst.w,
-                         .h = temp->pos_dst.h
-        };
+        SDL_Rect pos_dst = temp->pos_dst;
 
-        resize_pos_for_resolution(window, &pos);
+        resize_pos_for_resolution(window, &pos_dst);
 
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->enemy_shot->texture, NULL, &pos);
+        SDL_RenderCopy(window->renderer, window->img->enemy_shot->texture, &temp->pos_src, &pos_dst);
 
         // Go to next shot
         temp = temp->next;

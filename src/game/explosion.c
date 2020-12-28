@@ -67,11 +67,7 @@ void render_explosions(struct window *window)
 
     while (temp)
     {
-        SDL_Rect pos = { .x = temp->pos_dst.x,
-                         .y = temp->pos_dst.y,
-                         .w = temp->pos_dst.w,
-                         .h = temp->pos_dst.h
-                       };
+        SDL_Rect pos = temp->pos_dst;
 
         resize_pos_for_resolution(window, &pos);
 
