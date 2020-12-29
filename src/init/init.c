@@ -140,6 +140,7 @@ static void load_textures(struct window *window)
     window->img->a_button = load_texture("data/a_button.png", window);
     window->img->b_button = load_texture("data/b_button.png", window);
     window->img->trophy = load_texture("data/trophy_gold.png", window);
+    window->img->controller = load_texture("data/controller.png", window);
 }
 
 

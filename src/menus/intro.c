@@ -7,6 +7,15 @@
 #include <SDL2/SDL2_framerate.h>
 
 
+static void render_controller(struct window *window, Uint8 alpha)
+{
+    SDL_Rect controller_pos;
+    init_position(POS_CENTERED, 775, window->img->controller, &controller_pos);
+    resize_pos_for_resolution(window, &controller_pos);
+    SDL_SetTextureAlphaMod(window->img->controller, alpha);
+    SDL_RenderCopy(window->renderer, window->img->controller, NULL, &controller_pos);
+}
+
 void intro(struct window *window)
 {
     char *s[3] = { "SPACE WAR",
@@ -57,10 +66,12 @@ void intro(struct window *window)
                     POS_CENTERED, 200);
 
         render_text(window, window->fonts->pixel_large, s[1], white,
-                    POS_CENTERED, 600);
+                    POS_CENTERED, 575);
 
         render_text(window, window->fonts->pixel_large, s[2], white,
-                    POS_CENTERED, 750);
+                    POS_CENTERED, 725);
+
+        render_controller(window, i);
 
         SDL_RenderPresent(window->renderer);
 
@@ -89,11 +100,12 @@ void intro(struct window *window)
                 POS_CENTERED, 200);
 
         render_text(window, window->fonts->pixel_large, s[1], white,
-                POS_CENTERED, 600);
+                POS_CENTERED, 575);
 
         render_text(window, window->fonts->pixel_large, s[2], white,
-                POS_CENTERED, 750);
+                POS_CENTERED, 725);
 
+        render_controller(window, 195);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
@@ -116,11 +128,12 @@ void intro(struct window *window)
                 POS_CENTERED, 200);
 
         render_text(window, window->fonts->pixel_large, s[1], white,
-                POS_CENTERED, 600);
+                POS_CENTERED, 575);
 
         render_text(window, window->fonts->pixel_large, s[2], white,
-                POS_CENTERED, 750);
+                POS_CENTERED, 725);
 
+        render_controller(window, i);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

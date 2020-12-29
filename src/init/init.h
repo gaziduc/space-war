@@ -84,6 +84,7 @@ struct textures
     SDL_Texture *a_button;
     SDL_Texture *b_button;
     SDL_Texture *trophy;
+    SDL_Texture *controller;
 };
 
 
