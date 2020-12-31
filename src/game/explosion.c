@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 
 
-void set_explosion_pos(struct list *new, SDL_Rect *pos_dst, SDL_Texture *texture)
+void set_explosion_pos(struct list *new, SDL_FRect *pos_dst, SDL_Texture *texture)
 {
     // Setting animation to first frame
     new->pos_src.x = 0;
@@ -67,12 +67,14 @@ void render_explosions(struct window *window)
 
     while (temp)
     {
-        SDL_Rect pos = temp->pos_dst;
+        SDL_Rect pos_dst = { .x = (int) temp->pos_dst.x, .y = (int) temp->pos_dst.y,
+                             .w = (int) temp->pos_dst.w, .h = (int) temp->pos_dst.h
+                           };
 
-        resize_pos_for_resolution(window, &pos);
+        resize_pos_for_resolution(window, &pos_dst);
 
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->explosion, &temp->pos_src, &pos);
+        SDL_RenderCopy(window->renderer, window->img->explosion, &temp->pos_src, &pos_dst);
 
         // Go to next shot
         temp = temp->next;

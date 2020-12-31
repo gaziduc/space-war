@@ -3,7 +3,7 @@
 
 #define FRAMES_BETWEEN_BOSS_SHOTS 40
 
-void set_boss_attributes(struct list *new, SDL_Rect *pos,
+void set_boss_attributes(struct list *new, SDL_FRect *pos,
                          struct window *window, char enemy_type);
 
 void move_boss(struct window *window);

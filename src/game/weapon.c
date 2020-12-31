@@ -20,7 +20,7 @@ int shoot(struct window *window, struct player *player, int provoked_by_me)
     {
         if (player->missile_around) // double missile
         {
-            SDL_Rect missile_pos = player->pos;
+            SDL_FRect missile_pos = player->pos;
 
             missile_pos.y += 15;
             list_push_front(&missile_pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);

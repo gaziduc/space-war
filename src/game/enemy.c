@@ -18,7 +18,7 @@ static int is_rotating(char enemy_type)
     return 0;
 }
 
-void set_enemy_attributes(struct list *new, SDL_Rect *pos,
+void set_enemy_attributes(struct list *new, SDL_FRect *pos,
                           struct window *window, char enemy_type)
 {
     new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
@@ -59,7 +59,7 @@ void set_enemy_attributes(struct list *new, SDL_Rect *pos,
 
     new->rotating = is_rotating(enemy_type);
     new->curr_texture = 0;
-    init_position(DEFAULT_W, pos->y,
+    init_position_float(DEFAULT_W, pos->y,
                   new->rotating ? new->texture.textures[0]->texture
                                 : new->texture.texture->texture,
                   &new->pos_dst);
@@ -107,7 +107,7 @@ void create_enemies(struct window *window)
                 break;
         }
 
-        SDL_Rect pos = { .x = 0,
+        SDL_FRect pos = { .x = 0,
                          .y = window->paths->data[window->paths->index].line.enemy_path.pos_y
                               - h / 2,
                          .w = 0,
@@ -334,8 +334,8 @@ void render_enemies_health(struct window *window)
     render_boss_health(window);
 }
 
-void set_enemy_shot_attributes(struct list *new, SDL_Rect *pos_dst,
-                               SDL_Rect *ship_pos, char enemy_type)
+void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
+                               SDL_FRect *ship_pos, char enemy_type)
 {
     // Setting shot initial position
     new->pos_dst.x = pos_dst->x + pos_dst->w / 2;
@@ -401,7 +401,9 @@ void render_enemy_shots(struct window *window)
 
     while (temp)
     {
-        SDL_Rect pos_dst = temp->pos_dst;
+        SDL_Rect pos_dst = { .x = (int) temp->pos_dst.x, .y = (int) temp->pos_dst.y,
+                             .w = (int) temp->pos_dst.w, .h = (int) temp->pos_dst.h
+                            };
 
         resize_pos_for_resolution(window, &pos_dst);
 

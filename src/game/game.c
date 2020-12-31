@@ -77,7 +77,7 @@ static void handle_arrow_event(struct window *window, struct player *player)
         case MOUSE:
             ;
             int cursor_speed_factor = window->settings->mouse_sensitivity + 1;
-            SDL_Rect last_pos = player->pos;
+            SDL_FRect last_pos = player->pos;
 
             if (window->in->mouse_pos.x - player->pos.x > SHIP_SPEED / cursor_speed_factor)
                 player->pos.x += SHIP_SPEED / cursor_speed_factor;
@@ -96,8 +96,8 @@ static void handle_arrow_event(struct window *window, struct player *player)
             player->pos.x = (player->pos.x - last_pos.x) * cursor_speed_factor + last_pos.x;
             player->pos.y = (player->pos.y - last_pos.y) * cursor_speed_factor + last_pos.y;
 
-            SDL_Rect cursor_pos = player->pos;
-            resize_pos_for_resolution(window, &cursor_pos);
+            SDL_FRect cursor_pos = player->pos;
+            resize_pos_for_resolution_float(window, &cursor_pos);
             SDL_WarpMouseInWindow(window->window, cursor_pos.x, cursor_pos.y);
             break;
 
@@ -222,7 +222,7 @@ static int handle_bomb_event(struct window *window, struct player *player)
 }
 
 
-void render_trail(struct window *window, struct player *player, SDL_Rect *pos,
+void render_trail(struct window *window, struct player *player, SDL_FRect *pos,
                   int is_lan_player, int is_enemy)
 {
     // If ship is dead, don't display trail
@@ -278,7 +278,7 @@ static int respawn(struct window *window, struct player *player)
                 player->health = window->max_health;
 
                 player->respawn_frame = 0;
-                init_position(120, POS_CENTERED, window->img->ship->texture, &player->pos);
+                init_position_float(120, POS_CENTERED, window->img->ship->texture, &player->pos);
 
                 player->lives--;
             }
@@ -386,9 +386,9 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 }
 
 
-static void render_ship(struct window *window, SDL_Rect *temp_pos)
+static void render_ship(struct window *window, SDL_FRect *temp_pos)
 {
-    SDL_Rect pos = *temp_pos;
+    SDL_Rect pos = { temp_pos->x, temp_pos->y, temp_pos->w, temp_pos->h };
 
     resize_pos_for_resolution(window, &pos);
 
@@ -449,7 +449,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             init_background(window);
 
             for (unsigned i = 0; i < window->num_players; i++)
-                init_position(120, POS_CENTERED, window->img->ship->texture, &window->player[i].pos);
+                init_position_float(120, POS_CENTERED, window->img->ship->texture, &window->player[i].pos);
 
             retry = 0;
         }

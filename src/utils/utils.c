@@ -80,7 +80,6 @@ struct collision_texture *load_texture_collision(const char *path, struct window
     return result;
 }
 
-
 void init_position(int x, int y, SDL_Texture *texture, SDL_Rect *pos)
 {
     SDL_QueryTexture(texture, NULL, NULL, &pos->w, &pos->h);
@@ -96,6 +95,24 @@ void init_position(int x, int y, SDL_Texture *texture, SDL_Rect *pos)
         pos->y = y;
 }
 
+void init_position_float(int x, int y, SDL_Texture *texture, SDL_FRect *pos)
+{
+    int w = 0;
+    int h = 0;
+    SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+    pos->w = w;
+    pos->h = h;
+
+    if (x == POS_CENTERED)
+        pos->x = DEFAULT_W / 2 - pos->w / 2;
+    else
+        pos->x = x;
+
+    if (y == POS_CENTERED)
+        pos->y = DEFAULT_H / 2 - pos->h / 2;
+    else
+        pos->y = y;
+}
 
 void error(const char *title, const char *text, SDL_Window *window, SDL_Renderer *renderer)
 {
@@ -218,4 +235,12 @@ void resize_pos_for_resolution(struct window *window, SDL_Rect *pos)
      pos->y = (pos->y * window->h) / DEFAULT_H;
      pos->w = (pos->w * window->w) / DEFAULT_W;
      pos->h = (pos->h * window->h) / DEFAULT_H;
+}
+
+void resize_pos_for_resolution_float(struct window *window, SDL_FRect *pos)
+{
+    pos->x = (pos->x * window->w) / DEFAULT_W;
+    pos->y = (pos->y * window->h) / DEFAULT_H;
+    pos->w = (pos->w * window->w) / DEFAULT_W;
+    pos->h = (pos->h * window->h) / DEFAULT_H;
 }

@@ -7,7 +7,7 @@
 
 void render_hud(struct window *window);
 
-void set_hud_text(struct list *new, SDL_Rect *pos_dst, struct window *window);
+void set_hud_text(struct list *new, SDL_FRect *pos_dst, struct window *window);
 
 void move_hud_texts(struct window *window);
 

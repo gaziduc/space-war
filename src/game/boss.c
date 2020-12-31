@@ -6,7 +6,7 @@
 #include "enemy.h"
 #include <SDL2/SDL.h>
 
-void set_boss_attributes(struct list *new, SDL_Rect *pos,
+void set_boss_attributes(struct list *new, SDL_FRect *pos,
                          struct window *window, char enemy_type)
 {
     new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
@@ -34,7 +34,7 @@ void set_boss_attributes(struct list *new, SDL_Rect *pos,
     new->rotating = 0;
     new->curr_texture = 0;
 
-    init_position(DEFAULT_W, pos->y, new->texture.texture->texture, &new->pos_dst);
+    init_position_float(DEFAULT_W, pos->y, new->texture.texture->texture, &new->pos_dst);
 
     new->framecount = 0;
 }
@@ -80,11 +80,13 @@ void render_boss(struct window *window)
 
     while (temp)
     {
-        SDL_Rect pos = temp->pos_dst;
+        SDL_Rect pos_dst = { .x = (int) temp->pos_dst.x, .y = (int) temp->pos_dst.y,
+                             .w = (int) temp->pos_dst.w, .h = (int) temp->pos_dst.h
+                            };
 
-        resize_pos_for_resolution(window, &pos);
+        resize_pos_for_resolution(window, &pos_dst);
 
-        SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &pos);
+        SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &pos_dst);
 
         // Go to next boss
         temp = temp->next;

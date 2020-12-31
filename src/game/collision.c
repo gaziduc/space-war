@@ -7,7 +7,7 @@
 #include "effect.h"
 #include "shot.h"
 
-static int collision_aabb(SDL_Rect *pos1, SDL_Rect *pos2)
+static int collision_aabb(SDL_FRect *pos1, SDL_FRect *pos2)
 {
     if (pos1->x > pos2->x + pos2->w
     || pos1->x + pos1->w < pos2->x
@@ -19,8 +19,8 @@ static int collision_aabb(SDL_Rect *pos1, SDL_Rect *pos2)
 }
 
 
-static int collision(SDL_Rect *pos1, struct collision_texture *t1,
-                     SDL_Rect *pos2, struct collision_texture *t2)
+static int collision(SDL_FRect *pos1, struct collision_texture *t1,
+                     SDL_FRect *pos2, struct collision_texture *t2)
 {
     if (!collision_aabb(pos1, pos2))
         return 0;
@@ -35,8 +35,8 @@ static int collision(SDL_Rect *pos1, struct collision_texture *t1,
             if (j < pos2->y || j >= pos2->y + pos2->h)
                 continue;
 
-            if (t1->collision[(j - pos1->y) * pos1->w + i - pos1->x]
-                && t2->collision[(j - pos2->y) * pos2->w + i - pos2->x])
+            if (t1->collision[(int) ((j - pos1->y) * pos1->w + i - pos1->x)]
+                && t2->collision[(int) ((j - pos2->y) * pos2->w + i - pos2->x)])
                 return 1;
         }
     }
@@ -60,7 +60,7 @@ static void check_collisions_list(struct window *window, struct player *player,
 
         // Get current enemy texture (correct animation frame)
         struct collision_texture *temp = NULL;
-        SDL_Rect *temp_pos = NULL;
+        SDL_FRect *temp_pos = NULL;
         int to_free = 0;
 
         if (temp_enemy->rotating)

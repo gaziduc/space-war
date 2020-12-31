@@ -138,9 +138,9 @@ union texture
 struct list
 {
     SDL_Rect pos_src;
-    SDL_Rect pos_dst;
+    SDL_FRect pos_dst;
     unsigned long framecount;
-    SDL_Point speed;
+    SDL_FPoint speed;
     int health;
     int max_health;
     Uint32 last_time_hurt;
@@ -227,7 +227,7 @@ struct save
 
 struct player
 {
-    SDL_Rect pos;
+    SDL_FRect pos;
     int lives;
     int respawn_frame;
     int shield_time;

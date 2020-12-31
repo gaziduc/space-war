@@ -15,6 +15,8 @@ struct collision_texture *load_texture_collision(const char *path, struct window
 
 void init_position(int x, int y, SDL_Texture *texture, SDL_Rect *pos);
 
+void init_position_float(int x, int y, SDL_Texture *texture, SDL_FRect *pos);
+
 void error(const char *title, const char *text, SDL_Window *window, SDL_Renderer *renderer);
 
 void *xmalloc(size_t size, SDL_Window *window, SDL_Renderer *renderer);
@@ -35,5 +37,7 @@ TTF_Font *load_font(struct window *window, const char *filename,
 Mix_Chunk *load_sound(struct window *window, const char *filename);
 
 void resize_pos_for_resolution(struct window *window, SDL_Rect *pos);
+
+void resize_pos_for_resolution_float(struct window *window, SDL_FRect *pos);
 
 #endif /* !UTILS_H */

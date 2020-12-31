@@ -6,9 +6,9 @@
 
 void init_list(struct window *window, enum list_type type);
 
-void list_push_front(SDL_Rect *pos, struct window *window,
+void list_push_front(SDL_FRect *pos, struct window *window,
                      enum list_type type, SDL_Texture *texture,
-                     SDL_Rect *ship_pos, enum object_type object,
+                     SDL_FRect *ship_pos, enum object_type object,
                      char enemy_type);
 
 void free_list(struct list *list);
