@@ -34,9 +34,25 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
         {
             if (screen[i][j])
             {
-                render_text(window, window->fonts->pixel_large, screen[i] + j, green,
-                            LEFT_PADDING + j * CREDITS_CHAR_W,
-                            UP_PADDING + i * CREDITS_CHAR_H);
+                SDL_Texture *texture = get_text_texture(window, window->fonts->pixel_large, screen[i] + j, green);
+
+                if (!texture)
+                    break;
+
+                int w = 0;
+                int h = 0;
+                SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+                SDL_FRect pos_dst = { .x = LEFT_PADDING + j * CREDITS_CHAR_W,
+                                      .y = UP_PADDING + i * CREDITS_CHAR_H,
+                                      .w = w,
+                                      .h = h
+                                    };
+
+                resize_pos_for_resolution_float(window, &pos_dst);
+
+                SDL_RenderCopyF(window->renderer, texture, NULL, &pos_dst);
+
+                SDL_DestroyTexture(texture);
                 break;
             }
         }
@@ -50,7 +66,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
         if (alpha > 255)
             alpha = -alpha + 511;
 
-        SDL_SetRenderDrawColor(window->renderer, 8, alpha, 8, alpha);
+        SDL_SetRenderDrawColor(window->renderer, 8, alpha, alpha, alpha);
 
         SDL_Rect pos = { .x = LEFT_PADDING + col * CREDITS_CHAR_W,
                          .y = UP_PADDING + line * CREDITS_CHAR_H,
