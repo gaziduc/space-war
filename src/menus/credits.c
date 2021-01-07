@@ -7,8 +7,7 @@
 #include <SDL2/SDL.h>
 
 
-static int render_screen(struct window *window, char screen[][CREDITS_COLS],
-                          size_t line, size_t col, Uint32 begin, int is_in_menu)
+static int render_screen(struct window *window, char screen[][CREDITS_COLS], int is_in_menu)
 {
     static SDL_Color green = { GREEN_R, GREEN_G, GREEN_B, TITLE_ALPHA_MAX };
 
@@ -34,7 +33,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
         {
             if (screen[i][j])
             {
-                SDL_Texture *texture = get_text_texture(window, window->fonts->pixel_large, screen[i] + j, green);
+                SDL_Texture *texture = get_text_texture(window, window->fonts->craft_large, screen[i] + j, green);
 
                 if (!texture)
                     break;
@@ -58,26 +57,6 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
         }
     }
 
-    // Render cursor
-    Uint32 alpha = (SDL_GetTicks() - begin) % 1000;
-
-    if (alpha <= 511)
-    {
-        if (alpha > 255)
-            alpha = -alpha + 511;
-
-        SDL_SetRenderDrawColor(window->renderer, 8, alpha, alpha, alpha);
-
-        SDL_Rect pos = { .x = LEFT_PADDING + col * CREDITS_CHAR_W,
-                         .y = UP_PADDING + line * CREDITS_CHAR_H,
-                         .w = CREDITS_CHAR_W,
-                         .h = CREDITS_CHAR_H };
-
-        resize_pos_for_resolution(window, &pos);
-
-        SDL_RenderFillRect(window->renderer, &pos);
-    }
-
     SDL_RenderPresent(window->renderer);
     SDL_framerateDelay(window->fps);
 
@@ -88,7 +67,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS],
 
 int add_letters(struct window *window, char screen[][CREDITS_COLS], char *letters,
                         size_t *line, size_t *col, Uint32 time_between_two_letters,
-                        Uint32 time_end, Uint32 begin, int is_in_menu)
+                        Uint32 time_end, int is_in_menu)
 {
     size_t i = 0;
 
@@ -97,7 +76,7 @@ int add_letters(struct window *window, char screen[][CREDITS_COLS], char *letter
         Uint32 curr = SDL_GetTicks();
         while (SDL_GetTicks() - curr < time_between_two_letters)
         {
-            if (render_screen(window, screen, *line, *col, begin, is_in_menu))
+            if (render_screen(window, screen, is_in_menu))
                 return 1;
         }
 
@@ -119,7 +98,7 @@ int add_letters(struct window *window, char screen[][CREDITS_COLS], char *letter
 
     while (SDL_GetTicks() - curr < time_end)
     {
-        if (render_screen(window, screen, *line, *col, begin, is_in_menu))
+        if (render_screen(window, screen, is_in_menu))
             return 1;
     }
 
@@ -130,25 +109,18 @@ int add_letters(struct window *window, char screen[][CREDITS_COLS], char *letter
 void credits(struct window *window)
 {
     char screen[CREDITS_LINES][CREDITS_COLS] = { 0 };
-    Uint32 begin = SDL_GetTicks();
-
-    char *msg = "GAME CREATED BY DAVID \"GAZI\" GHIASSI\n\n\nPROGRAMMED IN C LANGUAGE\n\n\n";
-    char *h_line = "+------------------+\n";
-
     size_t line = 0;
     size_t col = 0;
 
-    ADD_LETTERS(window, screen, msg, &line, &col, 50, 0, begin, 1);
-    ADD_LETTERS(window, screen, h_line, &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|  LIBRARIES USED  |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, h_line, &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|       SDL2       |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|    SDL2_IMAGE    |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|     SDL2_TTF     |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|    SDL2_MIXER    |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|     SDL2_GFX     |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|     SDL2_NET     |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "|       CURL       |\n", &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, h_line, &line, &col, 50, 0, begin, 1)
-    ADD_LETTERS(window, screen, "\n\n\nTHANKS FOR PLAYING!", &line, &col, 50, 42000, begin, 1)
+    ADD_LETTERS(window, screen, "GAME CREATED BY DAVID \"GAZI\" GHIASSI\n\n\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "PROGRAMMED IN C LANGUAGE\n\n\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "LIBRARIES USED\n\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "SDL2\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "SDL2_IMAGE\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "SDL2_TTF\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "SDL2_MIXER\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "SDL2_GFX\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "SDL2_NET\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "CURL\n\n\n\n\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "THANKS FOR PLAYING!", &line, &col, 50, 42000, 1)
 }

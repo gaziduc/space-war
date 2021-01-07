@@ -102,17 +102,17 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
     switch (selected_difficulty)
     {
         case EASY:
-            render_text(window, window->fonts->pixel_large,
+            render_text(window, window->fonts->craft_large,
                         window->txt[EASY_CONDITIONS], white, 150, 880);
             break;
 
         case HARD:
-            render_text(window, window->fonts->pixel_large,
+            render_text(window, window->fonts->craft_large,
                         window->txt[HARD_CONDITIONS], white, 150, 880);
             break;
 
         case REALLY_HARD:
-            render_text(window, window->fonts->pixel_large,
+            render_text(window, window->fonts->craft_large,
                         window->txt[REALLY_HARD_CONDITIONS], white, 150, 880);
             break;
 

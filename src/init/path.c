@@ -27,6 +27,16 @@ static int set_path_title(size_t *index, char *s, struct path *p)
     return scan;
 }
 
+static int set_chat_text(size_t *index, char *s, struct path *p)
+{
+    p->type = PERSISTENT_TEXT;
+    int scan = sscanf(s + (*index), " %s\n", p->line.title);
+
+    go_to_next_line(index, s);
+
+    return scan;
+}
+
 static void set_object_type(struct window *window, const char *filename, size_t *index, char *s, struct path *p)
 {
     p->type = OBJECT;
@@ -112,6 +122,17 @@ struct vector *load_paths(struct window *window, char *filename)
 
             set_object_type(window, filename, &index, str->ptr, &p);
         }
+        else if (str->ptr[index] == '&') // bottom-left text (persistent)
+        {
+            index++;
+
+            int scan = set_chat_text(&index, str->ptr, &p);
+
+            if (scan != NUM_FIELDS_TEXT)
+                error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
+            else
+                replace_underscores(p.line.title);
+        }
         else
         {
             // If line[0] wasn't a '#', '@', '\r', '\n' or a '$'
@@ -150,7 +171,21 @@ int execute_path_action(struct window *window)
         else if (type == OBJECT)
             create_object(window, window->paths->data[window->paths->index].line.type);
         else if (type == TITLE)
+        {
             render_wave_title(window);
+        }
+        else if (type == PERSISTENT_TEXT)
+        {
+            int i = 2;
+
+            while (!window->chat_text[i][0])
+                i--;
+
+            i++;
+
+            strcpy(window->chat_text[i], window->paths->data[window->paths->index].line.title);
+            window->paths->index++;
+        }
 
         return 0;
     }

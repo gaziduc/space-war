@@ -3,6 +3,9 @@
 #include "free.h"
 #include "menu.h"
 #include "intro.h"
+#include "level.h"
+#include "game.h"
+#include "setting.h"
 #include <stdlib.h>
 
 int main(int argc, char *argv[])
@@ -16,6 +19,17 @@ int main(int argc, char *argv[])
 
     // Game intro
     intro(window);
+
+    // Tutorial
+    if (window->settings->show_tutorial)
+    {
+        window->is_lan = 0;
+        window->num_players = 1;
+        play_game(window, 0, EASY);
+
+        window->settings->show_tutorial = 0;
+        write_settings(window);
+    }
 
     // Menu loop
     menu(window);

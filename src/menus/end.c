@@ -85,6 +85,9 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
 
 void success(struct window *window, const int level_num, const int difficulty)
 {
+    if (level_num == 0)
+        return;
+
     if (window->save->progress[window->num_players - 1][level_num - 1] < difficulty)
         window->save->progress[window->num_players - 1][level_num - 1] = difficulty;
 
@@ -239,6 +242,12 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
 
 int failure(struct window *window, int level_num)
 {
+    if (level_num == 0)
+    {
+        window->restart = 1;
+        return 0;
+    }
+
     Uint32 begin = SDL_GetTicks();
     int escape = 0;
     unsigned selected = 0;

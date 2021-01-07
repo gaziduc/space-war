@@ -85,6 +85,7 @@ struct textures
     SDL_Texture *b_button;
     SDL_Texture *trophy;
     SDL_Texture *controller;
+    SDL_Texture *bomb;
 };
 
 
@@ -175,9 +176,11 @@ struct vector
 
 struct fonts
 {
-    TTF_Font *pixel_small_bold;
     TTF_Font *pixel;
     TTF_Font *pixel_large;
+    TTF_Font *craft_small;
+    TTF_Font *craft;
+    TTF_Font *craft_large;
     TTF_Font *zero4b_30;
     TTF_Font *zero4b_30_small;
     TTF_Font *zero4b_30_extra_small;
@@ -212,6 +215,7 @@ struct settings
     int is_force_feedback;
     SDL_Scancode controls[NUM_CONTROLS];
     int mouse_sensitivity;
+    int show_tutorial;
 };
 
 
@@ -512,6 +516,7 @@ struct window
     struct trophy trophy;
     int combo_lover;
     int num_enemies_collided;
+    char chat_text[3][128];
 };
 
 void render_loading_screen(struct window *window);

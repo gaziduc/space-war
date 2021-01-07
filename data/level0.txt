@@ -1,0 +1,20 @@
+# Usage:
+# $ wave_name
+# num_ms_to_appear pos_y speed health enemy_type
+# enemy_type:
+# A: standard
+# 0: boss
+# D: drone
+
+$ Tutorial:_Wave_1
+& Press_arrow_keys_to_move
+& Press_Space_to_shoot
+0 540 1 1 B
+
+$ Wave_2
+& Press_B_to_use_bomb
+0 240 1 100 B
+0 840 1 100 B
+
+$ Great!
+$ Now_you_can_play!

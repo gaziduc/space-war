@@ -44,9 +44,9 @@ void render_trophy_pop_up(struct window *window)
 
     SDL_RenderCopy(window->renderer, window->img->trophy, NULL, &pos_trophy);
 
-    render_text(window, window->fonts->pixel_large, window->txt[TROPHY_1_TITLE + window->trophy.id[0] * 3], white, DEFAULT_W - window->trophy.offset_x + 140, 30);
-    render_text(window, window->fonts->pixel, window->txt[TROPHY_1_LINE_1 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 75);
-    render_text(window, window->fonts->pixel, window->txt[TROPHY_1_LINE_2 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 105);
+    render_text(window, window->fonts->craft_large, window->txt[TROPHY_1_TITLE + window->trophy.id[0] * 3], white, DEFAULT_W - window->trophy.offset_x + 140, 30);
+    render_text(window, window->fonts->craft, window->txt[TROPHY_1_LINE_1 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 75);
+    render_text(window, window->fonts->craft, window->txt[TROPHY_1_LINE_2 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 105);
 
     if (window->trophy.is_unlocking_fade_in)
     {
@@ -138,12 +138,12 @@ static void render_view_trophies(struct window *window, Uint32 begin, unsigned s
     int initial_i = page * 5;
     for (int i = initial_i; i < initial_i + 5; i++)
     {
-        render_text(window, window->fonts->pixel_large, window->txt[TROPHY_1_TITLE + i * 3], title_color, 490, 248 + (i - initial_i) * 125);
+        render_text(window, window->fonts->craft_large, window->txt[TROPHY_1_TITLE + i * 3], title_color, 490, 248 + (i - initial_i) * 125);
         char s[256] = { 0 };
         strcpy(s, window->txt[TROPHY_1_LINE_1 + i * 3]);
         strcat(s, " ");
         strcat(s, window->txt[TROPHY_1_LINE_2 + i * 3]);
-        render_text(window, window->fonts->pixel, s, white, 490, 298 + (i - initial_i) * 125);
+        render_text(window, window->fonts->craft, s, white, 490, 298 + (i - initial_i) * 125);
 
         if (window->save->trophies[i])
         {

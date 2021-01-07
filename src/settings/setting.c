@@ -192,6 +192,12 @@ void write_settings(struct window *window)
     sprintf(buffer, "bomb=%d\n", window->settings->controls[BOMB]);
     add_string(window, str, buffer);
 
+    add_string(window, str, "\n");
+    add_string(window, str, "[misc]\n");
+
+    sprintf(buffer, "show_tutorial=%d\n", window->settings->show_tutorial);
+    add_string(window, str, buffer);
+
 
     // Open file
     SDL_RWops *f = SDL_RWFromFile("settings.ini", "w");
@@ -233,6 +239,8 @@ void load_settings(struct window *window)
 
         // Controls
         reset_controls(window);
+
+        window->settings->show_tutorial = 1;
 
         return;
     }
@@ -301,6 +309,15 @@ void load_settings(struct window *window)
     go_to_next_line(&index, str->ptr);
 
     sscanf(str->ptr + index, "bomb=%d\n", (int *) &window->settings->controls[BOMB]);
+    go_to_next_line(&index, str->ptr);
+
+    sscanf(str->ptr + index, "\n");
+    go_to_next_line(&index, str->ptr);
+
+    sscanf(str->ptr + index, "[misc]\n");
+    go_to_next_line(&index, str->ptr);
+
+    sscanf(str->ptr + index, "show_tutorial=%d\n", &window->settings->show_tutorial);
     go_to_next_line(&index, str->ptr);
 
     free_string(str);

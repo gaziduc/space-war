@@ -207,7 +207,7 @@ static void accept_client(struct window *window, char *ip_str)
                         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
                         SDL_RenderClear(window->renderer);
                         render_stars(window);
-                        render_text(window, window->fonts->pixel, window->txt[SYNC_CLIENT_SERVER],
+                        render_text(window, window->fonts->craft, window->txt[SYNC_CLIENT_SERVER],
                                     white, 150, 150);
                         SDL_RenderPresent(window->renderer);
 
@@ -360,7 +360,7 @@ void create_server(struct window *window)
 
             char buf[40] = { 0 }; // 40 =  Max IPv6 len + 1
             sprintf(buf, "%u.%u.%u.%u", a, b, c, d);
-            render_text(window, window->fonts->pixel,
+            render_text(window, window->fonts->craft,
                         buf, white, 150, 400 + index * 40);
 
             index++;
@@ -369,17 +369,17 @@ void create_server(struct window *window)
         render_text(window, window->fonts->zero4b_30_extra_small, window->txt[YOUR_IP_ONLINE],
                     white, 1060, 300);
 
-        render_text(window, window->fonts->pixel, has_online_ip == 2 ? online_ip
+        render_text(window, window->fonts->craft, has_online_ip == 2 ? online_ip
                                                   : has_online_ip == 1 ? window->txt[SEARCHING_FOR_ONLINE_IP]
                                                   : window->txt[PRESS_TO_GET_IP], has_online_ip == 0 ? orange : white, 1060, 400);
 
-        render_text(window, window->fonts->pixel, window->txt[TO_PLAY_ONLINE_1],
+        render_text(window, window->fonts->craft, window->txt[TO_PLAY_ONLINE_1],
                     white, 150, 800);
 
-        render_text(window, window->fonts->pixel, window->txt[TO_PLAY_ONLINE_2],
+        render_text(window, window->fonts->craft, window->txt[TO_PLAY_ONLINE_2],
                     white, 150, 840);
 
-        render_text(window, window->fonts->pixel, window->txt[TO_PLAY_ONLINE_3],
+        render_text(window, window->fonts->craft, window->txt[TO_PLAY_ONLINE_3],
                     white, 150, 920);
 
         SDL_RenderPresent(window->renderer);
@@ -523,15 +523,15 @@ void connect_to_server(struct window *window)
                     orange, 150, 150);
 
         if (buf[0])
-            render_text(window, window->fonts->pixel, buf, white, 150, 350);
+            render_text(window, window->fonts->craft, buf, white, 150, 350);
 
         if (!is_connecting && !is_connected)
-            render_text(window, window->fonts->pixel, "_",
+            render_text(window, window->fonts->craft, "_",
                         white, 150 + strlen(buf) * 18, 350);
 
         if (is_connecting)
         {
-            render_text(window, window->fonts->pixel,
+            render_text(window, window->fonts->craft,
                         window->txt[CONNECTING], green, 150, 470);
         }
 
@@ -544,7 +544,7 @@ void connect_to_server(struct window *window)
             else if (!window->accepted && accepting)
             {
                 handle_messages(window, "A");
-                render_text(window, window->fonts->pixel,
+                render_text(window, window->fonts->craft,
                             window->txt[WAITING_FOR_OTHER],
                             green, 150, 470);
             }
@@ -566,7 +566,7 @@ void connect_to_server(struct window *window)
             }
         }
         else if (err[0])
-            render_text(window, window->fonts->pixel, err, red, 150, 470);
+            render_text(window, window->fonts->craft, err, red, 150, 470);
 
         SDL_RenderPresent(window->renderer);
 

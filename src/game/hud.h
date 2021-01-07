@@ -13,4 +13,6 @@ void move_hud_texts(struct window *window);
 
 void render_hud_texts(struct window *window);
 
+void render_persistent_text(struct window *window);
+
 #endif /* !HUD_H */

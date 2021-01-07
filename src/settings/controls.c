@@ -143,7 +143,7 @@ SDL_Scancode get_key(struct window *window, int selected_item)
         SDL_Color white = { 255, 255, 255, alpha };
 
         render_text(window, window->fonts->zero4b_30_small, s1, orange, 150, 150);
-        render_text(window, window->fonts->pixel_large, s2, orange, 150, 350);
+        render_text(window, window->fonts->craft_large, s2, orange, 150, 350);
         render_text(window, window->fonts->zero4b_30_small, window->txt[ESCAPE_TO_CANCEL], white, 150, 850);
 
         SDL_RenderPresent(window->renderer);

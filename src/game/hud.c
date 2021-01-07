@@ -5,6 +5,7 @@
 #include "hud.h"
 #include "menu.h"
 #include "shot.h"
+#include "path.h"
 #include <stdio.h>
 #include <SDL2/SDL_ttf.h>
 
@@ -83,19 +84,21 @@ static void render_score(struct window *window)
     char s[50] = { 0 };
     sprintf(s, window->txt[SCORE_D], window->score);
 
-    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
+    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 234 };
 
-    render_text(window, window->fonts->pixel_large, s, color, 20, 146);
+    render_text(window, window->fonts->craft_large, s, color, 20, 166);
 }
 
 static void render_bombs(struct window *window)
 {
-    char s[50] = { 0 };
-    sprintf(s, window->txt[BOMBS_D], window->num_bombs);
+    SDL_Rect pos = { .x = 20, .y = 105, .w = 0, .h = 0 };
+    SDL_QueryTexture(window->img->bomb, NULL, NULL, &pos.w, &pos.h);
 
-    SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 224 };
-
-    render_text(window, window->fonts->pixel_large, s, color, 20, 110);
+    for (int i = 0; i < window->num_bombs; i++)
+    {
+        SDL_RenderCopy(window->renderer, window->img->bomb, NULL, &pos);
+        pos.x += 80;
+    }
 }
 
 
@@ -111,7 +114,7 @@ static void render_combo(struct window *window)
         Uint32 offset = ticks - window->combo_time;
         SDL_Color orange = { .r = 255, .g = 127, .b = 39, .a = offset < 224 ? offset : 224 };
 
-        render_text(window, window->fonts->pixel_large, s, orange, 20, offset < 224 ? 262 - offset / 10 : 240);
+        render_text(window, window->fonts->craft_large, s, orange, 20, offset < 224 ? 282 - offset / 10 : 260);
     }
 
     Uint32 delay = ticks - window->last_combo_time;
@@ -119,11 +122,11 @@ static void render_combo(struct window *window)
     if (delay < 2224)
     {
         char s[50] = { 0 };
-        sprintf(s, "+%d (%d COMBO)", compute_combo_score(window->last_combo), window->last_combo);
+        sprintf(s, "+%d [%d COMBO]", compute_combo_score(window->last_combo), window->last_combo);
 
         SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = delay < 224 ? delay : delay < 2000 ? 224 : 2224 - delay };
 
-        render_text(window, window->fonts->pixel_large, s, yellow, 20, 200);
+        render_text(window, window->fonts->craft_large, s, yellow, 20, 220);
     }
 }
 
@@ -138,7 +141,7 @@ static void render_ammo(struct window *window, struct player *player, int player
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
-    render_text(window, window->fonts->pixel, s, color, 20 + player_num * 220, 65);
+    render_text(window, window->fonts->craft, s, color, 20 + player_num * 220, 68);
 }
 
 void render_hud(struct window *window)
@@ -173,16 +176,18 @@ void render_hud(struct window *window)
                                      : window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT]
                                      : window->txt[CONTROLLER_TXT]);
 
-        render_text(window, window->fonts->pixel_small_bold, s, i == 0 ? blue : red, 20 + i * 220, 15);
+        render_text(window, window->fonts->craft_small, s, i == 0 ? blue : red, 20 + i * 220, 15);
 
         if (alpha > 0)
-            render_text(window, window->fonts->pixel_small_bold, s,
+            render_text(window, window->fonts->craft_small, s,
                         i == 0 ? blue_transparent : red_transparent,
                         window->player[i].pos.x - 25, window->player[i].pos.y - 25);
 
         render_life(window, &window->player[i], i);
         render_ammo(window, &window->player[i], i);
     }
+
+    render_persistent_text(window);
 }
 
 
@@ -190,7 +195,7 @@ void set_hud_text(struct list *new, SDL_FRect *pos_dst, struct window *window)
 {
     /* Get text width */
     int w = 0;
-    TTF_SizeText(window->fonts->pixel, "+100", &w, NULL);
+    TTF_SizeText(window->fonts->craft, "+100", &w, NULL);
 
     new->pos_dst.x = pos_dst->x + pos_dst->w / 2 - w / 2;
     new->pos_dst.y = pos_dst->y;
@@ -249,10 +254,27 @@ void render_hud_texts(struct window *window)
             alpha = TITLE_ALPHA_MAX;
 
         SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
-        render_text(window, window->fonts->pixel, "+100", blue,
+        render_text(window, window->fonts->craft, "+100", blue,
                     temp->pos_dst.x, temp->pos_dst.y);
 
         // Go to next element
         temp = temp->next;
     }
 }
+
+
+void render_persistent_text(struct window *window)
+{
+    for (int i = 2; i >= 0; i--)
+    {
+        if (window->chat_text[i][0])
+        {
+            SDL_Color color = { 255, 127, 39, 255 };
+
+            render_text(window, window->fonts->craft_large,
+                        window->chat_text[i],
+                        color, 35, DEFAULT_H - 60 - i * 40);
+        }
+    }
+}
+

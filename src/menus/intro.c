@@ -41,7 +41,7 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
 
-        render_text(window, window->fonts->pixel_large, "100 %", white, POS_CENTERED, 675);
+        render_text(window, window->fonts->craft_large, "100 %", white, POS_CENTERED, 675);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
@@ -65,10 +65,10 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
 
-        render_text(window, window->fonts->pixel_large, s[1], white,
+        render_text(window, window->fonts->craft_large, s[1], white,
                     POS_CENTERED, 575);
 
-        render_text(window, window->fonts->pixel_large, s[2], white,
+        render_text(window, window->fonts->craft_large, s[2], white,
                     POS_CENTERED, 725);
 
         render_controller(window, i);
@@ -99,10 +99,10 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                 POS_CENTERED, 200);
 
-        render_text(window, window->fonts->pixel_large, s[1], white,
+        render_text(window, window->fonts->craft_large, s[1], white,
                 POS_CENTERED, 575);
 
-        render_text(window, window->fonts->pixel_large, s[2], white,
+        render_text(window, window->fonts->craft_large, s[2], white,
                 POS_CENTERED, 725);
 
         render_controller(window, 195);
@@ -127,10 +127,10 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                 POS_CENTERED, 200);
 
-        render_text(window, window->fonts->pixel_large, s[1], white,
+        render_text(window, window->fonts->craft_large, s[1], white,
                 POS_CENTERED, 575);
 
-        render_text(window, window->fonts->pixel_large, s[2], white,
+        render_text(window, window->fonts->craft_large, s[2], white,
                 POS_CENTERED, 725);
 
         render_controller(window, i);
@@ -145,18 +145,17 @@ void intro(struct window *window)
 
 
     char screen[CREDITS_LINES][CREDITS_COLS] = { 0 };
-    Uint32 begin = SDL_GetTicks();
 
     size_t line = 0;
     size_t col = 0;
 
-    ADD_LETTERS(window, screen, "12th of March 2061:\n\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "On the 11th, the Earth has been destroyed by\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "a giant nuclear explosion. As an astronaut,\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "I was not on the Earth this day.\n\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "In this ship are the last humans alive.\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "Since there is no more Earth, we don't know\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "where to go...\n\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "\n\n\n\n\n\n\n\n\n\n\n", &line, &col, 60, 0, begin, 0);
-    ADD_LETTERS(window, screen, "Press ENTER to play", &line, &col, 60, 42000, begin, 0);
+    ADD_LETTERS(window, screen, "12th of March 2061:\n\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "On the 11th, the Earth has been destroyed by\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "a giant nuclear explosion. As an astronaut,\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "I was not on the Earth this day.\n\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "In this ship are the last humans alive.\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "Since there is no more Earth, we don't know\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "where to go...\n\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "\n\n\n\n\n\n\n\n\n\n\n", &line, &col, 60, 0, 0);
+    ADD_LETTERS(window, screen, "Press ENTER to play", &line, &col, 60, 42000, 0);
 }

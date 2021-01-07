@@ -6,12 +6,14 @@
 #define NUM_FIELDS_TITLE 1
 #define NUM_FIELDS_OBJECT 1
 #define NUM_FIELDS_ENEMY 5
+#define NUM_FIELDS_TEXT 1
 
 enum path_line_type
 {
     TITLE = 0,
     ENEMY,
     OBJECT,
+    PERSISTENT_TEXT,
 };
 
 struct enemy_path

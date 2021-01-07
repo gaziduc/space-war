@@ -40,7 +40,7 @@ void render_loading_screen(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
         render_text(window, window->fonts->zero4b_30, "SPACE WAR", blue, POS_CENTERED, 200);
-        render_text(window, window->fonts->pixel_large, s, white, POS_CENTERED, 675);
+        render_text(window, window->fonts->craft_large, s, white, POS_CENTERED, 675);
         SDL_RenderPresent(window->renderer);
     }
 }
@@ -141,6 +141,7 @@ static void load_textures(struct window *window)
     window->img->b_button = load_texture("data/b_button.png", window);
     window->img->trophy = load_texture("data/trophy_gold.png", window);
     window->img->controller = load_texture("data/controller.png", window);
+    window->img->bomb = load_texture("data/bomb.png", window);
 }
 
 
@@ -148,9 +149,12 @@ static void load_fonts(struct window *window)
 {
     window->fonts = xmalloc(sizeof(struct fonts), window->window, window->renderer);
 
-    window->fonts->pixel_small_bold = load_font(window, "data/pixel.ttf", 18);
     window->fonts->pixel = load_font(window, "data/pixel.ttf", 30);
-    window->fonts->pixel_large = load_font(window, "data/pixel.ttf", 37);
+
+    window->fonts->craft_small = load_font(window, "data/minecraft.ttf", 18);
+    window->fonts->craft = load_font(window, "data/minecraft.ttf", 30);
+    window->fonts->craft_large = load_font(window, "data/minecraft.ttf", 37);
+
     window->fonts->zero4b_30 = load_font(window, "data/04b_30.ttf", 120);
     window->fonts->zero4b_30_small = load_font(window, "data/04b_30.ttf", 60);
     window->fonts->zero4b_30_extra_small = load_font(window, "data/04b_30.ttf", 40);
