@@ -143,7 +143,7 @@ Is it possible?
 Collide with 4 enemies in a
 level, and stay alive.
 Ammo collector
-Finish a level (1P, really hard)
+Finish a level [1P, really hard]
 with more than 100 ammo.
 Over the world
 Finish a level in

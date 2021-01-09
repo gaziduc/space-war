@@ -522,12 +522,16 @@ void connect_to_server(struct window *window)
         render_text(window, window->fonts->zero4b_30_small, "Enter IP:",
                     orange, 150, 150);
 
+        int x_offset = 0;
+
         if (buf[0])
+        {
+            TTF_SizeText(window->fonts->craft, buf, &x_offset, NULL);
             render_text(window, window->fonts->craft, buf, white, 150, 350);
+        }
 
         if (!is_connecting && !is_connected)
-            render_text(window, window->fonts->craft, "_",
-                        white, 150 + strlen(buf) * 18, 350);
+            render_text(window, window->fonts->craft, "_", white, 150 + x_offset, 350);
 
         if (is_connecting)
         {
