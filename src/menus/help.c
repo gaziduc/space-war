@@ -90,6 +90,8 @@ void tutorial_help(struct window *window, int tutorial_num)
         sprintf(s, "Press %s to shoot.", SDL_GetScancodeName(window->settings->controls[SHOOT]));
     else if (tutorial_num == 3)
         sprintf(s, "Press %s to use bomb.", SDL_GetScancodeName(window->settings->controls[BOMB]));
+    else if (tutorial_num == 4)
+        sprintf(s, "Don't let any enemy go through the left of the screen, or you loose. Press Y to continue.");
 
     SDL_Texture *bg = NULL;
 
@@ -124,6 +126,11 @@ void tutorial_help(struct window *window, int tutorial_num)
         else if (tutorial_num == 3)
         {
              if (window->in->key[window->settings->controls[BOMB]])
+                escape = 1;
+        }
+        else if (tutorial_num == 4)
+        {
+            if (window->in->key[SDL_SCANCODE_Y])
                 escape = 1;
         }
 

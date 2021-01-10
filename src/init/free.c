@@ -45,6 +45,7 @@ static void free_textures(struct window *window)
     SDL_DestroyTexture(window->img->b_button);
     SDL_DestroyTexture(window->img->trophy);
     SDL_DestroyTexture(window->img->bomb);
+    SDL_DestroyTexture(window->img->padlock);
 
     free(window->img);
 }
@@ -60,7 +61,6 @@ static void free_window(struct window *window)
 
 static void free_fonts(struct window *window)
 {
-    TTF_CloseFont(window->fonts->pixel);
     TTF_CloseFont(window->fonts->craft);
     TTF_CloseFont(window->fonts->craft_small);
     TTF_CloseFont(window->fonts->craft_large);

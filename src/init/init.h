@@ -86,6 +86,7 @@ struct textures
     SDL_Texture *trophy;
     SDL_Texture *controller;
     SDL_Texture *bomb;
+    SDL_Texture *padlock;
 };
 
 
@@ -176,8 +177,6 @@ struct vector
 
 struct fonts
 {
-    TTF_Font *pixel;
-    TTF_Font *pixel_large;
     TTF_Font *craft_small;
     TTF_Font *craft;
     TTF_Font *craft_large;

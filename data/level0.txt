@@ -19,5 +19,10 @@ $ Wave_2
 4000 540 1 100 B
 & 3
 
+$ Wave_3
+0 540 2 2 A
+2000 540 2 2 A
+& 4
+
 $ Great!
 $ Now_you_can_play!

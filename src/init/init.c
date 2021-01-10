@@ -142,14 +142,13 @@ static void load_textures(struct window *window)
     window->img->trophy = load_texture("data/trophy_gold.png", window);
     window->img->controller = load_texture("data/controller.png", window);
     window->img->bomb = load_texture("data/bomb.png", window);
+    window->img->padlock = load_texture("data/padlock.png", window);
 }
 
 
 static void load_fonts(struct window *window)
 {
     window->fonts = xmalloc(sizeof(struct fonts), window->window, window->renderer);
-
-    window->fonts->pixel = load_font(window, "data/pixel.ttf", 30);
 
     window->fonts->craft_small = load_font(window, "data/minecraft.ttf", 18);
     window->fonts->craft = load_font(window, "data/minecraft.ttf", 30);

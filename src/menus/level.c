@@ -206,6 +206,7 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
     SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
     SDL_Color orange = { 255, 127, 39, alpha };
     SDL_Color grey = { 128, 128, 128, alpha };
+    SDL_Color white = { 210, 210, 210, alpha };
 
     render_text(window, window->fonts->zero4b_30_small, window->txt[SELECT_MISSION], orange, 150, 150);
 
@@ -226,14 +227,30 @@ static void render_level_texts(struct window *window, Uint32 begin, int selected
             if (i == 1 || window->save->progress[window->num_players - 1][i - 2] > 0)
                 render_text(window, window->fonts->zero4b_30_extra_small, s, blue, 150, y);
             else
+            {
+                SDL_Rect pos = { .x = 100, .y = y, .w = 0, .h = 0 };
+                SDL_QueryTexture(window->img->padlock, NULL, NULL, &pos.w, &pos.h);
+                resize_pos_for_resolution(window, &pos);
+                SDL_SetTextureAlphaMod(window->img->padlock, alpha);
+                SDL_RenderCopy(window->renderer, window->img->padlock, NULL, &pos);
+
                 render_text(window, window->fonts->zero4b_30_extra_small, s, grey, 150, y);
+            }
         }
         else
         {
             if (i == 1 || window->save->progress[window->num_players - 1][i - 2] > 0)
                 render_text(window, window->fonts->zero4b_30_extra_small, s, green, 150, y);
             else
-                render_text(window, window->fonts->zero4b_30_extra_small, s, grey, 150, y);
+            {
+                SDL_Rect pos = { .x = 100, .y = y, .w = 0, .h = 0 };
+                SDL_QueryTexture(window->img->padlock, NULL, NULL, &pos.w, &pos.h);
+                resize_pos_for_resolution(window, &pos);
+                SDL_SetTextureAlphaMod(window->img->padlock, alpha);
+                SDL_RenderCopy(window->renderer, window->img->padlock, NULL, &pos);
+
+                render_text(window, window->fonts->zero4b_30_extra_small, s, white, 150, y);
+            }
         }
     }
 
