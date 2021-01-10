@@ -148,3 +148,28 @@ with more than 100 ammo.
 Over the world
 Finish a level in
 network mode.
+GAME CREATED BY DAVID "GAZI" GHIASSI
+PROGRAMMED IN C LANGUAGE
+LIBRARIES USED:
+THANKS FOR PLAYING!
+12th of March 2061:
+On the 11th, the Earth has been destroyed by
+a giant nuclear explosion. As an astronaut,
+I was not on the Earth this day.
+In this ship are the last humans alive.
+Since there is no more Earth, we don't know
+where to go...
+Press ENTER to play
+Goal: Kill all enemies
+You loose if:
+  - An enemy pass on the left of the screen
+  - Your health points reach 0
+You can throw a bomb to destroy all enemies on screen
+                        Keyboard [can be modified]                Mouse                               Controller
+Move:                                Arrows                             Move mouse                   Move Left joystick
+Shoot:                                Space                               Left click                  RT (second right trigger)
+Use bomb:                             B                                   Right click                                  X
+Press %s, %s, %s or %s to move.
+Press %s to shoot.
+Press %s to use bomb.
+Don't let any enemy go through the left of the screen, or you loose. Press Y to continue.

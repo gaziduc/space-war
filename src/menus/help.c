@@ -21,20 +21,20 @@ static void render_help(struct window *window, Uint32 begin, unsigned selected)
     render_text(window, window->fonts->zero4b_30_small, window->txt[HELP], orange, 150, 150);
 
     TTF_SetFontStyle(window->fonts->craft, TTF_STYLE_UNDERLINE);
-    render_text(window, window->fonts->craft, "Goal: Kill all enemies", white, 150, 280);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_1], white, 150, 280);
     TTF_SetFontStyle(window->fonts->craft, TTF_STYLE_NORMAL);
 
-    render_text(window, window->fonts->craft, "You loose if:", white, 150, 360);
-    render_text(window, window->fonts->craft, "  - An enemy pass on the left of the screen", white, 150, 400);
-    render_text(window, window->fonts->craft, "  - Your health points reach 0", white, 150, 440);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_2], white, 150, 360);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_3], white, 150, 400);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_4], white, 150, 440);
 
-    render_text(window, window->fonts->craft, "You can throw a bomb to destroy all enemies on screen", white, 150, 520);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_5], white, 150, 520);
 
-    render_text(window, window->fonts->craft, "                        Keyboard [can be modified]                Mouse                               Controller", blue, 150, 600);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_6], blue, 150, 600);
     render_text(window, window->fonts->craft, "-----------------------------------------------------------------------------------------------------------------------------------", white, 150, 640);
-    render_text(window, window->fonts->craft, "Move:                                Arrows                             Move mouse                   Move Left joystick", white, 150, 680);
-    render_text(window, window->fonts->craft, "Shoot:                                Space                               Left click                  RT (second right trigger)", white, 150, 720);
-    render_text(window, window->fonts->craft, "use bomb:                             B                                   Right click                                  X", white, 150, 760);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_7], white, 150, 680);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_8], white, 150, 720);
+    render_text(window, window->fonts->craft, window->txt[HELP_MSG_9], white, 150, 760);
 
     render_text(window, window->fonts->zero4b_30_extra_small, window->txt[BACK_1],
                 selected == 1 ? green : blue, 150, 880);
@@ -81,17 +81,17 @@ void tutorial_help(struct window *window, int tutorial_num)
 
     char s[256] = { 0 };
     if (tutorial_num == 1)
-        sprintf(s, "Press %s, %s, %s or %s to move.",
+        sprintf(s, window->txt[TUTORIAL_1],
                 SDL_GetScancodeName(window->settings->controls[UP]),
                 SDL_GetScancodeName(window->settings->controls[LEFT]),
                 SDL_GetScancodeName(window->settings->controls[DOWN]),
                 SDL_GetScancodeName(window->settings->controls[RIGHT]));
     else if (tutorial_num == 2)
-        sprintf(s, "Press %s to shoot.", SDL_GetScancodeName(window->settings->controls[SHOOT]));
+        sprintf(s, window->txt[TUTORIAL_2], SDL_GetScancodeName(window->settings->controls[SHOOT]));
     else if (tutorial_num == 3)
-        sprintf(s, "Press %s to use bomb.", SDL_GetScancodeName(window->settings->controls[BOMB]));
+        sprintf(s, window->txt[TUTORIAL_3], SDL_GetScancodeName(window->settings->controls[BOMB]));
     else if (tutorial_num == 4)
-        sprintf(s, "Don't let any enemy go through the left of the screen, or you loose. Press Y to continue.");
+        sprintf(s, window->txt[TUTORIAL_4]);
 
     SDL_Texture *bg = NULL;
 

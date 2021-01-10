@@ -23,7 +23,7 @@ static void render_ok(struct window *window, int selected_level,
     SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
     SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
 
-    render_text(window, window->fonts->zero4b_30_small, "SUMMARY", orange, 150, 150);
+    render_text(window, window->fonts->zero4b_30_small, window->txt[SUMMARY], orange, 150, 150);
 
     char str[128] = { 0 };
     sprintf(str, window->txt[MODE_S], window->is_lan ? window->txt[TWO_PLAYERS_NETWORK] :
