@@ -8,6 +8,7 @@
 #include "object.h"
 #include "string_vec.h"
 #include "file.h"
+#include "help.h"
 
 
 static void replace_underscores(char *s)
@@ -30,7 +31,7 @@ static int set_path_title(size_t *index, char *s, struct path *p)
 static int set_chat_text(size_t *index, char *s, struct path *p)
 {
     p->type = PERSISTENT_TEXT;
-    int scan = sscanf(s + (*index), " %s\n", p->line.title);
+    int scan = sscanf(s + (*index), " %d\n", &p->line.tutorial_num);
 
     go_to_next_line(index, s);
 
@@ -130,8 +131,6 @@ struct vector *load_paths(struct window *window, char *filename)
 
             if (scan != NUM_FIELDS_TEXT)
                 error(filename, "Could not load file because it is corrupted.", window->window, window->renderer);
-            else
-                replace_underscores(p.line.title);
         }
         else
         {
@@ -176,14 +175,7 @@ int execute_path_action(struct window *window)
         }
         else if (type == PERSISTENT_TEXT)
         {
-            int i = 2;
-
-            while (!window->chat_text[i][0])
-                i--;
-
-            i++;
-
-            strcpy(window->chat_text[i], window->paths->data[window->paths->index].line.title);
+            tutorial_help(window, window->paths->data[window->paths->index].line.tutorial_num);
             window->paths->index++;
         }
 

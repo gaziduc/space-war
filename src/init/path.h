@@ -30,6 +30,7 @@ union path_line
     char title[128];
     struct enemy_path enemy_path;
     enum object_type type;
+    int tutorial_num;
 };
 
 struct path

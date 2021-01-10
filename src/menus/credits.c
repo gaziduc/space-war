@@ -114,7 +114,7 @@ void credits(struct window *window)
 
     ADD_LETTERS(window, screen, "GAME CREATED BY DAVID \"GAZI\" GHIASSI\n\n\n", &line, &col, 50, 0, 1)
     ADD_LETTERS(window, screen, "PROGRAMMED IN C LANGUAGE\n\n\n", &line, &col, 50, 0, 1)
-    ADD_LETTERS(window, screen, "LIBRARIES USED\n\n", &line, &col, 50, 0, 1)
+    ADD_LETTERS(window, screen, "LIBRARIES USED:\n\n", &line, &col, 50, 0, 1)
     ADD_LETTERS(window, screen, "SDL2\n", &line, &col, 50, 0, 1)
     ADD_LETTERS(window, screen, "SDL2_IMAGE\n", &line, &col, 50, 0, 1)
     ADD_LETTERS(window, screen, "SDL2_TTF\n", &line, &col, 50, 0, 1)

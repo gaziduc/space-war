@@ -516,7 +516,6 @@ struct window
     struct trophy trophy;
     int combo_lover;
     int num_enemies_collided;
-    char chat_text[3][128];
 };
 
 void render_loading_screen(struct window *window);

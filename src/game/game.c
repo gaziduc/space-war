@@ -293,9 +293,6 @@ static int respawn(struct window *window, struct player *player)
 
 void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 {
-    for (int i = 0; i < 3; i++)
-        memset(window->chat_text, 0, sizeof(window->chat_text));
-
     if (all_reset)
     {
         for (enum list_type i = 0; i < NUM_LISTS; i++)

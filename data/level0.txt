@@ -7,14 +7,17 @@
 # D: drone
 
 $ Tutorial:_Wave_1
-& Press_arrow_keys_to_move
-& Press_Space_to_shoot
+& 1
 0 540 1 1 B
+4000 540 1 1 B
+& 2
 
 $ Wave_2
-& Press_B_to_use_bomb
 0 240 1 100 B
 0 840 1 100 B
+4000 540 1 100 B
+4000 540 1 100 B
+& 3
 
 $ Great!
 $ Now_you_can_play!

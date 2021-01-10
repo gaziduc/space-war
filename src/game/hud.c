@@ -91,13 +91,15 @@ static void render_score(struct window *window)
 
 static void render_bombs(struct window *window)
 {
-    SDL_Rect pos = { .x = 20, .y = 105, .w = 0, .h = 0 };
-    SDL_QueryTexture(window->img->bomb, NULL, NULL, &pos.w, &pos.h);
+    int w = 0;
+    int h = 0;
+    SDL_QueryTexture(window->img->bomb, NULL, NULL, &w, &h);
 
     for (int i = 0; i < window->num_bombs; i++)
     {
+        SDL_Rect pos = { .x = 20 + i * 80, .y = 105, .w = w, .h = h };
+        resize_pos_for_resolution(window, &pos);
         SDL_RenderCopy(window->renderer, window->img->bomb, NULL, &pos);
-        pos.x += 80;
     }
 }
 
@@ -186,8 +188,6 @@ void render_hud(struct window *window)
         render_life(window, &window->player[i], i);
         render_ammo(window, &window->player[i], i);
     }
-
-    render_persistent_text(window);
 }
 
 
@@ -262,19 +262,4 @@ void render_hud_texts(struct window *window)
     }
 }
 
-
-void render_persistent_text(struct window *window)
-{
-    for (int i = 2; i >= 0; i--)
-    {
-        if (window->chat_text[i][0])
-        {
-            SDL_Color color = { 255, 127, 39, 255 };
-
-            render_text(window, window->fonts->craft_large,
-                        window->chat_text[i],
-                        color, 35, DEFAULT_H - 60 - i * 40);
-        }
-    }
-}
 
