@@ -195,7 +195,7 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
                 get_weapon_shots_per_second(i - 1));
 
         render_text(window, window->fonts->zero4b_30_extra_small,
-                    s, choice == i ? green : blue, 350, 350 + (i - 1) * 200);
+                    s, choice == i ? green : blue, 330, 350 + (i - 1) * 200);
 
         if (i == choice)
         {
@@ -322,18 +322,18 @@ int get_weapon_speed(int weapon)
 }
 
 
-int get_weapon_shots_per_second(int weapon)
+float get_weapon_shots_per_second(int weapon)
 {
     switch (weapon)
     {
         case 0:
-            return 3;
+            return 3.2;
 
         case 1:
-            return 2;
+            return 2.0;
 
         case 2:
-            return 1;
+            return 1.2;
 
         default:
             return 0;

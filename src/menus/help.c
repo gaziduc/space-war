@@ -162,6 +162,8 @@ void tutorial_help(struct window *window, int tutorial_num)
         render_text(window, window->fonts->craft, s, orange, POS_CENTERED, 800);
 
         SDL_RenderPresent(window->renderer);
+
+        SDL_framerateDelay(window->fps);
     }
 }
 

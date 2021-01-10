@@ -4,10 +4,10 @@
 #include "init.h"
 
 #define FRAMES_BETWEEN_ENEMY_SHOTS 100
-#define FRAMES_BETWEEN_ROTATING_ENEMY_SHOTS 8
+#define FRAMES_BETWEEN_ROTATING_ENEMY_SHOTS 10
 #define FRAMES_BETWEEN_DRONE_SHOTS 60
 #define ENEMY_SHOT_SPEED 8
-#define FINAL_BOSS_SHOT_SPEED 14
+#define FINAL_BOSS_SHOT_SPEED 15
 
 void set_enemy_attributes(struct list *new, SDL_FRect *pos,
                           struct window *window, char enemy_type);

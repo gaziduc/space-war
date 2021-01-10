@@ -32,7 +32,7 @@ BACK
 7 HP - 1 Bomb - 999+ Ammo - 5000 Bonus
 3 HP - 1 Bomb - 200 Ammo - 20000 Bonus
 CHOOSE WEAPON
-DAMAGE: %d - SPEED: %d - SHOTS/SECOND: %d
+DAMAGE: %d - SPEED: %d - SHOTS/SECOND: %.1f
 BACK
 SUMMARY
 MODE: %s

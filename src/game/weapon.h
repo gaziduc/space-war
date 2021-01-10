@@ -16,6 +16,6 @@ int get_weapon_damage(int weapon);
 
 int get_weapon_speed(int weapon);
 
-int get_weapon_shots_per_second(int weapon);
+float get_weapon_shots_per_second(int weapon);
 
 #endif /* !WEAPON_H */
