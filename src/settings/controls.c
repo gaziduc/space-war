@@ -51,7 +51,7 @@ void controls(struct window *window)
         for (unsigned i = 0; i < NUM_CONTROLS; i++)
         {
             areas[i].x = 150;
-            areas[i].y = 280 + i * 80;
+            areas[i].y = 280 + i * 75;
 
             char s[64] = { 0 };
             sprintf(s, "%s: %s", window->txt[UP_TXT + i], SDL_GetScancodeName(window->settings->controls[i]));
