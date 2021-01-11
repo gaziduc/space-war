@@ -34,12 +34,14 @@ void vector_add_path(struct vector *vector, const struct path *p, struct window 
 
     vector->data[vector->size].type = p->type;
 
-    if (p->type == TITLE || p->type == PERSISTENT_TEXT)
+    if (p->type == TITLE)
         strcpy(vector->data[vector->size].line.title, p->line.title);
     else if (p->type == OBJECT)
         vector->data[vector->size].line.type = p->line.type;
     else if (p->type == ENEMY)
         vector->data[vector->size].line.enemy_path = p->line.enemy_path;
+    else if (p->type == PERSISTENT_TEXT)
+        vector->data[vector->size].line.tutorial_num = p->line.tutorial_num;
 
     vector->size++;
 }
