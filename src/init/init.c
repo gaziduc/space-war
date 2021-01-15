@@ -108,7 +108,12 @@ static void load_textures(struct window *window)
     window->img->explosion = load_texture("data/explosion.png", window);
     window->img->trail = load_texture("data/trail.png", window);
     window->img->enemy_shot = load_texture_collision("data/enemy_shot.png", window);
-    window->img->boss = load_texture_collision("data/boss.png", window);
+    window->img->enemy_shot_teleguided = load_texture_collision("data/enemy_shot_teleguided.png", window);
+
+    window->img->bosses[0] = load_texture_collision("data/boss0.png", window);
+    window->img->bosses[1] = load_texture_collision("data/boss1.png", window);
+    window->img->bosses[9] = load_texture_collision("data/boss9.png", window);
+
     window->img->objects[HEALTH] = load_texture_collision("data/health.png", window);
     window->img->objects[SHIELD] = load_texture_collision("data/shield.png", window);
     window->img->objects[PLANET] = load_texture_collision("data/planet.png", window);
@@ -135,7 +140,6 @@ static void load_textures(struct window *window)
     SDL_FreeSurface(original);
 
     window->img->drone = load_texture_collision("data/drone.png", window);
-    window->img->final_boss = load_texture_collision("data/final_boss.png", window);
     window->img->wall = load_texture_collision("data/wall.png", window);
     window->img->a_button = load_texture("data/a_button.png", window);
     window->img->b_button = load_texture("data/b_button.png", window);

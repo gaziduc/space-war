@@ -170,9 +170,7 @@ int execute_path_action(struct window *window)
         else if (type == OBJECT)
             create_object(window, window->paths->data[window->paths->index].line.type);
         else if (type == TITLE)
-        {
             render_wave_title(window);
-        }
         else if (type == PERSISTENT_TEXT)
         {
             tutorial_help(window, window->paths->data[window->paths->index].line.tutorial_num);

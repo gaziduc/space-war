@@ -40,7 +40,7 @@ $ Wave_2
 5000 540 3 5 C
 
 $ Final_Boss
-0 540 2 150 1
+0 540 2 150 9
 
 $ ...
 $ Detector_sees_no_more_enemy

@@ -49,6 +49,10 @@ void end_combo(struct window *window)
     window->combo = 0;
 }
 
+
+
+
+
 void move_shots(struct window *window)
 {
     struct list *temp = window->list[MY_SHOTS_LIST]->next;

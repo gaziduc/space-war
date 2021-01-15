@@ -14,6 +14,7 @@
 #define MAX_PLAYERS 2
 #define NUM_RESOLUTIONS 7
 #define MAX_NUM_FINGERS 2
+#define NUM_BOSSES 10
 
 /* Colors */
 #define BLUE_R 0
@@ -73,13 +74,13 @@ struct textures
     SDL_Texture *explosion;
     SDL_Texture *trail;
     struct collision_texture *enemy_shot;
-    struct collision_texture *boss;
+    struct collision_texture *enemy_shot_teleguided;
+    struct collision_texture *bosses[NUM_BOSSES];
     struct collision_texture *objects[NUM_OBJECTS];
     struct collision_texture *asteroid;
     struct collision_texture *rotating_enemy[NUM_ROTATING_FRAMES];
     SDL_Texture *aura;
     struct collision_texture *drone;
-    struct collision_texture *final_boss;
     struct collision_texture *wall;
     SDL_Texture *a_button;
     SDL_Texture *b_button;

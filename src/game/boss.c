@@ -16,21 +16,7 @@ void set_boss_attributes(struct list *new, SDL_FRect *pos,
     new->last_time_hurt = 0;
     new->first_time_hurt = 0;
     new->enemy_type = enemy_type;
-
-    switch (enemy_type)
-    {
-        case '0':
-            new->texture.texture = window->img->boss;
-            break;
-
-        case '1':
-            new->texture.texture = window->img->final_boss;
-            break;
-
-        default:
-            break;
-    }
-
+    new->texture.texture = window->img->bosses[enemy_type - '0'];
     new->rotating = 0;
     new->curr_texture = 0;
 

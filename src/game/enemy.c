@@ -96,10 +96,16 @@ void create_enemies(struct window *window)
                 break;
 
             case '0':
-                SDL_QueryTexture(window->img->boss->texture, NULL, NULL, NULL, &h);
-                break;
             case '1':
-                SDL_QueryTexture(window->img->final_boss->texture, NULL, NULL, NULL, &h);
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                SDL_QueryTexture(window->img->bosses[window->paths->data[window->paths->index].line.enemy_path.enemy_type - '0']->texture, NULL, NULL, NULL, &h);
                 break;
 
             default:
@@ -334,9 +340,19 @@ void render_enemies_health(struct window *window)
     render_boss_health(window);
 }
 
-void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
-                               SDL_FRect *ship_pos, char enemy_type)
+static int is_teleguided(char enemy_type)
 {
+    return enemy_type == '1';
+}
+
+void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
+                               SDL_FRect *ship_pos, char enemy_type, struct window *window)
+{
+    if (is_teleguided(enemy_type))
+        new->texture.texture = window->img->enemy_shot_teleguided;
+    else
+        new->texture.texture = window->img->enemy_shot;
+
     // Setting shot initial position
     new->pos_dst.x = pos_dst->x + pos_dst->w / 2;
     new->pos_dst.y = pos_dst->y + pos_dst->h / 2 - 16;
@@ -353,8 +369,10 @@ void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
     int gap_y = ship_pos->y + ship_pos->h / 2 - (new->pos_dst.y + new->pos_dst.h / 2);
     float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
 
-    new->speed.x = enemy_type == '1' ? (gap_x * FINAL_BOSS_SHOT_SPEED) / gap : (gap_x * ENEMY_SHOT_SPEED) / gap;
-    new->speed.y = enemy_type == '1' ? (gap_y * FINAL_BOSS_SHOT_SPEED) / gap : (gap_y * ENEMY_SHOT_SPEED) / gap;
+    new->speed.x = enemy_type == '9' ? (gap_x * FINAL_BOSS_SHOT_SPEED) / gap : (gap_x * ENEMY_SHOT_SPEED) / gap;
+    new->speed.y = enemy_type == '9' ? (gap_y * FINAL_BOSS_SHOT_SPEED) / gap : (gap_y * ENEMY_SHOT_SPEED) / gap;
+
+    new->enemy_type = enemy_type;
 }
 
 
@@ -368,6 +386,22 @@ void move_enemy_shots(struct window *window)
         // Move shot
         temp->pos_dst.x -= temp->speed.x;
         temp->pos_dst.y += temp->speed.y;
+
+        if (is_teleguided(temp->enemy_type))
+        {
+            struct player *closest_player = select_player(window, temp);
+
+            int gap_x = temp->pos_dst.x + temp->pos_dst.w / 2 - (closest_player->pos.x + closest_player->pos.w / 2);
+            int gap_y = closest_player->pos.y + closest_player->pos.h / 2 - (temp->pos_dst.y + temp->pos_dst.h / 2);
+            float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
+
+            float speed_x = temp->enemy_type == '9' ? (gap_x * FINAL_BOSS_SHOT_SPEED) / gap : (gap_x * ENEMY_SHOT_SPEED) / gap;
+            float speed_y = temp->enemy_type == '9' ? (gap_y * FINAL_BOSS_SHOT_SPEED) / gap : (gap_y * ENEMY_SHOT_SPEED) / gap;
+            float diff_speed_y = speed_y - temp->speed.y;
+            float diff_speed_x = speed_x - temp->speed.x;
+            temp->speed.y += diff_speed_y / 25;
+            temp->speed.x += diff_speed_x / 25;
+        }
 
         // Go to next frame
         temp->pos_src.y += 32;
@@ -408,7 +442,7 @@ void render_enemy_shots(struct window *window)
         resize_pos_for_resolution(window, &pos_dst);
 
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->enemy_shot->texture, &temp->pos_src, &pos_dst);
+        SDL_RenderCopy(window->renderer, temp->texture.texture->texture, &temp->pos_src, &pos_dst);
 
         // Go to next shot
         temp = temp->next;
