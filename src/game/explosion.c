@@ -4,22 +4,45 @@
 #include <SDL2/SDL.h>
 
 
-void set_explosion_pos(struct list *new, SDL_FRect *pos_dst, SDL_Texture *texture)
+void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_dst, SDL_Texture *texture, int explosion_texture_num)
 {
+    new->num_explosion = explosion_texture_num;
+
+    int exp_w = 0;
+    int exp_h = 0;
+    SDL_QueryTexture(window->img->explosion[new->num_explosion], NULL, NULL, &exp_w, &exp_h);
+
+    SDL_Point anim_sprite = { .x = 0, .y = 0 };
+    switch (explosion_texture_num)
+    {
+        case 0:
+            anim_sprite.x = 8;
+            anim_sprite.y = 8;
+            break;
+
+        case 1:
+            anim_sprite.x = 5;
+            anim_sprite.y = 4;
+            break;
+
+        default:
+            break;
+    }
+
     // Setting animation to first frame
     new->pos_src.x = 0;
     new->pos_src.y = 0;
-    new->pos_src.w = EXPLOSION_SIZE;
-    new->pos_src.h = EXPLOSION_SIZE;
+    new->pos_src.w = exp_w / anim_sprite.x;
+    new->pos_src.h = exp_h / anim_sprite.y;
 
-    // Setting animation position
     int w = 0;
     int h = 0;
     SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-    new->pos_dst.x = pos_dst->x + w / 2 - EXPLOSION_SIZE / 2;
-    new->pos_dst.y = pos_dst->y + h / 2 - EXPLOSION_SIZE / 2;
-    new->pos_dst.w = EXPLOSION_SIZE;
-    new->pos_dst.h = EXPLOSION_SIZE;
+
+    new->pos_dst.x = pos_dst->x + w / 2 - new->pos_src.w / 2;
+    new->pos_dst.y = pos_dst->y + h / 2 - new->pos_src.h / 2;
+    new->pos_dst.w = new->pos_src.w;
+    new->pos_dst.h = new->pos_src.h;
 }
 
 
@@ -30,16 +53,17 @@ void move_explosions(struct window *window)
 
     int w = 0;
     int h = 0;
-    SDL_QueryTexture(window->img->explosion, NULL, NULL, &w, &h);
+    if (temp)
+        SDL_QueryTexture(window->img->explosion[temp->num_explosion], NULL, NULL, &w, &h);
 
     while (temp)
     {
         // Increment explosion animation tile
-        temp->pos_src.x += EXPLOSION_SIZE;
+        temp->pos_src.x += temp->pos_src.w;
         if (temp->pos_src.x >= w)
         {
             temp->pos_src.x = 0;
-            temp->pos_src.y += EXPLOSION_SIZE;
+            temp->pos_src.y += temp->pos_src.h;
 
             // Delete explosion when animation is done
             if (temp->pos_src.y >= h)
@@ -74,7 +98,7 @@ void render_explosions(struct window *window)
         resize_pos_for_resolution(window, &pos_dst);
 
         // Display shot
-        SDL_RenderCopy(window->renderer, window->img->explosion, &temp->pos_src, &pos_dst);
+        SDL_RenderCopy(window->renderer, window->img->explosion[temp->num_explosion], &temp->pos_src, &pos_dst);
 
         // Go to next shot
         temp = temp->next;

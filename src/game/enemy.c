@@ -5,6 +5,8 @@
 #include "game.h"
 #include "path.h"
 #include "boss.h"
+#include "collision.h"
+#include "explosion.h"
 #include <stdlib.h>
 #include <math.h>
 #include <SDL2/SDL.h>
@@ -123,9 +125,9 @@ void create_enemies(struct window *window)
         char type = window->paths->data[window->paths->index].line.enemy_path.enemy_type;
 
         if (type >= 'A' && type <= 'Z')
-            list_push_front(&pos, window, ENEMY_LIST, NULL, NULL, 0, type);
+            list_push_front(&pos, window, ENEMY_LIST, NULL, NULL, 0, type, 0);
         else if (type >= '0' && type <= '9')
-            list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0, type);
+            list_push_front(&pos, window, BOSS_LIST, NULL, NULL, 0, type, 0);
 
         window->last_enemy_time = ticks;
         window->paths->index++;
@@ -196,15 +198,15 @@ void move_enemies(struct window *window)
 
         if (temp->enemy_type == 'A' && temp->framecount % FRAMES_BETWEEN_ENEMY_SHOTS == 0)
             list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
-                            &closest_player->pos, 0, 0);
+                            &closest_player->pos, 0, 0, 0);
 
         if (temp->enemy_type == 'C' && temp->framecount % FRAMES_BETWEEN_ROTATING_ENEMY_SHOTS == 0)
             list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
-                            &closest_player->pos, 0, 0);
+                            &closest_player->pos, 0, 0, 0);
 
         if (temp->enemy_type == 'D' && temp->framecount % FRAMES_BETWEEN_DRONE_SHOTS == 0)
             list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
-                            &closest_player->pos, 0, 0);
+                            &closest_player->pos, 0, 0, 0);
 
         // Prevent out of bounds by deleting the enemy if not on screen
         if (temp->pos_dst.x + temp->pos_dst.w <= 0)
@@ -345,6 +347,11 @@ static int is_teleguided(char enemy_type)
     return enemy_type == '1';
 }
 
+static int is_explose(char enemy_type)
+{
+    return enemy_type == '2';
+}
+
 void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
                                SDL_FRect *ship_pos, char enemy_type, struct window *window)
 {
@@ -383,10 +390,6 @@ void move_enemy_shots(struct window *window)
 
     while (temp)
     {
-        // Move shot
-        temp->pos_dst.x -= temp->speed.x;
-        temp->pos_dst.y += temp->speed.y;
-
         if (is_teleguided(temp->enemy_type))
         {
             struct player *closest_player = select_player(window, temp);
@@ -397,11 +400,43 @@ void move_enemy_shots(struct window *window)
 
             float speed_x = temp->enemy_type == '9' ? (gap_x * FINAL_BOSS_SHOT_SPEED) / gap : (gap_x * ENEMY_SHOT_SPEED) / gap;
             float speed_y = temp->enemy_type == '9' ? (gap_y * FINAL_BOSS_SHOT_SPEED) / gap : (gap_y * ENEMY_SHOT_SPEED) / gap;
-            float diff_speed_y = speed_y - temp->speed.y;
-            float diff_speed_x = speed_x - temp->speed.x;
-            temp->speed.y += diff_speed_y / 25;
-            temp->speed.x += diff_speed_x / 25;
+            float diff_speed_y = (speed_y - temp->speed.y) / 40;
+            float diff_speed_x = (speed_x - temp->speed.x) / 40;
+
+            temp->speed.x += diff_speed_x;
+            if (temp->speed.x < 3)
+                temp->speed.x = 3;
+            else
+                temp->speed.y += diff_speed_y;
         }
+        else if (is_explose(temp->enemy_type))
+        {
+            struct player *closest_player = select_player(window, temp);
+
+            int gap_x = temp->pos_dst.x + temp->pos_dst.w / 2 - (closest_player->pos.x + closest_player->pos.w / 2);
+            int gap_y = closest_player->pos.y + closest_player->pos.h / 2 - (temp->pos_dst.y + temp->pos_dst.h / 2);
+            float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
+
+            if (gap < 130)
+            {
+                list_push_front(&temp->pos_dst, window, EXPLOSION_LIST,
+                                NULL, NULL, 0, 0, 1);
+
+                hurt(window, closest_player);
+
+                struct list *to_delete = temp;
+                prev->next = temp->next;
+                free(to_delete);
+
+                // Go to next shot
+                temp = prev->next;
+                continue;
+            }
+        }
+
+        // Move shot
+        temp->pos_dst.x -= temp->speed.x;
+        temp->pos_dst.y += temp->speed.y;
 
         // Go to next frame
         temp->pos_src.y += 32;

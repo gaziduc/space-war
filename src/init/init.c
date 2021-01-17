@@ -105,13 +105,15 @@ static void load_textures(struct window *window)
     window->img->shot[1] = load_texture_collision("data/shot1.bmp", window);
     window->img->shot[2] = load_texture_collision("data/shot2.bmp", window);
     window->img->enemy = load_texture_collision("data/enemy.png", window);
-    window->img->explosion = load_texture("data/explosion.png", window);
+    window->img->explosion[0] = load_texture("data/explosion0.png", window);
+    window->img->explosion[1] = load_texture("data/explosion1.png", window);
     window->img->trail = load_texture("data/trail.png", window);
     window->img->enemy_shot = load_texture_collision("data/enemy_shot.png", window);
     window->img->enemy_shot_teleguided = load_texture_collision("data/enemy_shot_teleguided.png", window);
 
     window->img->bosses[0] = load_texture_collision("data/boss0.png", window);
     window->img->bosses[1] = load_texture_collision("data/boss1.png", window);
+    window->img->bosses[2] = load_texture_collision("data/boss2.png", window);
     window->img->bosses[9] = load_texture_collision("data/boss9.png", window);
 
     window->img->objects[HEALTH] = load_texture_collision("data/health.png", window);

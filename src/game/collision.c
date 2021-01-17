@@ -6,6 +6,7 @@
 #include "weapon.h"
 #include "effect.h"
 #include "shot.h"
+#include "explosion.h"
 
 static int collision_aabb(SDL_FRect *pos1, SDL_FRect *pos2)
 {
@@ -42,6 +43,32 @@ static int collision(SDL_FRect *pos1, struct collision_texture *t1,
     }
 
     return 0;
+}
+
+
+void hurt(struct window *window, struct player *player)
+{
+    if (SDL_GetTicks() - player->shield_time >= SHIELD_TIME)
+    {
+        // Add an explosion
+        list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                        NULL, 0, 0, 0);
+
+        Mix_PlayChannel(-1, window->sounds->explosion, 0);
+
+        // Put combo in score
+        end_combo(window);
+
+        player->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+        window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
+
+        // Set shake effect
+        set_shake_effect(window);
+
+        // force feedback
+        if (window->settings->is_force_feedback && window->in->c.haptic)
+            SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
+    }
 }
 
 
@@ -107,7 +134,7 @@ static void check_collisions_list(struct window *window, struct player *player,
 
                 // Add an explosion
                 list_push_front(temp_pos, window, EXPLOSION_LIST,
-                                temp->texture, NULL, 0, 0);
+                                temp->texture, NULL, 0, 0, 0);
 
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -121,7 +148,7 @@ static void check_collisions_list(struct window *window, struct player *player,
                 {
                     // Add a "+100" text above the dead enemy
                     list_push_front(temp_pos, window, HUD_LIST,
-                                    NULL, NULL, 0, 0);
+                                    NULL, NULL, 0, 0, 0);
 
                     // Delete enemy
                     struct list *enemy_to_delete = temp_enemy;
@@ -160,7 +187,7 @@ static void check_collisions_list(struct window *window, struct player *player,
 
             // Add an explosion
             list_push_front(temp_pos, window, EXPLOSION_LIST,
-                            temp->texture, NULL, 0, 0);
+                            temp->texture, NULL, 0, 0, 0);
 
             Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -168,7 +195,7 @@ static void check_collisions_list(struct window *window, struct player *player,
             {
                 // Add a "+100" text above the dead enemy
                 list_push_front(temp_pos, window, HUD_LIST,
-                                NULL, NULL, 0, 0);
+                                NULL, NULL, 0, 0, 0);
 
                 // Delete enemy
                 struct list *enemy_to_delete = temp_enemy;
@@ -200,7 +227,7 @@ static void check_collisions_list(struct window *window, struct player *player,
             {
                 // Add an explosion
                 list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
-                                NULL, 0, 0);
+                                NULL, 0, 0, 0);
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
                 player->health = 0;
@@ -247,14 +274,14 @@ static void check_collisions_list(struct window *window, struct player *player,
 
                 if (SDL_GetTicks() - player->shield_time >= SHIELD_TIME)
                 {
-                    // Put combo in score
-                    end_combo(window);
-
                     // Add an explosion
                     list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
-                                    NULL, 0, 0);
+                                    NULL, 0, 0, 0);
 
                     Mix_PlayChannel(-1, window->sounds->explosion, 0);
+
+                    // Put combo in score
+                    end_combo(window);
 
                     player->health -= HEALTH_TO_DECREASE_WHEN_HURT;
                     window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;

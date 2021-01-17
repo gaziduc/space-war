@@ -11,6 +11,7 @@
 #include "effect.h"
 #include "trophies.h"
 #include "save.h"
+#include "explosion.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -23,7 +24,7 @@ int shoot(struct window *window, struct player *player, int provoked_by_me)
             SDL_FRect missile_pos = player->pos;
 
             missile_pos.y += 15;
-            list_push_front(&missile_pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+            list_push_front(&missile_pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0, 0);
             Mix_PlayChannel(-1, window->sounds->shot, 0);
 
             if (player->ammo > 0)
@@ -32,7 +33,7 @@ int shoot(struct window *window, struct player *player, int provoked_by_me)
             if (player->ammo == -1 || player->ammo > 0)
             {
                 missile_pos.y = player->pos.y - 15;
-                list_push_front(&missile_pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+                list_push_front(&missile_pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0, 0);
                 Mix_PlayChannel(-1, window->sounds->shot, 0);
 
                 if (player->ammo > 0)
@@ -48,7 +49,7 @@ int shoot(struct window *window, struct player *player, int provoked_by_me)
         }
         else
         {
-            list_push_front(&player->pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0);
+            list_push_front(&player->pos, window, MY_SHOTS_LIST, NULL, NULL, 0, 0, 0);
 
             Mix_PlayChannel(-1, window->sounds->shot, 0);
 
@@ -84,9 +85,9 @@ void bomb(struct window *window, int provoked_by_me)
 
         // Destroy enemy
         list_push_front(&enemy_to_delete->pos_dst, window, EXPLOSION_LIST,
-                        window->img->enemy->texture, NULL, 0, 0);
+                        window->img->enemy->texture, NULL, 0, 0, 0);
         list_push_front(&enemy_to_delete->pos_dst, window, HUD_LIST, NULL,
-                        NULL, 0, 0);
+                        NULL, 0, 0, 0);
 
         free(enemy_to_delete);
         Mix_PlayChannel(-1, window->sounds->explosion, 0);
@@ -106,7 +107,7 @@ void bomb(struct window *window, int provoked_by_me)
 
         // Explosion
         list_push_front(&sentinel->next->pos_dst, window, EXPLOSION_LIST,
-                        sentinel->next->texture.texture->texture, NULL, 0, 0);
+                        sentinel->next->texture.texture->texture, NULL, 0, 0, 0);
         Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
 
@@ -116,7 +117,7 @@ void bomb(struct window *window, int provoked_by_me)
             sentinel->next = sentinel->next->next;
 
             list_push_front(&boss_to_delete->pos_dst, window, HUD_LIST, NULL,
-                            NULL, 0, 0);
+                            NULL, 0, 0, 0);
 
             free(boss_to_delete);
 

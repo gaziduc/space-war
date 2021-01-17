@@ -25,10 +25,12 @@ static void free_textures(struct window *window)
     free_collision_texture(window->img->enemy);
     free_collision_texture(window->img->enemy_shot);
     free_collision_texture(window->img->enemy_shot_teleguided);
-    SDL_DestroyTexture(window->img->explosion);
+    SDL_DestroyTexture(window->img->explosion[0]);
+    SDL_DestroyTexture(window->img->explosion[1]);
     SDL_DestroyTexture(window->img->trail);
     free_collision_texture(window->img->bosses[0]);
     free_collision_texture(window->img->bosses[1]);
+    free_collision_texture(window->img->bosses[2]);
     free_collision_texture(window->img->bosses[9]);
 
     for (enum object_type i = 0; i < NUM_OBJECTS; i++)

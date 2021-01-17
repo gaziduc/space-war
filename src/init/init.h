@@ -71,7 +71,7 @@ struct textures
     struct collision_texture *ship;
     struct collision_texture *shot[3];
     struct collision_texture *enemy;
-    SDL_Texture *explosion;
+    SDL_Texture *explosion[2];
     SDL_Texture *trail;
     struct collision_texture *enemy_shot;
     struct collision_texture *enemy_shot_teleguided;
@@ -153,6 +153,7 @@ struct list
     int rotating;
     int curr_texture;
     union texture texture;
+    int num_explosion;
     struct list *next;
 };
 

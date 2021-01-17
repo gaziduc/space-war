@@ -46,13 +46,22 @@ void move_boss(struct window *window)
 
         temp->framecount++;
 
-        if (temp->framecount % FRAMES_BETWEEN_BOSS_SHOTS == 0)
+        if ((temp->enemy_type == '0' && temp->framecount % FRAMES_BETWEEN_BOSS_1_SHOTS == 0)
+            || (temp->enemy_type == '1' && temp->framecount % FRAMES_BETWEEN_BOSS_2_SHOTS == 0)
+            || (temp->enemy_type == '2' && temp->framecount % FRAMES_BETWEEN_BOSS_3_SHOTS == 0)
+            || (temp->enemy_type == '3' && temp->framecount % FRAMES_BETWEEN_BOSS_4_SHOTS == 0)
+            || (temp->enemy_type == '4' && temp->framecount % FRAMES_BETWEEN_BOSS_5_SHOTS == 0)
+            || (temp->enemy_type == '5' && temp->framecount % FRAMES_BETWEEN_BOSS_6_SHOTS == 0)
+            || (temp->enemy_type == '6' && temp->framecount % FRAMES_BETWEEN_BOSS_7_SHOTS == 0)
+            || (temp->enemy_type == '7' && temp->framecount % FRAMES_BETWEEN_BOSS_8_SHOTS == 0)
+            || (temp->enemy_type == '8' && temp->framecount % FRAMES_BETWEEN_BOSS_9_SHOTS == 0)
+            || (temp->enemy_type == '9' && temp->framecount % FRAMES_BETWEEN_FINAL_BOSS_SHOTS == 0))
         {
             // Selecting on which player to shoot
             struct player *closest_player = select_player(window, temp);
 
             list_push_front(&temp->pos_dst, window, ENEMY_SHOT_LIST, NULL,
-                            &closest_player->pos, 0, temp->enemy_type);
+                            &closest_player->pos, 0, temp->enemy_type, 0);
         }
 
         temp = temp->next;
