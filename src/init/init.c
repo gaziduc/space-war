@@ -23,11 +23,11 @@ void render_loading_screen(struct window *window)
     static Uint32 last_time = 0;
     Uint32 time = SDL_GetTicks();
 
-    static int progress = 10;
+    static int progress = 0;
 
     progress += 3;
 
-    if (time - last_time > 16)
+    if (time - last_time >= 17)
     {
         last_time = time;
 
@@ -110,6 +110,7 @@ static void load_textures(struct window *window)
     window->img->trail = load_texture("data/trail.png", window);
     window->img->enemy_shot = load_texture_collision("data/enemy_shot.png", window);
     window->img->enemy_shot_teleguided = load_texture_collision("data/enemy_shot_teleguided.png", window);
+    window->img->enemy_shot_explode = load_texture_collision("data/enemy_shot_explode.png", window);
 
     window->img->bosses[0] = load_texture_collision("data/boss0.png", window);
     window->img->bosses[1] = load_texture_collision("data/boss1.png", window);

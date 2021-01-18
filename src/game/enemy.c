@@ -357,6 +357,8 @@ void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
 {
     if (is_teleguided(enemy_type))
         new->texture.texture = window->img->enemy_shot_teleguided;
+    else if (is_explose(enemy_type))
+        new->texture.texture = window->img->enemy_shot_explode;
     else
         new->texture.texture = window->img->enemy_shot;
 
@@ -417,7 +419,7 @@ void move_enemy_shots(struct window *window)
             int gap_y = closest_player->pos.y + closest_player->pos.h / 2 - (temp->pos_dst.y + temp->pos_dst.h / 2);
             float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
 
-            if (gap < 130)
+            if (gap < 145)
             {
                 list_push_front(&temp->pos_dst, window, EXPLOSION_LIST,
                                 NULL, NULL, 0, 0, 1);

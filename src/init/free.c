@@ -25,6 +25,7 @@ static void free_textures(struct window *window)
     free_collision_texture(window->img->enemy);
     free_collision_texture(window->img->enemy_shot);
     free_collision_texture(window->img->enemy_shot_teleguided);
+    free_collision_texture(window->img->enemy_shot_explode);
     SDL_DestroyTexture(window->img->explosion[0]);
     SDL_DestroyTexture(window->img->explosion[1]);
     SDL_DestroyTexture(window->img->trail);

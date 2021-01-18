@@ -75,6 +75,7 @@ struct textures
     SDL_Texture *trail;
     struct collision_texture *enemy_shot;
     struct collision_texture *enemy_shot_teleguided;
+    struct collision_texture *enemy_shot_explode;
     struct collision_texture *bosses[NUM_BOSSES];
     struct collision_texture *objects[NUM_OBJECTS];
     struct collision_texture *asteroid;
