@@ -41,7 +41,15 @@ void intro(struct window *window)
         render_text(window, window->fonts->zero4b_30, s[0], blue,
                     POS_CENTERED, 200);
 
-        render_text(window, window->fonts->craft_large, "100 %", white, POS_CENTERED, 675);
+        SDL_Rect pos = { .x = DEFAULT_W / 2 - 300, .y = 665, .w = 600, .h = 45 };
+        resize_pos_for_resolution(window, &pos);
+        SDL_SetRenderDrawColor(window->renderer, 90, 230, 29, i == 0 ? 1 : i);
+        SDL_RenderFillRect(window->renderer, &pos);
+        SDL_SetRenderDrawColor(window->renderer, 225, 225, 225,  i == 0 ? 1 : i);
+        SDL_RenderDrawRect(window->renderer, &pos);
+
+
+        render_text(window, window->fonts->craft_large, "100 %", white, POS_CENTERED, 673);
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame

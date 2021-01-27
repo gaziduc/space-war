@@ -98,7 +98,7 @@ static void handle_arrow_event(struct window *window, struct player *player)
 
             SDL_FRect cursor_pos = player->pos;
             resize_pos_for_resolution_float(window, &cursor_pos);
-            SDL_WarpMouseInWindow(window->window, cursor_pos.x, cursor_pos.y);
+            SDL_WarpMouseInWindow(window->window, cursor_pos.x + 0.5, cursor_pos.y + 0.5); // + 0.5 for fixing a bug, do not remove
             break;
 
         default:

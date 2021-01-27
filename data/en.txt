@@ -165,7 +165,7 @@ You loose if:
   - An enemy pass on the left of the screen
   - Your health points reach 0
 You can throw a bomb to destroy all enemies on screen
-                        Keyboard [can be modified]                Mouse                               Controller
+                         Keyboard [can be modified]                Mouse                               Controller
 Move:                                Arrows                             Move mouse                   Move Left joystick
 Shoot:                                Space                               Left click                  RT (second right trigger)
 Use bomb:                             B                                   Right click                                  X

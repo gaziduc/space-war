@@ -26,7 +26,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_SetRenderDrawColor(window->renderer, 0, 255, 0, 192);
 
         SDL_Rect pos = { .x = 20 + player_num * 220,
-                         .y = 37,
+                         .y = 39,
                          .w = anim_health_low,
                          .h = 25
                        };
@@ -43,7 +43,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_SetRenderDrawColor(window->renderer, 255, 128, 0, 192);
 
         SDL_Rect pos = { .x = 20 + anim_health_low + player_num * 220,
-                         .y = 37,
+                         .y = 39,
                          .w = anim_health_high - anim_health_low,
                          .h = 25
                        };
@@ -58,7 +58,7 @@ static void render_life(struct window *window, struct player *player, int player
         SDL_SetRenderDrawColor(window->renderer, 255, 0, 0, 192);
 
         SDL_Rect pos = { .x = 20 + anim_health_high + player_num * 220,
-                         .y = 37,
+                         .y = 39,
                          .w = window->max_health - anim_health_high,
                          .h = 25
                        };
@@ -86,7 +86,7 @@ static void render_score(struct window *window)
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 234 };
 
-    render_text(window, window->fonts->craft_large, s, color, 20, 166);
+    render_text(window, window->fonts->craft_large, s, color, 20, 168);
 }
 
 static void render_bombs(struct window *window)
@@ -97,7 +97,7 @@ static void render_bombs(struct window *window)
 
     for (int i = 0; i < window->num_bombs; i++)
     {
-        SDL_Rect pos = { .x = 20 + i * 80, .y = 105, .w = w, .h = h };
+        SDL_Rect pos = { .x = 20 + i * 80, .y = 107, .w = w, .h = h };
         resize_pos_for_resolution(window, &pos);
         SDL_RenderCopy(window->renderer, window->img->bomb, NULL, &pos);
     }
@@ -116,7 +116,7 @@ static void render_combo(struct window *window)
         Uint32 offset = ticks - window->combo_time;
         SDL_Color orange = { .r = 255, .g = 127, .b = 39, .a = offset < 224 ? offset : 224 };
 
-        render_text(window, window->fonts->craft_large, s, orange, 20, offset < 224 ? 282 - offset / 10 : 260);
+        render_text(window, window->fonts->craft_large, s, orange, 20, offset < 224 ? 284 - offset / 10 : 262);
     }
 
     Uint32 delay = ticks - window->last_combo_time;
@@ -128,7 +128,7 @@ static void render_combo(struct window *window)
 
         SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = delay < 224 ? delay : delay < 2000 ? 224 : 2224 - delay };
 
-        render_text(window, window->fonts->craft_large, s, yellow, 20, 220);
+        render_text(window, window->fonts->craft_large, s, yellow, 20, 222);
     }
 }
 
@@ -143,7 +143,7 @@ static void render_ammo(struct window *window, struct player *player, int player
 
     SDL_Color color = { .r = 255, .g = 255, .b = 255, .a = 255 };
 
-    render_text(window, window->fonts->craft, s, color, 20 + player_num * 220, 68);
+    render_text(window, window->fonts->craft, s, color, 20 + player_num * 220, 70);
 }
 
 void render_hud(struct window *window)

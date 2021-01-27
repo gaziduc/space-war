@@ -23,9 +23,9 @@ void render_loading_screen(struct window *window)
     static Uint32 last_time = 0;
     Uint32 time = SDL_GetTicks();
 
-    static int progress = 0;
+    static float progress = 0;
 
-    progress += 3;
+    progress += 2.9;
 
     if (time - last_time >= 17)
     {
@@ -35,12 +35,24 @@ void render_loading_screen(struct window *window)
         SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = TITLE_ALPHA_MAX };
 
         char s[128] = { 0 };
-        sprintf(s, "%d %%", progress);
+        sprintf(s, "%d %%", (int) progress);
 
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
         render_text(window, window->fonts->zero4b_30, "SPACE WAR", blue, POS_CENTERED, 200);
-        render_text(window, window->fonts->craft_large, s, white, POS_CENTERED, 675);
+
+        SDL_Rect pos = { .x = DEFAULT_W / 2 - 300, .y = 665, .w = (int) (progress * 6), .h = 45 };
+        resize_pos_for_resolution(window, &pos);
+        SDL_SetRenderDrawColor(window->renderer, 90, 230, 29, 192);
+        SDL_RenderFillRect(window->renderer, &pos);
+
+        SDL_Rect pos_bar = { .x = DEFAULT_W / 2 - 300, .y = 665, .w = 600, .h = 45 };
+        resize_pos_for_resolution(window, &pos_bar);
+        SDL_SetRenderDrawColor(window->renderer, 225, 225, 225, 255);
+        SDL_RenderDrawRect(window->renderer, &pos_bar);
+
+        render_text(window, window->fonts->craft_large, s, white, POS_CENTERED, 673);
+
         SDL_RenderPresent(window->renderer);
     }
 }
@@ -157,7 +169,7 @@ static void load_fonts(struct window *window)
 {
     window->fonts = xmalloc(sizeof(struct fonts), window->window, window->renderer);
 
-    window->fonts->craft_small = load_font(window, "data/minecraft.ttf", 18);
+    window->fonts->craft_small = load_font(window, "data/minecraft.ttf", 25);
     window->fonts->craft = load_font(window, "data/minecraft.ttf", 30);
     window->fonts->craft_large = load_font(window, "data/minecraft.ttf", 37);
 

@@ -95,10 +95,10 @@ void render_stars(struct window *window)
         if (return_code == 1)
         {
             SDL_SetRenderDrawColor(window->renderer,
-                                   212 * rp.opacity / OPACITY_MAX,
-                                   212 * rp.opacity / OPACITY_MAX,
-                                   212 * rp.opacity / OPACITY_MAX,
-                                   212 * rp.opacity / OPACITY_MAX);
+                                   220 * rp.opacity / OPACITY_MAX,
+                                   220 * rp.opacity / OPACITY_MAX,
+                                   220 * rp.opacity / OPACITY_MAX,
+                                   220 * rp.opacity / OPACITY_MAX);
 
             if (rp.size > 1)
             {
