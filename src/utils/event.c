@@ -299,7 +299,7 @@ int init_controller(struct input *in, unsigned num_controller, Sint32 which)
     if (!in->c[num_controller].controller)
         return 0;
 
-    in->c[num_controller].name = SDL_GameControllerName(in->c[num_controller].controller);
+    in->c[num_controller].name = (char *) SDL_GameControllerName(in->c[num_controller].controller);
     SDL_Joystick *temp = SDL_GameControllerGetJoystick(in->c[num_controller].controller);
 
     // Get instance ID

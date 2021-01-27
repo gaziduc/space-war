@@ -89,7 +89,6 @@ AMMO     999+
 NETWORK
 KEYBOARD
 MOUSE
-CONTROLLER
 Enter the key for %s...
 Current key: %s
 CONTINUE

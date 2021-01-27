@@ -396,7 +396,6 @@ enum texts
     NETWORK,
     KEYBOARD_TXT,
     MOUSE_TXT,
-    CONTROLLER_TXT,
     ENTER_KEY,
     CURRENT_KEY,
     CONTINUE,
