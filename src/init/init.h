@@ -102,6 +102,7 @@ struct controller
 {
     SDL_GameController *controller;
     Sint32 id;
+    char *name;
     char button[SDL_CONTROLLER_BUTTON_MAX];
     struct axis axis[SDL_CONTROLLER_AXIS_MAX];
     SDL_Haptic *haptic;
@@ -124,7 +125,8 @@ struct input
     char key[SDL_NUM_SCANCODES];
     SDL_Point mouse_pos;
     char mouse_button[5];
-    struct controller c;
+    unsigned num_controllers;
+    struct controller c[2];
     char text[8];
     char finger[MAX_NUM_FINGERS];
     enum input_type last_input_type;
@@ -243,6 +245,7 @@ struct player
     int animated_health_high;
     Uint32 last_shot_time;
     enum input_type input_type;
+    unsigned controller_num;
     int missile_around;
 };
 

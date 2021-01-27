@@ -16,7 +16,7 @@ int handle_play_event(struct window *window);
 
 void handle_select_arrow_event(struct window *window, unsigned *selected, unsigned max, SDL_Rect areas[]);
 
-void init_controller(struct input *in, Sint32 which);
+int init_controller(struct input *in, unsigned num_controller, Sint32 which);
 
 
 #endif /* !INPUT_H */

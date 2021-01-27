@@ -68,8 +68,8 @@ Video:
 Fullscreen: %s
 Resolution: %dx%d %s
 Inputs:
-P1 Input: %s
-P2 Input: %s
+P1: %s
+P2: %s
 Keyboard Controls...
 Mouse Sensitivity: %s
 Controller Force Feedback: %s

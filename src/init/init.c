@@ -243,16 +243,6 @@ struct window *init_all(void)
     // Init inputs
     window->in = xcalloc(1, sizeof(struct input), window->window, window->renderer);
 
-    // Init controller
-    for (int i = 0; i < SDL_NumJoysticks(); i++)
-    {
-        if (SDL_IsGameController(i))
-        {
-            init_controller(window->in, i);
-            break;
-        }
-    }
-
     // Init framerate manager
     window->fps = xmalloc(sizeof(FPSmanager), window->window, window->renderer);
     SDL_initFramerate(window->fps);

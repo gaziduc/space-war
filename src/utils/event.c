@@ -13,8 +13,9 @@ void update_events(struct input *in, struct window *window, int is_in_level)
     SDL_Event event;
 
     // Reset axis state
-    for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
-        in->c.axis[i].state = 0;
+    for (unsigned controller_num = 0; controller_num < 2; controller_num++)
+        for (int i = 0; i < SDL_CONTROLLER_AXIS_MAX; i++)
+            in->c[controller_num].axis[i].state = 0;
 
     while (SDL_PollEvent(&event))
     {
@@ -51,50 +52,86 @@ void update_events(struct input *in, struct window *window, int is_in_level)
 
         // Controller events
         case SDL_CONTROLLERDEVICEADDED:
-            if (!in->c.controller)
+            if (SDL_IsGameController(event.cdevice.which) && in->num_controllers < 2)
             {
-                if (SDL_IsGameController(event.cdevice.which))
+                for (unsigned i = 0; i < 2; i++)
                 {
-                    init_controller(in, event.cdevice.which);
-                    in->last_input_type = CONTROLLER;
+                    if (!in->c[i].controller)
+                    {
+                        init_controller(in, i, event.cdevice.which);
+                        in->last_input_type = CONTROLLER;
+
+                        in->num_controllers++;
+                        break;
+                    }
                 }
             }
             break;
 
         case SDL_CONTROLLERDEVICEREMOVED:
-            if (event.cdevice.which == in->c.id)
+            for (unsigned i = 0; i < 2; i++)
             {
-                // Free haptic
-                if (in->c.haptic)
+                if (event.cdevice.which == in->c[i].id)
                 {
-                    SDL_HapticClose(in->c.haptic);
-                    in->c.haptic = NULL;
+                    // Free haptic
+                    if (in->c[i].haptic)
+                    {
+                        SDL_HapticClose(in->c[i].haptic);
+                        in->c[i].haptic = NULL;
+                    }
+
+                    SDL_GameControllerClose(in->c[i].controller);
+                    in->c[i].controller = NULL;
+                    in->c[i].name = NULL;
+
+                    in->last_input_type = KEYBOARD;
+
+                    in->num_controllers--;
+                    break;
                 }
-
-                SDL_GameControllerClose(in->c.controller);
-                in->c.controller = NULL;
-
-                in->last_input_type = KEYBOARD;
             }
             break;
 
         case SDL_CONTROLLERBUTTONDOWN:
-            in->c.button[event.cbutton.button] = 1;
+            for (unsigned i = 0; i < 2; i++)
+            {
+                if (event.cdevice.which == in->c[i].id)
+                {
+                    in->c[i].button[event.cbutton.button] = 1;
+                    break;
+                }
+            }
+
             in->last_input_type = CONTROLLER;
             break;
 
         case SDL_CONTROLLERBUTTONUP:
-            in->c.button[event.cbutton.button] = 0;
+            for (unsigned i = 0; i < 2; i++)
+            {
+                if (event.cdevice.which == in->c[i].id)
+                {
+                    in->c[i].button[event.cbutton.button] = 0;
+                    break;
+                }
+            }
+
             break;
 
         case SDL_CONTROLLERAXISMOTION:
-            // For menus
-            if (abs(event.caxis.value) >= DEAD_ZONE
-                && abs(in->c.axis[event.caxis.axis].value) < DEAD_ZONE)
-                in->c.axis[event.caxis.axis].state = 1;
+            for (unsigned i = 0; i < 2; i++)
+            {
+                if (event.cdevice.which == in->c[i].id)
+                {
+                    // For menus
+                    if (abs(event.caxis.value) >= DEAD_ZONE
+                        && abs(in->c[i].axis[event.caxis.axis].value) < DEAD_ZONE)
+                        in->c[i].axis[event.caxis.axis].state = 1;
 
-            in->c.axis[event.caxis.axis].value = event.caxis.value;
-            in->last_input_type = CONTROLLER;
+                    in->c[i].axis[event.caxis.axis].value = event.caxis.value;
+                    in->last_input_type = CONTROLLER;
+                    break;
+                }
+            }
             break;
 
         // Handling window event to prevent bug on Windows
@@ -144,12 +181,14 @@ void handle_quit_event(struct window *window, int is_in_level)
 int handle_escape_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_ESCAPE]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_B]
+        || window->in->c[0].button[SDL_CONTROLLER_BUTTON_B]
+        || window->in->c[1].button[SDL_CONTROLLER_BUTTON_B]
         || window->in->mouse_button[SDL_BUTTON_X1]
         || window->in->key[SDL_SCANCODE_AC_BACK]) // Android back button
     {
         window->in->key[SDL_SCANCODE_ESCAPE] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_B] = 0;
+        window->in->c[0].button[SDL_CONTROLLER_BUTTON_B] = 0;
+        window->in->c[1].button[SDL_CONTROLLER_BUTTON_B] = 0;
         window->in->mouse_button[SDL_BUTTON_X1] = 0;
         window->in->key[SDL_SCANCODE_AC_BACK] = 0;
 
@@ -164,12 +203,14 @@ int handle_play_event(struct window *window)
 {
     if (window->in->key[SDL_SCANCODE_RETURN]
         || window->in->key[SDL_SCANCODE_KP_ENTER]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_A]
+        || window->in->c[0].button[SDL_CONTROLLER_BUTTON_A]
+        || window->in->c[1].button[SDL_CONTROLLER_BUTTON_A]
         || window->in->mouse_button[SDL_BUTTON_LEFT])
     {
         window->in->key[SDL_SCANCODE_RETURN] = 0;
         window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_A] = 0;
+        window->in->c[0].button[SDL_CONTROLLER_BUTTON_A] = 0;
+        window->in->c[1].button[SDL_CONTROLLER_BUTTON_A] = 0;
         window->in->mouse_button[SDL_BUTTON_LEFT] = 0;
 
         Mix_PlayChannel(-1, window->sounds->play, 0);
@@ -186,12 +227,16 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     /* Keyboard and controller */
     // Up
     if (window->in->key[SDL_SCANCODE_UP]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP]
-        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
+        || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_UP]
+        || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_UP]
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
+            && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].state)
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
+            && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].state))
     {
         window->in->key[SDL_SCANCODE_UP] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
+        window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
+        window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_UP] = 0;
 
         if (*selected > 1)
         {
@@ -207,12 +252,16 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
 
     // Down
     if (window->in->key[SDL_SCANCODE_DOWN]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
-        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].state))
+        || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
+        || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
+            && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].state)
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
+            && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].state))
     {
         window->in->key[SDL_SCANCODE_DOWN] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
+        window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
+        window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_DOWN] = 0;
 
         if (*selected < max)
         {
@@ -242,18 +291,26 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
 }
 
 
-void init_controller(struct input *in, Sint32 which)
+int init_controller(struct input *in, unsigned num_controller, Sint32 which)
 {
-    in->c.controller = SDL_GameControllerOpen(which);
-    SDL_Joystick *temp = SDL_GameControllerGetJoystick(in->c.controller);
+    in->c[num_controller].controller = SDL_GameControllerOpen(which);
+
+    // Error handling
+    if (!in->c[num_controller].controller)
+        return 0;
+
+    in->c[num_controller].name = SDL_GameControllerName(in->c[num_controller].controller);
+    SDL_Joystick *temp = SDL_GameControllerGetJoystick(in->c[num_controller].controller);
 
     // Get instance ID
-    in->c.id = SDL_JoystickInstanceID(temp);
+    in->c[num_controller].id = SDL_JoystickInstanceID(temp);
 
     // Get force feedback
-    in->c.haptic = SDL_HapticOpenFromJoystick(temp);
-    if (in->c.haptic)
-        SDL_HapticRumbleInit(in->c.haptic);
+    in->c[num_controller].haptic = SDL_HapticOpenFromJoystick(temp);
+    if (in->c[num_controller].haptic)
+        SDL_HapticRumbleInit(in->c[num_controller].haptic);
+
+    return 1;
 }
 
 

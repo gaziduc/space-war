@@ -66,8 +66,7 @@ void hurt(struct window *window, struct player *player)
         set_shake_effect(window);
 
         // force feedback
-        if (window->settings->is_force_feedback && window->in->c.haptic)
-            SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
+        force_feedback(window, player, 0.25, 250);
     }
 }
 
@@ -220,8 +219,7 @@ static void check_collisions_list(struct window *window, struct player *player,
                 window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
 
                 // Force feedback
-                if (window->settings->is_force_feedback && window->in->c.haptic)
-                    SDL_HapticRumblePlay(window->in->c.haptic, 0.5, 500);
+                force_feedback(window, player, 0.5, 500);
             }
             else /* if (type == BOSS_LIST) */
             {
@@ -237,8 +235,7 @@ static void check_collisions_list(struct window *window, struct player *player,
                 set_shake_effect(window);
 
                 // Force feedback
-                if (window->settings->is_force_feedback && window->in->c.haptic)
-                    SDL_HapticRumblePlay(window->in->c.haptic, 0.75, 750);
+                force_feedback(window, player, 0.75, 750);
             }
         }
 
@@ -289,9 +286,8 @@ static void check_collisions_list(struct window *window, struct player *player,
                     // Set shake effect
                     set_shake_effect(window);
 
-                    // force feedback
-                    if (window->settings->is_force_feedback && window->in->c.haptic)
-                        SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
+                    // Force feedback
+                    force_feedback(window, player, 0.25, 250);
                 }
             }
             else
@@ -327,8 +323,7 @@ void check_collisions_objects(struct window *window, struct player *player)
                 Mix_PlayChannel(-1, window->sounds->power_up, 0);
 
                 // force feedback
-                if (window->settings->is_force_feedback && window->in->c.haptic)
-                    SDL_HapticRumblePlay(window->in->c.haptic, 0.25, 250);
+                force_feedback(window, player, 0.25, 250);
 
 
                 switch (temp->type)

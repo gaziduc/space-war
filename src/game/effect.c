@@ -19,3 +19,11 @@ void set_shake_effect(struct window *window)
     window->shake.y = (rand() % 3) + 3;
 }
 
+
+void force_feedback(struct window *window, struct player *player, float strength, Uint32 length)
+{
+    if (player->input_type == CONTROLLER
+        && window->settings->is_force_feedback
+        && window->in->c[player->controller_num].haptic)
+        SDL_HapticRumblePlay(window->in->c[player->controller_num].haptic, strength, length);
+}

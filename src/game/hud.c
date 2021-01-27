@@ -173,10 +173,12 @@ void render_hud(struct window *window)
     for (unsigned i = 0; i < window->num_players; i++)
     {
         char s[32] = { 0 };
+        char temp[32] = { 0 };
+        sprintf(temp, "CONTR. %d", window->player[i].controller_num + 1);
         sprintf(s, "P%d: %s", i + 1, window->is_lan && i == 1 ? window->txt[NETWORK]
                                      : window->player[i].input_type == KEYBOARD ? window->txt[KEYBOARD_TXT]
                                      : window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT]
-                                     : window->txt[CONTROLLER_TXT]);
+                                     : temp);
 
         render_text(window, window->fonts->craft_small, s, i == 0 ? blue : red, 20 + i * 220, 15);
 

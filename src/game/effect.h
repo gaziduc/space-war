@@ -9,4 +9,6 @@ void render_touched_effect(struct window *window);
 
 void set_shake_effect(struct window *window);
 
+void force_feedback(struct window *window, struct player *player, float strength, Uint32 length);
+
 #endif // EFFECT_H

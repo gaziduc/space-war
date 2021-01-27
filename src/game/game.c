@@ -35,31 +35,31 @@ static void handle_arrow_event(struct window *window, struct player *player)
     {
         case CONTROLLER:
             // Up
-            if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_UP])
+            if (window->in->c[player->controller_num].button[SDL_CONTROLLER_BUTTON_DPAD_UP])
                 player->pos.y -= SHIP_SPEED;
-            else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE)
-                player->pos.y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32768;
+            else if (window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE)
+                player->pos.y += window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32768;
 
 
             // Down
-            if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
+            if (window->in->c[player->controller_num].button[SDL_CONTROLLER_BUTTON_DPAD_DOWN])
                 player->pos.y += SHIP_SPEED;
-            else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE)
-                player->pos.y += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32767;
+            else if (window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE)
+                player->pos.y += window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTY].value * SHIP_SPEED / 32767;
 
 
             // Left
-            if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT])
+            if (window->in->c[player->controller_num].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT])
                 player->pos.x -= SHIP_SPEED;
-            else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE)
-                player->pos.x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32768;
+            else if (window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE)
+                player->pos.x += window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32768;
 
 
             // Right
-            if (window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT])
+            if (window->in->c[player->controller_num].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT])
                 player->pos.x += SHIP_SPEED;
-            else if (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE)
-                player->pos.x += window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32767;
+            else if (window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE)
+                player->pos.x += window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_LEFTX].value * SHIP_SPEED / 32767;
 
             break;
 
@@ -150,7 +150,7 @@ static int handle_shot_event(struct window *window, struct player *player)
         switch (player->input_type)
         {
             case CONTROLLER:
-                if (window->in->c.axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE)
+                if (window->in->c[player->controller_num].axis[SDL_CONTROLLER_AXIS_TRIGGERRIGHT].value >= DEAD_ZONE)
                     return try_to_shoot(window, player);
                 break;
             case KEYBOARD:
@@ -178,9 +178,9 @@ static int handle_bomb_event(struct window *window, struct player *player)
         switch (player->input_type)
         {
             case CONTROLLER:
-                if (window->in->c.button[SDL_CONTROLLER_BUTTON_X])
+                if (window->in->c[player->controller_num].button[SDL_CONTROLLER_BUTTON_X])
                 {
-                    window->in->c.button[SDL_CONTROLLER_BUTTON_X] = 0;
+                    window->in->c[player->controller_num].button[SDL_CONTROLLER_BUTTON_X] = 0;
 
                     // Bomb: erase all visible enemies
                     bomb(window, 1);

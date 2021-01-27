@@ -28,9 +28,13 @@ static void populate_settings_texts(struct window *window, char s_list[NUM_SETTI
     strcpy(s_list[INPUTS - 1], window->txt[INPUTS_TXT]);
 
     for (unsigned i = 0; i < MAX_PLAYERS; i++)
+    {
+        char temp[128] = { 0 };
+        sprintf(temp, "%s [C.%d]", window->in->c[window->player[i].controller_num].name, window->player[i].controller_num + 1);
         sprintf(s_list[7 + i], window->txt[P1_INPUT_S + i], window->player[i].input_type == KEYBOARD ? window->txt[KEYBOARD_TXT] :
                                            window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT] :
-                                           window->txt[CONTROLLER_TXT]);
+                                           temp);
+    }
 
     strcpy(s_list[9], window->txt[KEYBOARD_CONTROLS]);
     sprintf(s_list[10], window->txt[MOUSE_SENSITIVITY_S], window->settings->mouse_sensitivity == 0 ? window->txt[LOW_X1] : window->txt[HIGH_X2]);
@@ -59,8 +63,8 @@ static int has_setting_x_right_arrow(struct window *window, int setting_num)
     if ((setting_num == 2 && window->settings->music_volume < MIX_MAX_VOLUME)
         || (setting_num == 3 && window->settings->sfx_volume < MIX_MAX_VOLUME)
         || (setting_num == 6 && window->resolution_index < NUM_RESOLUTIONS - 1)
-        || (setting_num == 8 && window->player[0].input_type < NUM_INPUT_TYPE - 1)
-        || (setting_num == 9 && window->player[1].input_type < NUM_INPUT_TYPE - 1))
+        || (setting_num == 8 && (window->player[0].input_type < CONTROLLER || window->player[0].controller_num == 0))
+        || (setting_num == 9 && (window->player[1].input_type < CONTROLLER || window->player[1].controller_num == 0)))
     {
         return 1;
     }
@@ -102,7 +106,7 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
         }
         else
         {
-            int x = i != 13 ? 450 : 150;
+            int x = i != 13 ? 430 : 150;
             int y = i != 13 ? 280 + (setting_index - 1) * 55 + (i - setting_index - 1) * 30 : 900;
             int x_offset = get_setting_x_offset(window, i);
 
@@ -157,10 +161,10 @@ void write_settings(struct window *window)
     add_string(window, str, "\n");
     add_string(window, str, "[inputs]\n");
 
-    sprintf(buffer, "input_type_player_1=%d\n", window->player[0].input_type);
+    sprintf(buffer, "input_type_player_1=%d,%d\n", window->player[0].input_type, window->player[0].controller_num);
     add_string(window, str, buffer);
 
-    sprintf(buffer, "input_type_player_2=%d\n", window->player[1].input_type);
+    sprintf(buffer, "input_type_player_2=%d,%d\n", window->player[1].input_type, window->player[1].controller_num);
     add_string(window, str, buffer);
 
     sprintf(buffer, "mouse_sensitivity=%d\n", window->settings->mouse_sensitivity);
@@ -275,10 +279,10 @@ void load_settings(struct window *window)
     sscanf(str->ptr + index, "[inputs]\n");
     go_to_next_line(&index, str->ptr);
 
-    sscanf(str->ptr + index, "input_type_player_1=%d\n", (int *) &window->player[0].input_type);
+    sscanf(str->ptr + index, "input_type_player_1=%d,%d\n", (int *) &window->player[0].input_type, (int *) &window->player[0].controller_num);
     go_to_next_line(&index, str->ptr);
 
-    sscanf(str->ptr + index, "input_type_player_2=%d\n", (int *) &window->player[1].input_type);
+    sscanf(str->ptr + index, "input_type_player_2=%d,%d\n", (int *) &window->player[1].input_type, (int *) &window->player[1].controller_num);
     go_to_next_line(&index, str->ptr);
 
     sscanf(str->ptr + index, "mouse_sensitivity=%d\n", &window->settings->mouse_sensitivity);
@@ -329,12 +333,15 @@ void load_settings(struct window *window)
 static int handle_arrow_event(struct window *window, const int selected_item, Uint32 *begin, SDL_Rect *area)
 {
     if (window->in->key[SDL_SCANCODE_LEFT]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
-        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+        || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+            && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].state)
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+            && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].state))
     {
         window->in->key[SDL_SCANCODE_LEFT] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = 0;
+        window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = 0;
+        window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] = 0;
 
         switch (selected_item)
         {
@@ -377,13 +384,17 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 break;
 
             case 5:
-                if (window->player[0].input_type > 0)
+                if (window->player[0].input_type == CONTROLLER && window->player[0].controller_num > 0)
+                    window->player[0].controller_num--;
+                else if (window->player[0].input_type > 0)
                     window->player[0].input_type--;
                 write_settings(window);
                 break;
 
             case 6:
-                if (window->player[1].input_type > 0)
+                if (window->player[1].input_type == CONTROLLER && window->player[1].controller_num > 0)
+                    window->player[1].controller_num--;
+                else if (window->player[1].input_type > 0)
                     window->player[1].input_type--;
                 write_settings(window);
                 break;
@@ -395,12 +406,14 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
 
     if (window->in->key[SDL_SCANCODE_RETURN]
         || window->in->key[SDL_SCANCODE_KP_ENTER]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_A]
+        || window->in->c[0].button[SDL_CONTROLLER_BUTTON_A]
+        || window->in->c[1].button[SDL_CONTROLLER_BUTTON_A]
         || window->in->mouse_button[SDL_BUTTON_LEFT])
     {
         window->in->key[SDL_SCANCODE_RETURN] = 0;
         window->in->key[SDL_SCANCODE_KP_ENTER] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_A] = 0;
+        window->in->c[0].button[SDL_CONTROLLER_BUTTON_A] = 0;
+        window->in->c[1].button[SDL_CONTROLLER_BUTTON_A] = 0;
         window->in->mouse_button[SDL_BUTTON_LEFT] = 0;
 
         switch (selected_item)
@@ -450,12 +463,15 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
     }
 
     if (window->in->key[SDL_SCANCODE_RIGHT]
-        || window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
-        || (window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
-            && window->in->c.axis[SDL_CONTROLLER_AXIS_LEFTX].state))
+        || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+            && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].state)
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+            && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].state))
     {
         window->in->key[SDL_SCANCODE_RIGHT] = 0;
-        window->in->c.button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
+        window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
+        window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] = 0;
 
         switch (selected_item)
         {
@@ -503,15 +519,25 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 break;
 
             case 5:
-                if (window->player[0].input_type < NUM_INPUT_TYPE - 1)
+                if (window->player[0].input_type == CONTROLLER && window->player[0].controller_num < 1)
+                    window->player[0].controller_num++;
+                else if (window->player[0].input_type < CONTROLLER)
+                {
                     window->player[0].input_type++;
+                    window->player[0].controller_num = 0;
+                }
 
                 write_settings(window);
                 break;
 
             case 6:
-                if (window->player[1].input_type < NUM_INPUT_TYPE - 1)
+               if (window->player[1].input_type == CONTROLLER && window->player[1].controller_num < 1)
+                    window->player[1].controller_num++;
+                else if (window->player[1].input_type < CONTROLLER)
+                {
                     window->player[1].input_type++;
+                    window->player[1].controller_num = 0;
+                }
 
                 write_settings(window);
                 break;
@@ -549,7 +575,7 @@ void settings(struct window *window)
             if (i == AUDIO || i == VIDEO || i == INPUTS)
                 continue;
 
-            areas[setting_index].x = i != 13 ? 450 : 150;
+            areas[setting_index].x = i != 13 ? 430 : 150;
             areas[setting_index].y = i != 13 ? 280 + setting_index * 55 + (i - setting_index - 2) * 30 : 900;
             TTF_SizeText(window->fonts->zero4b_30_extra_small, s_list[i - 1], &areas[setting_index].w, &areas[setting_index].h);
             if (i != 13)
