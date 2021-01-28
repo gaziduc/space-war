@@ -44,9 +44,9 @@ void render_trophy_pop_up(struct window *window)
 
     SDL_RenderCopy(window->renderer, window->img->trophy, NULL, &pos_trophy);
 
-    render_text(window, window->fonts->craft_large, window->txt[TROPHY_1_TITLE + window->trophy.id[0] * 3], white, DEFAULT_W - window->trophy.offset_x + 140, 30);
-    render_text(window, window->fonts->craft, window->txt[TROPHY_1_LINE_1 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 75);
-    render_text(window, window->fonts->craft, window->txt[TROPHY_1_LINE_2 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 105);
+    render_text(window, window->fonts->craft_large, window->txt[TROPHY_1_TITLE + window->trophy.id[0] * 3], white, DEFAULT_W - window->trophy.offset_x + 140, 35);
+    render_text(window, window->fonts->craft, window->txt[TROPHY_1_LINE_1 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 80);
+    render_text(window, window->fonts->craft, window->txt[TROPHY_1_LINE_2 + window->trophy.id[0] * 3], blue, DEFAULT_W - window->trophy.offset_x + 140, 110);
 
     if (window->trophy.is_unlocking_fade_in)
     {
