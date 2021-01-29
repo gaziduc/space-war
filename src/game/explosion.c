@@ -53,11 +53,11 @@ void move_explosions(struct window *window)
 
     int w = 0;
     int h = 0;
-    if (temp)
-        SDL_QueryTexture(window->img->explosion[temp->num_explosion], NULL, NULL, &w, &h);
 
     while (temp)
     {
+        SDL_QueryTexture(window->img->explosion[temp->num_explosion], NULL, NULL, &w, &h);
+
         // Increment explosion animation tile
         temp->pos_src.x += temp->pos_src.w;
         if (temp->pos_src.x >= w)
