@@ -25,7 +25,7 @@ void render_loading_screen(struct window *window)
 
     static float progress = 0;
 
-    progress += 2.9;
+    progress += 2.86;
 
     if (time - last_time >= 17)
     {
