@@ -20,3 +20,11 @@ space-war-debug.exe
 space-war.cbp
 space-war.depend
 space-war.layout
+ALL_BUILD.vcxproj
+ALL_BUILD.vcxproj.filters
+space-war.sln
+space-war.vcxproj
+space-war.vcxproj.filters
+ZERO_CHECK.vcxproj
+ZERO_CHECK.vcxproj.filters
+icon/res.aps
