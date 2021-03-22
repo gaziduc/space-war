@@ -16,7 +16,7 @@ save.bin
 /obj
 space-war.exe
 space-war-debug.exe
-*.dll
+/*.dll
 space-war.cbp
 space-war.depend
 space-war.layout

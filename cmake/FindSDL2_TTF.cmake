@@ -88,12 +88,12 @@
 # (To distribute this file outside of CMake, substitute the full
 # License text for the above reference.)
 
-FIND_PATH(SDL2_TTF_INCLUDE_DIR SDL_ttf.h
+FIND_PATH(SDL2_TTF_INCLUDE_DIR SDL2/SDL_ttf.h
 	HINTS
 	${SDL2}
 	$ENV{SDL2}
 	$ENV{SDL2_TTF}
-	PATH_SUFFIXES include/SDL2 include SDL2
+	PATH_SUFFIXES include SDL2
 	i686-w64-mingw32/include/SDL2
 	PATHS
 	~/Library/Frameworks
@@ -104,6 +104,7 @@ FIND_PATH(SDL2_TTF_INCLUDE_DIR SDL_ttf.h
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
+	${PROJECT_SOURCE_DIR}/dep/win64-mingw/SDL2_ttf/x86_64-w64-mingw32
 )
 
 # Lookup the 64 bit libs on x64
@@ -122,6 +123,7 @@ IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		/opt/local
 		/opt/csw
 		/opt
+		${PROJECT_SOURCE_DIR}/dep/win64-mingw/SDL2_ttf/x86_64-w64-mingw32
 	)
 # On 32bit build find the 32bit libs
 ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -139,6 +141,7 @@ ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		/opt/local
 		/opt/csw
 		/opt
+		${PROJECT_SOURCE_DIR}/dep/win64-mingw/SDL2_ttf/i686-w64-mingw32
 	)
 ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 

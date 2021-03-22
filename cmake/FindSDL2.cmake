@@ -74,12 +74,13 @@ SET(SDL2_SEARCH_PATHS
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
+	${PROJECT_SOURCE_DIR}/dep/win64-mingw/SDL2/x86_64-w64-mingw32
 )
 
-FIND_PATH(SDL2_INCLUDE_DIR SDL.h
+FIND_PATH(SDL2_INCLUDE_DIR SDL2/SDL.h
 	HINTS
 	$ENV{SDL2DIR}
-	PATH_SUFFIXES include/SDL2 include
+	PATH_SUFFIXES include
 	PATHS ${SDL2_SEARCH_PATHS}
 )
 
