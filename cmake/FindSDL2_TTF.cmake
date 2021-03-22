@@ -104,7 +104,7 @@ FIND_PATH(SDL2_TTF_INCLUDE_DIR SDL2/SDL_ttf.h
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
 	/opt
-	${PROJECT_SOURCE_DIR}/dep/win64-mingw/SDL2_ttf/x86_64-w64-mingw32
+	${DEPS_DIR}/SDL2_ttf/x64
 )
 
 # Lookup the 64 bit libs on x64
@@ -123,7 +123,7 @@ IF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		/opt/local
 		/opt/csw
 		/opt
-		${PROJECT_SOURCE_DIR}/dep/win64-mingw/SDL2_ttf/x86_64-w64-mingw32
+		${DEPS_DIR}/SDL2_ttf/x64
 	)
 # On 32bit build find the 32bit libs
 ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -141,7 +141,7 @@ ELSE(CMAKE_SIZEOF_VOID_P EQUAL 8)
 		/opt/local
 		/opt/csw
 		/opt
-		${PROJECT_SOURCE_DIR}/dep/win64-mingw/SDL2_ttf/i686-w64-mingw32
+		${DEPS_DIR}/SDL2_ttf/x86
 	)
 ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
