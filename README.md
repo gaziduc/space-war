@@ -24,10 +24,20 @@ libcurl
 ## Play only
 Go to the web page: https://gamejolt.com/games/space-war/482884
 ## Download, build and play:
+### Clone
 ```shell
 git clone https://github.com/gaziduc/space-war.git
 cd space-war
-cmake .
-make
-./space-war
+```
+### Generate project
+```shell
+cmake . # or use cmake-gui on Windows
+```
+### Build
+```shell
+make # Or launch the newly created Visual Studio solution / Codeblocks project on Windows
+```
+### Launch
+```shell
+./space-war # or double-click space-war.exe on Windows
 ```
