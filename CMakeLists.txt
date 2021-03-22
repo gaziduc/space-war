@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.13)
 project(space-war C)
 
 # source files
-file(GLOB_RECURSE SRC "src/*.c")
+file(GLOB_RECURSE SRC "src/*.c" "src/*.h")
 
 # Warning: put this before find_package as they use DEPS_DIR on Windows
 if (WIN32)
