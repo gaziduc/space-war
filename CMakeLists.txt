@@ -1,8 +1,33 @@
 cmake_minimum_required(VERSION 3.13)
 project(space-war C)
 
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+
 # source files
 file(GLOB_RECURSE SRC "src/*.c" "src/*.h")
+
+if (MSVC)
+    foreach (FILE ${SRC}) 
+        # Get the directory of the source file
+        get_filename_component(PARENT_DIR "${FILE}" DIRECTORY)
+
+        # Remove common directory prefix to make the group
+        string(REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "" GROUP "${PARENT_DIR}")
+
+        # Make sure we are using windows slashes
+        string(REPLACE "/" "\\" GROUP "${GROUP}")
+
+        # Group into "Source Files" and "Header Files"
+        if ("${FILE}" MATCHES ".*\\.c")
+            set(GROUP "Source Files${GROUP}")
+        elseif ("${FILE}" MATCHES ".*\\.h")
+            set(GROUP "Header Files${GROUP}")
+        endif ()
+
+        source_group("${GROUP}" FILES "${FILE}")
+    endforeach ()
+endif ()
+
 
 # Warning: put this before find_package as they use DEPS_DIR on Windows
 if (WIN32)
