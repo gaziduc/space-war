@@ -6,7 +6,7 @@ Space War is a shoot'em up game where you pilot a spaceship and your goal is to 
 ## Prerequisites to play
 ### Hardware
 - **Screen resolution**: at least **1280 x 720 px** (= HD 720p), **1920 x 1080 px** recommended (= Full HD 1080p)
-- **RAM**: about **200 Mo** (in addition to what to OS consumes) is necessary to run the game normally.
+- **RAM**: about **200 Mo** (in addition to what the OS consumes) is necessary to run the game normally.
 - **Storage**: about **65 Mo** of available space
 
 ### Software
@@ -35,7 +35,7 @@ cmake . # or use cmake-gui on Windows
 ```
 ### Build
 ```shell
-make # Or launch the newly created Visual Studio solution / Codeblocks project on Windows
+make # or launch the newly created Visual Studio solution / Codeblocks project on Windows
 ```
 ### Launch
 ```shell
