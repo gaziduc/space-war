@@ -34,7 +34,7 @@ SDL_Texture *load_texture(const char *path, struct window *window)
 void frame_delay(FPSmanager *fps)
 {
 #ifndef __EMSCRIPTEN__
-    frame_delay(fps);
+    SDL_framerateDelay(fps);
 #else
     static Uint32 last_ticks = 0;
     Uint32 ticks = SDL_GetTicks();
