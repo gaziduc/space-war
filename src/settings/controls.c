@@ -99,7 +99,7 @@ void controls(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 
@@ -149,7 +149,7 @@ SDL_Scancode get_key(struct window *window, int selected_item)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 

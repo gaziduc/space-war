@@ -549,7 +549,7 @@ struct window
 
 void render_loading_screen(struct window *window);
 
-void load_music(struct window *window, const char *filename, int must_free);
+void load_music_and_play(struct window *window, const char *filename, int must_free);
 
 struct window *init_all(void);
 

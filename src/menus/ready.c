@@ -85,7 +85,7 @@ void waiting_screen(struct window *window, Uint32 start_mission_ticks)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 
@@ -149,7 +149,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
     return 0;

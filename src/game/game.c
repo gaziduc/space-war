@@ -401,20 +401,20 @@ static void load_correct_music(struct window *window, int mission_num, int is_ar
     if (is_arcade)
     {
         if (mission_num == 1)
-            load_music(window, "data/pirates.ogg", 1);
+            load_music_and_play(window, "data/pirates.ogg", 1);
         else if (mission_num == 4)
-            load_music(window, "data/battle.ogg", 1);
+            load_music_and_play(window, "data/battle.ogg", 1);
         else if (mission_num == 7)
-            load_music(window, "data/planet.ogg", 1);
+            load_music_and_play(window, "data/planet.ogg", 1);
     }
     else
     {
         if (mission_num < 4)
-            load_music(window, "data/pirates.ogg", 1);
+            load_music_and_play(window, "data/pirates.ogg", 1);
         else if (mission_num < 7)
-            load_music(window, "data/battle.ogg", 1);
+            load_music_and_play(window, "data/battle.ogg", 1);
         else
-            load_music(window, "data/planet.ogg", 1);
+            load_music_and_play(window, "data/planet.ogg", 1);
     }
 }
 
@@ -494,7 +494,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     free_background(window->stars);
                     free_vector(window->paths);
                     window->paths = NULL; // important, see free_all in free.c
-                    load_music(window, "data/endgame.ogg", 1);
+                    load_music_and_play(window, "data/endgame.ogg", 1);
                     return;
                 }
             }
@@ -575,7 +575,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             SDL_RenderPresent(window->renderer);
 
             // Wait a frame
-            SDL_framerateDelay(window->fps);
+            frame_delay(window->fps);
             framecount++;
         }
 
@@ -626,6 +626,6 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
     free_vector(window->paths);
     window->paths = NULL; // important, see free_all in free.c
-    load_music(window, "data/endgame.ogg", 1);
+    load_music_and_play(window, "data/endgame.ogg", 1);
 }
 

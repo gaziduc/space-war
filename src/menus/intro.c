@@ -53,7 +53,7 @@ void intro(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
 
@@ -84,7 +84,7 @@ void intro(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
 
@@ -117,7 +117,7 @@ void intro(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
     for (int i = 195; i >= 0; i -= 6)
@@ -145,11 +145,11 @@ void intro(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
 
-    load_music(window, "data/intro.ogg", 0);
+    load_music_and_play(window, "data/intro.ogg", 0);
 
 
     char screen[CREDITS_LINES][CREDITS_COLS] = { 0 };

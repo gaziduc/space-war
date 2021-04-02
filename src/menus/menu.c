@@ -125,7 +125,7 @@ void render_stars(struct window *window)
 
 void menu(struct window *window)
 {
-    load_music(window, "data/endgame.ogg", 1);
+    load_music_and_play(window, "data/endgame.ogg", 1);
 
     int escape = 0;
     unsigned selected_item = 0;
@@ -187,7 +187,7 @@ void menu(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 
@@ -274,6 +274,6 @@ void select_num_players(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }

@@ -113,9 +113,9 @@ static void load_textures(struct window *window)
     window->img = xmalloc(sizeof(struct textures), window->window, window->renderer);
 
     window->img->ship = load_texture_collision("data/ship.png", window);
-    window->img->shot[0] = load_texture_collision("data/shot0.bmp", window);
-    window->img->shot[1] = load_texture_collision("data/shot1.bmp", window);
-    window->img->shot[2] = load_texture_collision("data/shot2.bmp", window);
+    window->img->shot[0] = load_texture_collision("data/shot0.png", window);
+    window->img->shot[1] = load_texture_collision("data/shot1.png", window);
+    window->img->shot[2] = load_texture_collision("data/shot2.png", window);
     window->img->enemy = load_texture_collision("data/enemy.png", window);
     window->img->explosion[0] = load_texture("data/explosion0.png", window);
     window->img->explosion[1] = load_texture("data/explosion1.png", window);
@@ -133,7 +133,7 @@ static void load_textures(struct window *window)
     window->img->objects[SHIELD] = load_texture_collision("data/shield.png", window);
     window->img->objects[PLANET] = load_texture_collision("data/planet.png", window);
     window->img->objects[GALAXY] = load_texture_collision("data/galaxy.png", window);
-    window->img->objects[MISSILE_AROUND] = load_texture_collision("data/missile.bmp", window);
+    window->img->objects[MISSILE_AROUND] = load_texture_collision("data/missile.png", window);
     window->img->aura = load_texture("data/aura.png", window);
     window->img->asteroid = load_texture_collision("data/asteroid.png", window);
 
@@ -178,7 +178,7 @@ static void load_fonts(struct window *window)
     window->fonts->zero4b_30_extra_small = load_font(window, "data/04b_30.ttf", 40);
 }
 
-void load_music(struct window *window, const char *filename, int must_free)
+void load_music_and_play(struct window *window, const char *filename, int must_free)
 {
     if (must_free)
         Mix_FreeMusic(window->music);
@@ -207,7 +207,13 @@ static void load_sounds(struct window *window)
 struct window *init_all(void)
 {
     // Init SDL2
+    SDL_Log("-10");
+
+#ifndef __EMSCRIPTEN__
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0)
+#else
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) != 0)
+#endif
         error("Could not load SDL2", SDL_GetError(), NULL, NULL);
 
     // Create window and renderer
@@ -216,12 +222,15 @@ struct window *init_all(void)
     // Enable blending (alpha)
     SDL_SetRenderDrawBlendMode(window->renderer, SDL_BLENDMODE_BLEND);
 
+    SDL_Log("-9");
+
     // Window icon
     SDL_Surface *icon = SDL_LoadBMP("data/icon.bmp");
     if (!icon)
         error("Could not load surface", SDL_GetError(), window->window, window->renderer);
     SDL_SetWindowIcon(window->window, icon);
     SDL_FreeSurface(icon);
+    SDL_Log("-8");
 
     // Init SDL2_image
     int img_flags = IMG_INIT_PNG;
@@ -229,16 +238,21 @@ struct window *init_all(void)
     if ((img_initted & img_flags) != img_flags)
         error("Could not load SDL2_image", IMG_GetError(), window->window, window->renderer);
 
+    SDL_Log("-7");
+
     // Init SDL2_tff
     if (TTF_Init() == -1)
         error("Could not load SDL2_ttf", TTF_GetError(), window->window, window->renderer);
 
     load_fonts(window);
-
+    SDL_Log("-6");
     load_language_file(window, "data/en.txt");
+    SDL_Log("-5");
 
     // Load textures
     load_textures(window);
+
+    SDL_Log("-4");
 
     // Init inputs
     window->in = xcalloc(1, sizeof(struct input), window->window, window->renderer);
@@ -259,14 +273,22 @@ struct window *init_all(void)
 
     window->paths = NULL;
 
+    SDL_Log("-5");
+
+#ifndef __EMSCRIPTEN__
     // Init SDL2_mixer
     int mix_flags = MIX_INIT_OGG;
     int mix_initted = Mix_Init(mix_flags);
     if ((mix_initted & mix_flags) != mix_flags)
         error("Could not load SDL2_mixer", Mix_GetError(), window->window, window->renderer);
+#endif
+
+    SDL_Log("test");
 
     // Load music with volume settings
     Mix_AllocateChannels(32);
+
+    SDL_Log("1");
 
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
         error("Could not initialize SDL2_mixer", Mix_GetError(), window->window, window->renderer);
@@ -292,6 +314,8 @@ struct window *init_all(void)
 
     // Trophies
     window->trophy.id[0] = -1;
+
+    SDL_Log("2");
 
     return window;
 }

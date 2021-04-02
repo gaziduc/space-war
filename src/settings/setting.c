@@ -233,7 +233,12 @@ void load_settings(struct window *window)
         window->settings->sfx_volume = MIX_MAX_VOLUME / 2;
         window->settings->is_force_feedback = 1;
 
+#ifndef __EMSCRIPTEN__
         window->resolution_index = 0;
+#else
+        window->resolution_index = 1; // For performance on browsers => 1280x720 window
+#endif
+
         set_resolution_with_index(window);
 
         window->player[0].input_type = KEYBOARD;
@@ -602,6 +607,6 @@ void settings(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }

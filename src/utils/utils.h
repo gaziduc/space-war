@@ -4,10 +4,13 @@
 #include "init.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL2_framerate.h>
 
 #define POS_CENTERED -4200
 
 SDL_Texture *load_texture(const char *path, struct window *window);
+
+void frame_delay(FPSmanager *fps);
 
 struct collision_texture *get_texture_collision(SDL_Surface *surface, struct window *window);
 

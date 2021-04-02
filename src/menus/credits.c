@@ -58,7 +58,7 @@ static int render_screen(struct window *window, char screen[][CREDITS_COLS], int
     }
 
     SDL_RenderPresent(window->renderer);
-    SDL_framerateDelay(window->fps);
+    frame_delay(window->fps);
 
     return 0;
 }

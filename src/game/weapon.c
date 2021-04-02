@@ -280,7 +280,7 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 

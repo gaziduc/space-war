@@ -187,7 +187,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 
@@ -334,6 +334,6 @@ void select_level(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }

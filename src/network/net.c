@@ -117,7 +117,7 @@ void create_or_join(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 
@@ -212,7 +212,7 @@ static void accept_client(struct window *window, char *ip_str)
                         SDL_RenderPresent(window->renderer);
 
                         // Wait a frame
-                        SDL_framerateDelay(window->fps);
+                        frame_delay(window->fps);
                     }
 
 
@@ -247,7 +247,7 @@ static void accept_client(struct window *window, char *ip_str)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 
@@ -385,7 +385,7 @@ void create_server(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
     SDLNet_TCP_Close(window->server);
@@ -575,7 +575,7 @@ void connect_to_server(struct window *window)
         SDL_RenderPresent(window->renderer);
 
         // Wait a frame
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
     SDL_StopTextInput();
@@ -740,7 +740,7 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 free_background(window->stars);
                 free_vector(window->paths);
                 window->paths = NULL; // important, see free_all in free.c
-                load_music(window, "data/endgame.ogg", 1);
+                load_music_and_play(window, "data/endgame.ogg", 1);
                 return 0;
 
             case 'Z': // Quit online

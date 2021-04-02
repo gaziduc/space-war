@@ -5,6 +5,11 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL2_framerate.h>
+
+#ifdef __EMSCRIPTEN__
+#include <emscripten.h>
+#endif
 
 SDL_Texture *load_texture(const char *path, struct window *window)
 {
@@ -23,6 +28,24 @@ SDL_Texture *load_texture(const char *path, struct window *window)
     SDL_FreeSurface(surface);
 
     return texture;
+}
+
+
+void frame_delay(FPSmanager *fps)
+{
+#ifndef __EMSCRIPTEN__
+    frame_delay(fps);
+#else
+    static Uint32 last_ticks = 0;
+    Uint32 ticks = SDL_GetTicks();
+
+    Uint32 gap = ticks - last_ticks;
+
+    if (gap < 16)
+        emscripten_sleep(16 - gap);
+
+    last_ticks = SDL_GetTicks();
+#endif
 }
 
 
@@ -66,6 +89,8 @@ struct collision_texture *get_texture_collision(SDL_Surface *surface, struct win
 
 struct collision_texture *load_texture_collision(const char *path, struct window *window)
 {
+    SDL_Log(path);
+
     render_loading_screen(window);
 
     SDL_Surface *surface = IMG_Load(path);

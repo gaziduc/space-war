@@ -69,7 +69,7 @@ void help(struct window *window)
         render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 
@@ -163,7 +163,7 @@ void tutorial_help(struct window *window, int tutorial_num)
 
         SDL_RenderPresent(window->renderer);
 
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 }
 

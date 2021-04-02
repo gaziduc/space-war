@@ -142,7 +142,7 @@ void success(struct window *window, const int level_num, const int difficulty)
     areas[0].y = 810;
     TTF_SizeText(window->fonts->zero4b_30_small, window->txt[CONTINUE], &areas[0].w, &areas[0].h);
 
-    load_music(window, "data/success.ogg", 1);
+    load_music_and_play(window, "data/success.ogg", 1);
 
     while (!escape)
     {
@@ -180,7 +180,7 @@ void success(struct window *window, const int level_num, const int difficulty)
 
         SDL_RenderPresent(window->renderer);
 
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
     window->restart = 0;
@@ -259,7 +259,7 @@ int failure(struct window *window, int level_num)
         is_best = 1;
     }
 
-    load_music(window, "data/failure.ogg", 1);
+    load_music_and_play(window, "data/failure.ogg", 1);
 
     SDL_Rect areas[2];
     for (unsigned i = 0; i < 2; i++)
@@ -326,7 +326,7 @@ int failure(struct window *window, int level_num)
         render_controller_input_texts(window, begin, 0);
         SDL_RenderPresent(window->renderer);
 
-        SDL_framerateDelay(window->fps);
+        frame_delay(window->fps);
     }
 
     window->restart = 0;

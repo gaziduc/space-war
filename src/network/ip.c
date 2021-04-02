@@ -1,6 +1,9 @@
 #include "utils.h"
 #include "ip.h"
 #include <string.h>
+
+#ifndef __EMSCRIPTEN__
+
 #include <curl/curl.h>
 
 int init_string(struct string *str)
@@ -27,8 +30,12 @@ size_t write_function(void *ptr, size_t size, size_t nmemb, struct string *s)
     return size * nmemb;
 }
 
+#endif
+
 const char* get_online_ip(void)
 {
+
+#ifndef __EMSCRIPTEN__
     static char res[40] = { 0 };
 
     CURL *curl = curl_easy_init();
@@ -59,4 +66,7 @@ const char* get_online_ip(void)
     curl_easy_cleanup(curl);
 
     return res;
+#else
+    return "Not available...";
+#endif
 }
