@@ -1,15 +1,12 @@
 #include "utils.h"
 #include "init.h"
 #include "pixel.h"
+#include "framerate.h"
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL2_framerate.h>
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten.h>
-#endif
 
 SDL_Texture *load_texture(const char *path, struct window *window)
 {
@@ -33,19 +30,7 @@ SDL_Texture *load_texture(const char *path, struct window *window)
 
 void frame_delay(FPSmanager *fps)
 {
-#ifndef __EMSCRIPTEN__
-    frame_delay(fps);
-#else
-    static Uint32 last_ticks = 0;
-    Uint32 ticks = SDL_GetTicks();
-
-    Uint32 gap = ticks - last_ticks;
-
-    if (gap < 16)
-        emscripten_sleep(16 - gap);
-
-    last_ticks = SDL_GetTicks();
-#endif
+    framerateDelay(fps);
 }
 
 

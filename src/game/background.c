@@ -10,8 +10,14 @@ void init_background(struct window *window)
     window->stars = xmalloc(sizeof(struct point), window->window, window->renderer);
     window->stars->next = NULL;
 
+#ifndef __EMSCRIPTEN__ // Create less points if emcripten build
+    int num_points = DEFAULT_H * 4;
+#else
+    int num_points = DEFAULT_H / 2;
+#endif
+
     // Create some initial points
-    for (int c = 0; c < 4 * DEFAULT_H; c++)
+    for (int c = 0; c < num_points; c++)
     {
         struct point *new = xmalloc(sizeof(struct point), window->window, window->renderer);
 

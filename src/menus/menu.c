@@ -115,7 +115,13 @@ void render_stars(struct window *window)
         }
     }
 
-    for (int c = 0; c < rand() % 64; c++)
+#ifndef __EMSCRIPTEN__
+    int num_points = 64;
+#else
+    int num_points = 16;
+#endif
+
+    for (int c = 0; c < rand() % num_points; c++)
         new_point(window->universe, window);
 
     if (window->trophy.is_unlocking_trophies)
