@@ -207,8 +207,6 @@ static void load_sounds(struct window *window)
 struct window *init_all(void)
 {
     // Init SDL2
-    SDL_Log("-10");
-
 #ifndef __EMSCRIPTEN__
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER | SDL_INIT_HAPTIC) != 0)
 #else
@@ -222,15 +220,12 @@ struct window *init_all(void)
     // Enable blending (alpha)
     SDL_SetRenderDrawBlendMode(window->renderer, SDL_BLENDMODE_BLEND);
 
-    SDL_Log("-9");
-
     // Window icon
     SDL_Surface *icon = SDL_LoadBMP("data/icon.bmp");
     if (!icon)
         error("Could not load surface", SDL_GetError(), window->window, window->renderer);
     SDL_SetWindowIcon(window->window, icon);
     SDL_FreeSurface(icon);
-    SDL_Log("-8");
 
     // Init SDL2_image
     int img_flags = IMG_INIT_PNG;
@@ -238,21 +233,16 @@ struct window *init_all(void)
     if ((img_initted & img_flags) != img_flags)
         error("Could not load SDL2_image", IMG_GetError(), window->window, window->renderer);
 
-    SDL_Log("-7");
-
     // Init SDL2_tff
     if (TTF_Init() == -1)
         error("Could not load SDL2_ttf", TTF_GetError(), window->window, window->renderer);
 
     load_fonts(window);
-    SDL_Log("-6");
     load_language_file(window, "data/en.txt");
-    SDL_Log("-5");
 
     // Load textures
     load_textures(window);
 
-    SDL_Log("-4");
 
     // Init inputs
     window->in = xcalloc(1, sizeof(struct input), window->window, window->renderer);
@@ -273,8 +263,6 @@ struct window *init_all(void)
 
     window->paths = NULL;
 
-    SDL_Log("-5");
-
 #ifndef __EMSCRIPTEN__
     // Init SDL2_mixer
     int mix_flags = MIX_INIT_OGG;
@@ -283,12 +271,8 @@ struct window *init_all(void)
         error("Could not load SDL2_mixer", Mix_GetError(), window->window, window->renderer);
 #endif
 
-    SDL_Log("test");
-
     // Load music with volume settings
     Mix_AllocateChannels(32);
-
-    SDL_Log("1");
 
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 1024) == -1)
         error("Could not initialize SDL2_mixer", Mix_GetError(), window->window, window->renderer);
@@ -314,8 +298,6 @@ struct window *init_all(void)
 
     // Trophies
     window->trophy.id[0] = -1;
-
-    SDL_Log("2");
 
     return window;
 }

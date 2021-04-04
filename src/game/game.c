@@ -608,7 +608,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             if (is_arcade)
                 mission_num = 1;
 
-            escape = failure(window, is_arcade ? NUM_LEVELS + 1 : mission_num, difficulty);
+            escape = failure(window, is_arcade ? NUM_LEVELS + 1 : mission_num);
             if (!escape)
             {
                 retry = 1;

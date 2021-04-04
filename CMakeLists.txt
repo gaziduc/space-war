@@ -63,17 +63,17 @@ else ()
         find_package(CURL REQUIRED)
         include_directories(SRC ${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_GFX_INCLUDE_DIR} ${SDL2_NET_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
     endif ()
-endif ()
 
-# Warnings
-if (MSVC)
-    add_compile_options(/W3)
-else ()
-    add_compile_options(-Wall -Wextra -pedantic -std=c99 -O2)
+    # Warnings
+    if (MSVC)
+        add_compile_options(/W3)
+    else ()
+        add_compile_options(-Wall -Wextra -pedantic -std=c99 -O2)
+    endif ()
 endif ()
 
 # compile
-if (WIN32)
+ if (WIN32)
     add_executable(${PROJECT_NAME} ${SRC} icon/res.rc)
     # copy .dll files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_DIR}/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>/)

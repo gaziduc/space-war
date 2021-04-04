@@ -7,6 +7,7 @@
 #include "effect.h"
 #include "shot.h"
 #include "explosion.h"
+#include <unistd.h>
 
 static int collision_aabb(SDL_FRect *pos1, SDL_FRect *pos2)
 {
@@ -28,16 +29,16 @@ static int collision(SDL_FRect *pos1, struct collision_texture *t1,
 
     for (int i = pos1->x; i < pos1->x + pos1->w; i++)
     {
-        if (i < pos2->x || i >= pos2->x + pos2->w)
+        if (i < (int) pos2->x || i >= (int) (pos2->x + pos2->w))
             continue;
 
         for (int j = pos1->y; j < pos1->y + pos1->h; j++)
         {
-            if (j < pos2->y || j >= pos2->y + pos2->h)
+            if (j < (int) pos2->y || j >= (int) (pos2->y + pos2->h))
                 continue;
 
-            if (t1->collision[(int) ((j - pos1->y) * pos1->w + i - pos1->x)]
-                && t2->collision[(int) ((j - pos2->y) * pos2->w + i - pos2->x)])
+            if (t1->collision[(j - (int) pos1->y) * (int) pos1->w + i - (int) pos1->x]
+                && t2->collision[(j - (int) pos2->y) * (int) pos2->w + i - (int) pos2->x])
                 return 1;
         }
     }
@@ -307,9 +308,9 @@ void check_collisions_objects(struct window *window, struct player *player)
 
     while (temp)
     {
-        if (player->health > 0 &&
-            collision(&player->pos, window->img->ship,
-                      &temp->pos_dst, temp->texture.texture))
+        if (player->health > 0
+            && collision(&player->pos, window->img->ship,
+                         &temp->pos_dst, temp->texture.texture))
         {
             // If planet or galaxy, go to next
             if (temp->type == PLANET || temp->type == GALAXY)

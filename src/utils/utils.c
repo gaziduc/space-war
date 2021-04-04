@@ -74,8 +74,6 @@ struct collision_texture *get_texture_collision(SDL_Surface *surface, struct win
 
 struct collision_texture *load_texture_collision(const char *path, struct window *window)
 {
-    SDL_Log(path);
-
     render_loading_screen(window);
 
     SDL_Surface *surface = IMG_Load(path);
