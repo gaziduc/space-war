@@ -74,7 +74,7 @@ endif ()
 
 # compile
  if (WIN32)
-    add_executable(${PROJECT_NAME} ${SRC} icon/res.rc)
+    add_executable(${PROJECT_NAME} WIN32 ${SRC} icon/res.rc)
     # copy .dll files
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEPS_DIR}/bin $<TARGET_FILE_DIR:${PROJECT_NAME}>/)
 else ()
