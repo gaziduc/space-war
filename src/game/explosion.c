@@ -1,6 +1,7 @@
 #include "init.h"
 #include "explosion.h"
 #include "utils.h"
+#include "game.h"
 #include <SDL2/SDL.h>
 
 

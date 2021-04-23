@@ -9,7 +9,7 @@ void set_shot_pos(struct list *new, SDL_FRect *pos_dst, struct window *window)
     // Setting shot initial position
     int w = 0;
     int h = 0;
-    SDL_QueryTexture(window->img->ship->texture, NULL, NULL, &w, &h);
+    SDL_QueryTexture(window->img->ship[0]->texture, NULL, NULL, &w, &h);
     new->pos_dst.x = pos_dst->x + w;
     new->pos_dst.y = pos_dst->y + h / 2;
 

@@ -17,7 +17,8 @@ static void free_collision_texture(struct collision_texture *t)
 
 static void free_textures(struct window *window)
 {
-    free_collision_texture(window->img->ship);
+    for (int i = 0; i < 4; i++)
+        free_collision_texture(window->img->ship[i]);
 
     for (int i = 0; i < 3; i++)
         free_collision_texture(window->img->shot[i]);

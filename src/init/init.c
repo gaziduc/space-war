@@ -25,7 +25,7 @@ void render_loading_screen(struct window *window)
 
     static float progress = 0;
 
-    progress += 2.65;
+    progress += 2.45;
 
     if (time - last_time >= 17)
     {
@@ -112,7 +112,10 @@ static void load_textures(struct window *window)
 {
     window->img = xmalloc(sizeof(struct textures), window->window, window->renderer);
 
-    window->img->ship = load_texture_collision("data/ship.png", window);
+    window->img->ship[0] = load_texture_collision("data/ship0.png", window);
+    window->img->ship[1] = load_texture_collision("data/ship1.png", window);
+    window->img->ship[2] = load_texture_collision("data/ship2.png", window);
+    window->img->ship[3] = load_texture_collision("data/ship3.png", window);
     window->img->shot[0] = load_texture_collision("data/shot0.png", window);
     window->img->shot[1] = load_texture_collision("data/shot1.png", window);
     window->img->shot[2] = load_texture_collision("data/shot2.png", window);

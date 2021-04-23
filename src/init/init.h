@@ -68,7 +68,7 @@ enum trophies
 
 struct textures
 {
-    struct collision_texture *ship;
+    struct collision_texture *ship[4];
     struct collision_texture *shot[3];
     struct collision_texture *enemy;
     SDL_Texture *explosion[2];

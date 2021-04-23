@@ -274,7 +274,7 @@ static int respawn(struct window *window, struct player *player)
                 player->health = window->max_health;
 
                 player->respawn_frame = 0;
-                init_position_float(120, POS_CENTERED, window->img->ship->texture, &player->pos);
+                init_position_float(120, POS_CENTERED, window->img->ship[0]->texture, &player->pos);
 
                 player->lives--;
             }
@@ -382,13 +382,12 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 }
 
 
-static void render_ship(struct window *window, SDL_FRect *temp_pos)
+static void render_ship(struct window *window, SDL_FRect *temp_pos, Uint32 framecount)
 {
     SDL_Rect pos = { temp_pos->x, temp_pos->y, temp_pos->w, temp_pos->h };
-
     resize_pos_for_resolution(window, &pos);
 
-    SDL_RenderCopy(window->renderer, window->img->ship->texture, NULL, &pos);
+    SDL_RenderCopy(window->renderer, window->img->ship[(framecount % 20) / 5]->texture, NULL, &pos);
 }
 
 
@@ -445,7 +444,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             init_background(window);
 
             for (unsigned i = 0; i < window->num_players; i++)
-                init_position_float(120, POS_CENTERED, window->img->ship->texture, &window->player[i].pos);
+                init_position_float(120, POS_CENTERED, window->img->ship[0]->texture, &window->player[i].pos);
 
             retry = 0;
         }
@@ -553,7 +552,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 if (window->player[i].health > 0)
                 {
                     render_shield_aura(window, &window->player[i]);
-                    render_ship(window, &window->player[i].pos);
+                    render_ship(window, &window->player[i].pos, framecount);
                 }
             }
 

@@ -52,7 +52,7 @@ void hurt(struct window *window, struct player *player)
     if (SDL_GetTicks() - player->shield_time >= SHIELD_TIME)
     {
         // Add an explosion
-        list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
+        list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship[0]->texture,
                         NULL, 0, 0, 0);
 
         Mix_PlayChannel(-1, window->sounds->explosion, 0);
@@ -178,7 +178,7 @@ static void check_collisions_list(struct window *window, struct player *player,
         // If collision ship <-> enemy
         if (player->health > 0 && !deleted_enemy
             && collision(temp_pos, temp,
-                         &player->pos, window->img->ship))
+                         &player->pos, window->img->ship[0]))
         {
             window->num_enemies_collided++;
 
@@ -225,7 +225,7 @@ static void check_collisions_list(struct window *window, struct player *player,
             else /* if (type == BOSS_LIST) */
             {
                 // Add an explosion
-                list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship[0]->texture,
                                 NULL, 0, 0, 0);
                 Mix_PlayChannel(-1, window->sounds->explosion, 0);
 
@@ -261,7 +261,7 @@ static void check_collisions_list(struct window *window, struct player *player,
         {
             // If collision ship <-> enemy shot
             if (player->health > 0 &&
-                collision(&player->pos, window->img->ship,
+                collision(&player->pos, window->img->ship[0],
                           &temp_enemy_shot->pos_dst, window->img->enemy_shot))
             {
                 // Delete enemy shot
@@ -273,7 +273,7 @@ static void check_collisions_list(struct window *window, struct player *player,
                 if (SDL_GetTicks() - player->shield_time >= SHIELD_TIME)
                 {
                     // Add an explosion
-                    list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship->texture,
+                    list_push_front(&player->pos, window, EXPLOSION_LIST, window->img->ship[0]->texture,
                                     NULL, 0, 0, 0);
 
                     Mix_PlayChannel(-1, window->sounds->explosion, 0);
@@ -309,7 +309,7 @@ void check_collisions_objects(struct window *window, struct player *player)
     while (temp)
     {
         if (player->health > 0
-            && collision(&player->pos, window->img->ship,
+            && collision(&player->pos, window->img->ship[0],
                          &temp->pos_dst, temp->texture.texture))
         {
             // If planet or galaxy, go to next
