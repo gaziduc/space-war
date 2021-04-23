@@ -51,6 +51,11 @@ static void free_textures(struct window *window)
     SDL_DestroyTexture(window->img->trophy);
     SDL_DestroyTexture(window->img->bomb);
     SDL_DestroyTexture(window->img->padlock);
+    SDL_DestroyTexture(window->img->play_icon);
+    SDL_DestroyTexture(window->img->wheel);
+    SDL_DestroyTexture(window->img->help);
+    SDL_DestroyTexture(window->img->copyright);
+    SDL_DestroyTexture(window->img->exit_logo);
 
     free(window->img);
 }

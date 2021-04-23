@@ -25,7 +25,7 @@ void render_loading_screen(struct window *window)
 
     static float progress = 0;
 
-    progress += 2.86;
+    progress += 2.65;
 
     if (time - last_time >= 17)
     {
@@ -162,6 +162,11 @@ static void load_textures(struct window *window)
     window->img->controller = load_texture("data/controller.png", window);
     window->img->bomb = load_texture("data/bomb.png", window);
     window->img->padlock = load_texture("data/padlock.png", window);
+    window->img->play_icon = load_texture("data/play.png", window);
+    window->img->wheel = load_texture("data/wheel.png", window);
+    window->img->help = load_texture("data/help.png", window);
+    window->img->copyright = load_texture("data/copyright.png", window);
+    window->img->exit_logo = load_texture("data/exit.png", window);
 }
 
 

@@ -74,8 +74,50 @@ static void render_menu_texts(struct window *window, Uint32 begin, int selected_
     {
         render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                     selected_item != i ? blue : green,
-                    150, 370 + (i - 1) * 100);
+                    250, 370 + (i - 1) * 100);
     }
+
+    SDL_Rect pos = { .x = 150, .y = 365, .w = 0, .h = 0 };
+    SDL_QueryTexture(window->img->play_icon, NULL, NULL, &pos.w, &pos.h);
+    resize_pos_for_resolution(window, &pos);
+    SDL_SetTextureAlphaMod(window->img->play_icon, alpha);
+    SDL_RenderCopy(window->renderer, window->img->play_icon, NULL, &pos);
+
+    pos.x = 150;
+    pos.y = 465;
+    SDL_QueryTexture(window->img->wheel, NULL, NULL, &pos.w, &pos.h);
+    resize_pos_for_resolution(window, &pos);
+    SDL_SetTextureAlphaMod(window->img->wheel, alpha);
+    SDL_RenderCopy(window->renderer, window->img->wheel, NULL, &pos);
+
+    pos.x = 150;
+    pos.y = 565;
+    SDL_QueryTexture(window->img->help, NULL, NULL, &pos.w, &pos.h);
+    resize_pos_for_resolution(window, &pos);
+    SDL_SetTextureAlphaMod(window->img->help, alpha);
+    SDL_RenderCopy(window->renderer, window->img->help, NULL, &pos);
+
+    pos.x = 150;
+    pos.y = 665;
+    pos.w = 64;
+    pos.h = 64;
+    resize_pos_for_resolution(window, &pos);
+    SDL_SetTextureAlphaMod(window->img->trophy, alpha);
+    SDL_RenderCopy(window->renderer, window->img->trophy, NULL, &pos);
+
+    pos.x = 150;
+    pos.y = 765;
+    SDL_QueryTexture(window->img->copyright, NULL, NULL, &pos.w, &pos.h);
+    resize_pos_for_resolution(window, &pos);
+    SDL_SetTextureAlphaMod(window->img->copyright, alpha);
+    SDL_RenderCopy(window->renderer, window->img->copyright, NULL, &pos);
+
+    pos.x = 150;
+    pos.y = 865;
+    SDL_QueryTexture(window->img->exit_logo, NULL, NULL, &pos.w, &pos.h);
+    resize_pos_for_resolution(window, &pos);
+    SDL_SetTextureAlphaMod(window->img->exit_logo, alpha);
+    SDL_RenderCopy(window->renderer, window->img->exit_logo, NULL, &pos);
 
     render_text(window, window->fonts->zero4b_30_small, VERSION_INGAME, white, 1300, 870);
 }
@@ -143,6 +185,7 @@ void menu(struct window *window)
         areas[i].x = 150;
         areas[i].y = 370 + i * 100;
         TTF_SizeText(window->fonts->zero4b_30_small, window->txt[0 + i], &areas[i].w, &areas[i].h);
+        areas[i].w += 100;
     }
 
     while (!escape)

@@ -89,6 +89,11 @@ struct textures
     SDL_Texture *controller;
     SDL_Texture *bomb;
     SDL_Texture *padlock;
+    SDL_Texture *play_icon;
+    SDL_Texture *wheel;
+    SDL_Texture *help;
+    SDL_Texture *copyright;
+    SDL_Texture *exit_logo;
 };
 
 
