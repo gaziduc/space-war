@@ -233,11 +233,11 @@ void render_trail(struct window *window, struct player *player, SDL_FRect *pos,
     int count = window->fps->framecount % 10;
 
     if (count < 5)
-        pos_dst_trail.x = pos->x - pos_dst_trail.w / 2 + count * 2;
+        pos_dst_trail.x = pos->x - pos_dst_trail.w + 15 + count / 2;
     else
     {
         count -= 5;
-        pos_dst_trail.x = pos->x - pos_dst_trail.w / 2 + 10 - count * 2;
+        pos_dst_trail.x = pos->x - pos_dst_trail.w + 15 + 3 - count / 2;
     }
 
     pos_dst_trail.y = pos->y + pos->h / 2 - pos_dst_trail.h / 2;
@@ -246,11 +246,9 @@ void render_trail(struct window *window, struct player *player, SDL_FRect *pos,
 
     if (is_enemy)
     {
-        pos_dst_trail.x += pos->w;
+        pos_dst_trail.x = pos_dst_trail.x + pos->w + 50;
         flip |= SDL_FLIP_HORIZONTAL;
     }
-    else
-        pos_dst_trail.x -= 5;
 
     resize_pos_for_resolution(window, &pos_dst_trail);
 
