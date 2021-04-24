@@ -544,7 +544,6 @@ void play_game(struct window *window, int mission_num, int difficulty)
             render_post_bg_objects(window);
             for (unsigned i = 0; i < window->num_players; i++)
                 render_trail(window, &window->player[i], &window->player[i].pos, 0, 0);
-            render_enemies_health(window);
             render_shots(window);
             render_enemy_shots(window);
             render_enemies(window);
@@ -558,6 +557,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             }
 
             render_explosions(window);
+            render_enemies_health(window);
             render_touched_effect(window);
             render_hud_texts(window);
             render_hud(window);
