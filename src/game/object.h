@@ -10,7 +10,9 @@ void create_object(struct window *window, enum object_type type);
 
 void move_objects(struct window *window);
 
-void render_objects(struct window *window);
+void render_pre_bg_objects(struct window *window);
+
+void render_post_bg_objects(struct window *window);
 
 void render_shield_aura(struct window *window, struct player *player);
 

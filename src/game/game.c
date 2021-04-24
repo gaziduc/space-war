@@ -539,8 +539,9 @@ void play_game(struct window *window, int mission_num, int difficulty)
             else
                 SDL_SetRenderDrawColor(window->renderer, 192, 128, 0, 255);
             SDL_RenderClear(window->renderer);
+            render_pre_bg_objects(window);
             render_background(window);
-            render_objects(window);
+            render_post_bg_objects(window);
             for (unsigned i = 0; i < window->num_players; i++)
                 render_trail(window, &window->player[i], &window->player[i].pos, 0, 0);
             render_enemies_health(window);

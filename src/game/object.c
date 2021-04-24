@@ -33,7 +33,10 @@ void move_objects(struct window *window)
 
     while (temp)
     {
-        temp->pos_dst.x--;
+        if (temp->type != GALAXY)
+            temp->pos_dst.x--;
+        else
+            temp->pos_dst.x -= 0.3;
         // temp->framecount++;
 
         // Prevent out of bounds by deleting the object if not on screen
@@ -56,22 +59,50 @@ void move_objects(struct window *window)
 }
 
 
-void render_objects(struct window *window)
+void render_pre_bg_objects(struct window *window)
 {
     struct list *temp = window->list[OBJECT_LIST]->next;
 
     while (temp)
     {
-        SDL_Rect pos = { .x = temp->pos_dst.x + window->shake.x,
+        if (temp->type == GALAXY) // if galaxy
+        {
+            SDL_Rect pos = { .x = temp->pos_dst.x + window->shake.x,
                          .y = temp->pos_dst.y + window->shake.y,
                          .w = temp->pos_dst.w,
                          .h = temp->pos_dst.h
                        };
 
-        resize_pos_for_resolution(window, &pos);
+            resize_pos_for_resolution(window, &pos);
 
-        // Display object
-        SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &pos);
+            // Display object
+            SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &pos);
+        }
+
+        // Go to next object
+        temp = temp->next;
+    }
+}
+
+void render_post_bg_objects(struct window *window)
+{
+    struct list *temp = window->list[OBJECT_LIST]->next;
+
+    while (temp)
+    {
+        if (temp->type != GALAXY) // if not galaxy
+        {
+            SDL_Rect pos = { .x = temp->pos_dst.x + window->shake.x,
+                         .y = temp->pos_dst.y + window->shake.y,
+                         .w = temp->pos_dst.w,
+                         .h = temp->pos_dst.h
+                       };
+
+            resize_pos_for_resolution(window, &pos);
+
+            // Display object
+            SDL_RenderCopy(window->renderer, temp->texture.texture->texture, NULL, &pos);
+        }
 
         // Go to next object
         temp = temp->next;

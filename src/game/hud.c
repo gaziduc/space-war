@@ -185,7 +185,7 @@ void render_hud(struct window *window)
         if (alpha > 0)
             render_text(window, window->fonts->craft_small, s,
                         i == 0 ? blue_transparent : red_transparent,
-                        window->player[i].pos.x - 25, window->player[i].pos.y - 25);
+                        window->player[i].pos.x - 15, window->player[i].pos.y - 25);
 
         render_life(window, &window->player[i], i);
         render_ammo(window, &window->player[i], i);
