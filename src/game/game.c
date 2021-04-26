@@ -387,7 +387,12 @@ static void render_ship(struct window *window, SDL_FRect *temp_pos, Uint32 frame
     SDL_Rect pos = { temp_pos->x, temp_pos->y, temp_pos->w, temp_pos->h };
     resize_pos_for_resolution(window, &pos);
 
-    SDL_RenderCopy(window->renderer, window->img->ship[(framecount % 20) / 5]->texture, NULL, &pos);
+    framecount /= 5;
+    framecount = framecount % ((NUM_ANIM_SHIP - 1) * 2);
+
+    unsigned frame_num = framecount < NUM_ANIM_SHIP ? framecount : -framecount + 2 * (NUM_ANIM_SHIP - 1);
+
+    SDL_RenderCopy(window->renderer, window->img->ship[frame_num]->texture, NULL, &pos);
 }
 
 

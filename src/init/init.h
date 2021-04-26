@@ -15,6 +15,7 @@
 #define NUM_RESOLUTIONS 7
 #define MAX_NUM_FINGERS 2
 #define NUM_BOSSES 10
+#define NUM_ANIM_SHIP 11
 
 /* Colors */
 #define BLUE_R 0
@@ -68,7 +69,7 @@ enum trophies
 
 struct textures
 {
-    struct collision_texture *ship[4];
+    struct collision_texture *ship[NUM_ANIM_SHIP];
     struct collision_texture *shot[3];
     struct collision_texture *enemy;
     SDL_Texture *explosion[2];
