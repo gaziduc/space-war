@@ -253,6 +253,7 @@ struct player
     enum input_type input_type;
     unsigned controller_num;
     int missile_around;
+    unsigned frame_num;
 };
 
 

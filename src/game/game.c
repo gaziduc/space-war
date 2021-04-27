@@ -382,15 +382,19 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
 }
 
 
-static void render_ship(struct window *window, SDL_FRect *temp_pos, Uint32 framecount)
+static unsigned get_ship_frame_num(Uint32 framecount)
 {
-    SDL_Rect pos = { temp_pos->x, temp_pos->y, temp_pos->w, temp_pos->h };
-    resize_pos_for_resolution(window, &pos);
-
     framecount /= 5;
     framecount = framecount % ((NUM_ANIM_SHIP - 1) * 2);
 
-    unsigned frame_num = framecount < NUM_ANIM_SHIP ? framecount : -framecount + 2 * (NUM_ANIM_SHIP - 1);
+    return framecount < NUM_ANIM_SHIP ? framecount : -framecount + 2 * (NUM_ANIM_SHIP - 1);
+}
+
+
+static void render_ship(struct window *window, SDL_FRect *temp_pos, unsigned frame_num)
+{
+    SDL_Rect pos = { temp_pos->x, temp_pos->y, temp_pos->w, temp_pos->h };
+    resize_pos_for_resolution(window, &pos);
 
     SDL_RenderCopy(window->renderer, window->img->ship[frame_num]->texture, NULL, &pos);
 }
@@ -499,11 +503,11 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 }
             }
 
-
             for (unsigned i = 0; i < window->num_players; i++)
             {
                 if (i == 0 || (i == 1 && !window->is_lan))
                 {
+                    window->player[i].frame_num = get_ship_frame_num(framecount);
                     handle_arrow_event(window, &window->player[i]);
                     handle_shot_event(window, &window->player[i]);
                     handle_bomb_event(window, &window->player[i]);
@@ -557,7 +561,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                 if (window->player[i].health > 0)
                 {
                     render_shield_aura(window, &window->player[i]);
-                    render_ship(window, &window->player[i].pos, framecount);
+                    render_ship(window, &window->player[i].pos, window->player[i].frame_num);
                 }
             }
 

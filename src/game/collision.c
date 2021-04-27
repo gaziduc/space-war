@@ -178,7 +178,7 @@ static void check_collisions_list(struct window *window, struct player *player,
         // If collision ship <-> enemy
         if (player->health > 0 && !deleted_enemy
             && collision(temp_pos, temp,
-                         &player->pos, window->img->ship[0]))
+                         &player->pos, window->img->ship[player->frame_num]))
         {
             window->num_enemies_collided++;
 
@@ -261,7 +261,7 @@ static void check_collisions_list(struct window *window, struct player *player,
         {
             // If collision ship <-> enemy shot
             if (player->health > 0 &&
-                collision(&player->pos, window->img->ship[0],
+                collision(&player->pos, window->img->ship[player->frame_num],
                           &temp_enemy_shot->pos_dst, window->img->enemy_shot))
             {
                 // Delete enemy shot
@@ -309,7 +309,7 @@ void check_collisions_objects(struct window *window, struct player *player)
     while (temp)
     {
         if (player->health > 0
-            && collision(&player->pos, window->img->ship[0],
+            && collision(&player->pos, window->img->ship[player->frame_num],
                          &temp->pos_dst, temp->texture.texture))
         {
             // If planet or galaxy, go to next
