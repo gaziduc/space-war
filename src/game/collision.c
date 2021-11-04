@@ -7,7 +7,6 @@
 #include "effect.h"
 #include "shot.h"
 #include "explosion.h"
-#include <unistd.h>
 
 static int collision_aabb(SDL_FRect *pos1, SDL_FRect *pos2)
 {
