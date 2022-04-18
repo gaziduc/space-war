@@ -115,7 +115,6 @@ void free_all(struct window *window, int is_in_level)
     free(window->settings);
     free_window(window);
 
-    SDLNet_Quit();
     Mix_Quit();
     IMG_Quit();
     TTF_Quit();

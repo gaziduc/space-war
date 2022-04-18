@@ -2,7 +2,6 @@
 #include "utils.h"
 #include "menu.h"
 #include "save.h"
-#include "net.h"
 #include "ready.h"
 #include "trophies.h"
 #include "level.h"
@@ -73,12 +72,8 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
 
 
     // Enter to continue
-    if (!window->is_lan || window->server)
-        render_text(window, window->fonts->zero4b_30_small, window->txt[CONTINUE],
+    render_text(window, window->fonts->zero4b_30_small, window->txt[CONTINUE],
                     selected_item == 1 ? green : blue, 150, 810);
-    else
-        render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_THE_SERVER],
-                    orange, 150, 810);
 }
 
 
@@ -128,8 +123,8 @@ void success(struct window *window, const int level_num, const int difficulty)
     if (difficulty == REALLY_HARD && window->player[0].ammo >= 100 && !window->save->trophies[AMMO_COLLECTOR])
         achieve_trophy(window, AMMO_COLLECTOR);
 
-    if (window->is_lan && !window->save->trophies[OVER_THE_WORLD])
-        achieve_trophy(window, OVER_THE_WORLD);
+    if (!window->save->trophies[SIMPLE_GAME])
+        achieve_trophy(window, SIMPLE_GAME);
 
     // Save
     write_save(window, window->save);
@@ -149,24 +144,8 @@ void success(struct window *window, const int level_num, const int difficulty)
         update_events(window->in, window, 0);
         handle_quit_event(window, 1);
 
-        if (!window->is_lan || window->server)
-        {
-            escape = selected > 0 && handle_play_event(window);
-            handle_select_arrow_event(window, &selected, 1, areas);
-
-            if (escape && window->server)
-            {
-                struct msg msg = { .type = MENU_MSG };
-                send_msg(window, &msg);
-            }
-        }
-        else
-        {
-            handle_messages(window, "M");
-
-            if (window->restart > 0)
-                break;
-        }
+        escape = selected > 0 && handle_play_event(window);
+        handle_select_arrow_event(window, &selected, 1, areas);
 
         SDL_RenderClear(window->renderer);
 
@@ -214,29 +193,21 @@ static void render_failure_texts(struct window *window, Uint32 begin, int select
         SDL_Color yellow = { .r = 255, .g = 255, .b = 0, .a = alpha };
         render_text(window, window->fonts->zero4b_30_small, window->txt[NEW_BEST], yellow, 150, 550);
     }
+ 
+    char *s_list[2] = { window->txt[RETRY], window->txt[BACK_9] };
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
 
 
-
-    if (!window->is_lan || window->server)
+    for (int i = 1; i <= 2; i++)
     {
-        char *s_list[2] = { window->txt[RETRY], window->txt[BACK_9] };
-        SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
-        SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
-
-
-        for (int i = 1; i <= 2; i++)
-        {
-            if (selected == i)
-                render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
-                            green, 150, 730 + (i - 1) * 100);
-            else
-                render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
-                            blue, 150, 730 + (i - 1) * 100);
-        }
+        if (selected == i)
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
+                        green, 150, 730 + (i - 1) * 100);
+        else
+            render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
+                        blue, 150, 730 + (i - 1) * 100);
     }
-    else
-        render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_THE_SERVER],
-                            orange, 150, 730);
 }
 
 
@@ -273,47 +244,17 @@ int failure(struct window *window, int level_num)
     {
         update_events(window->in, window, 0);
         handle_quit_event(window, 1);
-        if (!window->is_lan || window->server)
+        
+        escape = handle_escape_event(window);
+        if (selected > 0 && handle_play_event(window))
         {
-            escape = handle_escape_event(window);
-            if (selected > 0 && handle_play_event(window))
-            {
-                if (selected == 2)
-                {
-                    if (window->is_lan)
-                    {
-                        struct msg msg = { .type = MENU_MSG };
-                        send_msg(window, &msg);
-                    }
+            if (selected == 2)
+                escape = 1;
 
-                    escape = 1;
-                }
-                else if (window->is_lan)
-                {
-                    struct msg msg = { .type = RESTART_MSG };
-                    msg.content.ticks = SDL_GetTicks() + 3000;
-                    send_msg(window, &msg);
-
-                    waiting_screen(window, msg.content.ticks);
-                }
-
-                break;
-            }
-
-            handle_select_arrow_event(window, &selected, 2, areas);
-        }
-        else
-        {
-            handle_messages(window, "RM");
-
-            if (window->restart > 0)
-            {
-                if (window->restart == 2)
-                    escape = 1;
-                break;
-            }
+            break;
         }
 
+        handle_select_arrow_event(window, &selected, 2, areas);
 
         SDL_RenderClear(window->renderer);
 

@@ -243,7 +243,7 @@ void render_enemies(struct window *window)
     {
         // Display enemy trail
         if (is_shooting(temp->enemy_type) && !temp->rotating)
-            render_trail(window, NULL, &temp->pos_dst, 0, 1);
+            render_trail(window, NULL, &temp->pos_dst, 1);
 
         // Display enemy
         if (temp->rotating)

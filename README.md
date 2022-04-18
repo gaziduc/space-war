@@ -18,8 +18,6 @@ sdl2_image
 sdl2_gfx
 sdl2_ttf
 sdl2_mixer
-sdl2_net
-libcurl
 ```
 ## Play only
 Go to the web page: https://gamejolt.com/games/space-war/482884

@@ -23,7 +23,6 @@ int main(int argc, char *argv[])
     // Tutorial
     if (window->settings->show_tutorial)
     {
-        window->is_lan = 0;
         window->num_players = 1;
         play_game(window, 0, EASY);
 

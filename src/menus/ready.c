@@ -3,7 +3,6 @@
 #include "event.h"
 #include "game.h"
 #include "menu.h"
-#include "net.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -26,8 +25,7 @@ static void render_ok(struct window *window, int selected_level,
     render_text(window, window->fonts->zero4b_30_small, window->txt[SUMMARY], orange, 150, 150);
 
     char str[128] = { 0 };
-    sprintf(str, window->txt[MODE_S], window->is_lan ? window->txt[TWO_PLAYERS_NETWORK] :
-                                      window->num_players == 2 ? window->txt[TWO_PLAYERS_LOCAL] : window->txt[ONE_PLAYER]);
+    sprintf(str, window->txt[MODE_S], window->num_players == 2 ? window->txt[TWO_PLAYERS_LOCAL] : window->txt[ONE_PLAYER]);
 
     render_text(window, window->fonts->zero4b_30_extra_small, str,
                 white, 150, 300);
@@ -40,7 +38,7 @@ static void render_ok(struct window *window, int selected_level,
     render_text(window, window->fonts->zero4b_30_extra_small, str,
                 white, 150, 370);
 
-    snprintf(str, strlen(window->txt[EASY__ + selected_difficulty - 1]) - 1, "%s", window->txt[EASY__+ selected_difficulty - 1]);
+    snprintf(str, strlen(window->txt[EASY__ + selected_difficulty - 1]) - 1, "%s", window->txt[EASY__ + selected_difficulty - 1]);
     str[strlen(window->txt[EASY__ + selected_difficulty - 1]) - 1] = '\0';
 
     render_text(window, window->fonts->zero4b_30_extra_small, str, white, 150, 440);
@@ -115,20 +113,6 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
         {
             if (selected_item == 1)
             {
-                if (window->is_lan)
-                {
-                    struct msg msg = { .type =  LEVEL_MSG };
-                    msg.content.lvl.level_num = selected_level;
-                    msg.content.lvl.level_difficulty = selected_difficulty;
-                    msg.content.lvl.weapon = window->weapon;
-                    Uint32 ticks = SDL_GetTicks() + 3000;
-                    msg.content.lvl.start_mission_ticks = ticks; // Start mission in 3 sec
-                    send_msg(window, &msg);
-
-                    waiting_screen(window, ticks);
-
-                }
-
                 play_game(window, selected_level, selected_difficulty);
                 return 1;
             }

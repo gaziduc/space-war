@@ -5,7 +5,6 @@
 #include "utils.h"
 #include "level.h"
 #include "weapon.h"
-#include "net.h"
 #include <stdio.h>
 #include <string.h>
 #include <SDL2/SDL.h>

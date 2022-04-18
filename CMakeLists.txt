@@ -41,7 +41,7 @@ endif ()
 
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set(USE_FLAGS "-O3 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='[\"png\"]' -s USE_SDL_MIXER=2 -s SDL2_MIXER_FORMATS='[\"ogg\"]' -s USE_SDL_TTF=2 -s USE_SDL_GFX=2 -s USE_SDL_NET=2 -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY --preload-file data -s WASM=1 --shell-file template.html --post-js postfix.js")
+    set(USE_FLAGS "-O3 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='[\"png\"]' -s USE_SDL_MIXER=2 -s SDL2_MIXER_FORMATS='[\"ogg\"]' -s USE_SDL_TTF=2 -s USE_SDL_GFX=2 -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY --preload-file data -s WASM=1 --shell-file template.html --post-js postfix.js")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USE_FLAGS}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${USE_FLAGS}")
@@ -55,14 +55,8 @@ else ()
     find_package(SDL2_TTF REQUIRED)
     find_package(SDL2_MIXER REQUIRED)
     find_package(SDL2_GFX REQUIRED)
-    find_package(SDL2_NET REQUIRED)
-
-    if (WIN32)
-        include_directories(SRC ${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_GFX_INCLUDE_DIR} ${SDL2_NET_INCLUDE_DIR} ${DEPS_DIR}/Curl/x64/include)
-    else ()
-        find_package(CURL REQUIRED)
-        include_directories(SRC ${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_GFX_INCLUDE_DIR} ${SDL2_NET_INCLUDE_DIR} ${CURL_INCLUDE_DIRS})
-    endif ()
+    
+    include_directories(SRC ${SDL2_INCLUDE_DIR} ${SDL2_TTF_INCLUDE_DIR} ${SDL2_IMAGE_INCLUDE_DIR} ${SDL2_MIXER_INCLUDE_DIR} ${SDL2_GFX_INCLUDE_DIR})
 
     # Warnings
     if (MSVC)
@@ -82,14 +76,10 @@ else ()
 endif ()
 
 # local includes
-target_include_directories(${PROJECT_NAME} PRIVATE "src" "src/data_struct" "src/game" "src/init" "src/menus" "src/network" "src/settings" "src/utils")
+target_include_directories(${PROJECT_NAME} PRIVATE "src" "src/data_struct" "src/game" "src/init" "src/menus" "src/settings" "src/utils")
 
 # dependencies libraries
-if (WIN32)
-    target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_GFX_LIBRARY} ${SDL2_NET_LIBRARY} ${DEPS_DIR}/Curl/x64/lib/libcurl.lib)
-else ()
-    target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_GFX_LIBRARY} ${SDL2_NET_LIBRARY} ${CURL_LIBRARIES})
-endif ()
+target_link_libraries(${PROJECT_NAME} ${SDL2MAIN_LIBRARY} ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY} ${SDL2_IMAGE_LIBRARY} ${SDL2_MIXER_LIBRARY} ${SDL2_GFX_LIBRARY})
 
 # Other
 if (MSVC)
