@@ -1,7 +1,9 @@
 # space-war
 Space War is a shoot'em up game where you pilot a spaceship and your goal is to destroy all the enemies ship.
 
-[![Watch trailer](https://s2.gifyu.com/images/Untitled409932623c8dbf56.png)](https://www.youtube.com/watch?v=EE7p4LESCMg)
+Trailer: [https://www.youtube.com/watch?v=EE7p4LESCMg](https://www.youtube.com/watch?v=EE7p4LESCMg)
+
+Download Windows installer and updater : [https://gaziduc.github.io/space-war/](https://gaziduc.github.io/space-war/)
 
 ## Prerequisites to play
 ### Hardware
