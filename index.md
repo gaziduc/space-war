@@ -18,9 +18,9 @@ If you don't want to install Space War Launcher on your PC, you can [click here 
 
 ## Compatible Operating System
 
-Launcher: Windows 10/11 or later only.
+Launcher: Windows 10/11 or later only (64 bits only)
 
-Game zip: Windows Vista/7/8/10/11 or later (64 bits only), macOS 64 bits, Linux 64 bits
+Game zip: Windows Vista/7/8/10/11 or later (64 bits only)
 
 
 
