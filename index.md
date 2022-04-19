@@ -8,17 +8,19 @@ Space War is a 2D game where you are a spaceship and shoot enemies.  You can pla
 
 **Throw bomb**: B (keyboard) / right-click / X (Xbox controller)
 
-## Download game installer for Windows
+## Download game launcher and updater for Windows
 
 [Click here to download the game installer](https://github.com/gaziduc/space-war/raw/gh-pages/space-war-launcher-installer.exe). This installer will install the Space War Launcher which will help you having the latest version of Space War.
 
-## Download game zip
+## Download game zip for Windows
 
-[Click here to download a zip of the latest version](https://github.com/gaziduc/space-war/raw/gh-pages/space-war.zip). The game does not auto update itself when there is an update.
+If you don't want to install Space War Launcher on your PC, you can [click here to download a zip of the latest version](https://github.com/gaziduc/space-war/raw/gh-pages/space-war.zip). However, the game will not auto update itself when there is an update.
 
 ## Compatible Operating System
 
-Game: Windows Vista/7/8/10/11 or later (64 bits only), macOS 64 bits, Linux 64 bits
+Launcher: Windows 10/11 or later only.
 
-Launcher: Windows 10/11 or later.
+Game zip: Windows Vista/7/8/10/11 or later (64 bits only), macOS 64 bits, Linux 64 bits
+
+
 
