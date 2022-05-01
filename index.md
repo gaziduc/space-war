@@ -1,26 +1,24 @@
-Space War is a 2D game where you are a spaceship and shoot enemies.  You can play alone or with a friend on the same computer.
+Space War is a 2D game where you are a spaceship and shoot enemies. You can play alone or with a friend on the same computer.
 
 ## Controls
 
-**Move**: arrow keys / mouse / left joystick
+| Ccontrols  |  Keyboard   |   Mouse     |        Controller         |
+|:----------:|:-----------:|:-----------:|:-------------------------:|
+| Move       | Arrow keys  | Move mouse  |       left joystick       |
+| Shoot      |    Space    | Left-click  | RT (second right trigger) |
+| Throw bomb |      B      | Right-click |  X (on Xbox controller)   |
 
-**Shoot**: space / left-click / RT (second right trigger)
+## Download
 
-**Throw bomb**: B (keyboard) / right-click / X (Xbox controller)
-
-## Download game launcher and updater for Windows
-
-[Click here to download the game installer](https://github.com/gaziduc/space-war/raw/gh-pages/space-war-launcher-installer.exe). This installer will install the Space War Launcher which will help you having the latest version of Space War.
-
-## Download game zip for Windows
-
-If you don't want to install Space War Launcher on your PC, you can [click here to download a zip of the latest version](https://github.com/gaziduc/space-war/raw/gh-pages/space-war.zip). However, the game will not auto update itself when there is an update.
+| Installer and updater                                                                                  | Zip file                                                                            |
+|:------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------:|
+| [Download 64 bits .exe](https://github.com/gaziduc/space-war/raw/gh-pages/space-war-launcher-installer.exe) | [Download 64 bits .zip](https://github.com/gaziduc/space-war/raw/gh-pages/space-war.zip) |
 
 ## Compatible Operating System
 
-Launcher: Windows 10/11 or later only (64 bits only)
+Installer and updater: Windows 10/11 or later only (64 bits only)
 
-Game zip: Windows Vista/7/8/10/11 or later (64 bits only)
+Zip file: Windows Vista/7/8/10/11 or later (64 bits only)
 
 
 
