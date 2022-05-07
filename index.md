@@ -2,7 +2,7 @@ Space War is a 2D game where you are a spaceship and shoot enemies. You can play
 
 ## Controls
 
-| Ccontrols  |  Keyboard   |   Mouse     |        Controller         |
+| Controls  |  Keyboard   |   Mouse     |        Controller         |
 |:----------:|:-----------:|:-----------:|:-------------------------:|
 | Move       | Arrow keys  | Move mouse  |       left joystick       |
 | Shoot      |    Space    | Left-click  | RT (second right trigger) |
