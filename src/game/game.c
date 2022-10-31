@@ -16,7 +16,9 @@
 #include "level.h"
 #include "object.h"
 #include "pause.h"
+#include "net.h"
 #include "effect.h"
+#include "msg_list.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -112,6 +114,14 @@ static void handle_arrow_event(struct window *window, struct player *player)
         player->pos.x = 0;
     else if (player->pos.x > DEFAULT_W - player->pos.w)
         player->pos.x = DEFAULT_W - player->pos.w;
+
+    if (window->is_lan && (player->pos.x != last_player_pos.x || player->pos.y != last_player_pos.y))
+    {
+        struct msg msg = { .type = POSITION_MSG };
+        msg.content.point.x = player->pos.x;
+        msg.content.point.y = player->pos.y;
+        send_msg(window, &msg);
+    }
 }
 
 
@@ -210,10 +220,11 @@ static int handle_bomb_event(struct window *window, struct player *player)
 }
 
 
-void render_trail(struct window *window, struct player *player, SDL_FRect *pos, int is_enemy)
+void render_trail(struct window *window, struct player *player, SDL_FRect *pos,
+                  int is_lan_player, int is_enemy)
 {
     // If ship is dead, don't display trail
-    if (!is_enemy && player->health <= 0)
+    if (!is_enemy && !is_lan_player && player->health <= 0)
         return;
 
     SDL_Rect pos_dst_trail;
@@ -453,6 +464,14 @@ void play_game(struct window *window, int mission_num, int difficulty)
         int won = 0;
         unsigned long framecount = 0;
 
+        if (window->is_lan)
+        {
+            struct msg msg = { .type = POSITION_MSG };
+            msg.content.point.x = window->player[0].pos.x;
+            msg.content.point.y = window->player[0].pos.y;
+            send_msg(window, &msg);
+        }
+
         SDL_ShowCursor(SDL_DISABLE);
 
         while (!escape && !dead && !won)
@@ -461,18 +480,38 @@ void play_game(struct window *window, int mission_num, int difficulty)
             update_events(window->in, window, 1);
             handle_quit_event(window, 1);
 
-            if (window->in->focus_lost)
+            if (!window->is_lan && window->in->focus_lost)
                 pause(window);
 
             if (handle_escape_event(window))
-                escape = pause(window);
+            {
+                if (!window->is_lan)
+                    escape = pause(window);
+                else
+                {
+                    // Send quit message
+                    struct msg msg = { .type = QUIT_MSG };
+                    msg.content.boolean = 1;
+                    send_msg(window, &msg);
+
+                    // Quit game
+                    free_background(window->stars);
+                    free_vector(window->paths);
+                    window->paths = NULL; // important, see free_all in free.c
+                    load_music_and_play(window, "data/endgame.ogg", 1);
+                    return;
+                }
+            }
 
             for (unsigned i = 0; i < window->num_players; i++)
             {
-                window->player[i].frame_num = get_ship_frame_num(framecount);
-                handle_arrow_event(window, &window->player[i]);
-                handle_shot_event(window, &window->player[i]);
-                handle_bomb_event(window, &window->player[i]);
+                if (i == 0 || (i == 1 && !window->is_lan))
+                {
+                    window->player[i].frame_num = get_ship_frame_num(framecount);
+                    handle_arrow_event(window, &window->player[i]);
+                    handle_shot_event(window, &window->player[i]);
+                    handle_bomb_event(window, &window->player[i]);
+                }
             }
 
             // Move elements and background
@@ -483,6 +522,11 @@ void play_game(struct window *window, int mission_num, int difficulty)
             move_objects(window);
             move_hud_texts(window);
             move_background(window, framecount);
+
+            // LAN only
+            if (window->is_lan)
+                if (!handle_messages(window, "PSBQ"))
+                    return;
 
             for (unsigned i = 0; i < window->num_players; i++)
             {
@@ -508,7 +552,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
             render_background(window);
             render_post_bg_objects(window);
             for (unsigned i = 0; i < window->num_players; i++)
-                render_trail(window, &window->player[i], &window->player[i].pos, 0);
+                render_trail(window, &window->player[i], &window->player[i].pos, 0, 0);
             render_shots(window);
             render_enemy_shots(window);
             render_enemies(window);

@@ -7,6 +7,7 @@
 #include "level.h"
 #include "setting.h"
 #include "credits.h"
+#include "net.h"
 #include "version.h"
 #include "help.h"
 #include "trophies.h"
@@ -256,13 +257,13 @@ static void render_num_players(struct window *window, Uint32 begin, int selected
     render_text(window, window->fonts->zero4b_30_small, window->txt[SELECT_MODE], orange, 150, 150);
 
     // Render items
-    char *s_list[MAX_PLAYERS + 1] = { window->txt[ONE_PLAYER], window->txt[TWO_PLAYERS_LOCAL], window->txt[BACK_1] };
+    char *s_list[MAX_PLAYERS + 2] = { window->txt[ONE_PLAYER], window->txt[TWO_PLAYERS_LOCAL], window->txt[TWO_PLAYERS_NETWORK], window->txt[BACK_1] };
 
-    for (int i = 1; i <= MAX_PLAYERS + 1; i++)
+    for (int i = 1; i <= MAX_PLAYERS + 2; i++)
     {
         render_text(window, window->fonts->zero4b_30_small, s_list[i - 1],
                     selected_item != i ? blue : green,
-                    150, 670 + (i - 1) * 100);
+                    150, 570 + (i - 1) * 100);
     }
 }
 
@@ -272,12 +273,12 @@ void select_num_players(struct window *window)
     int escape = 0;
     window->num_players = 0;
     Uint32 begin = SDL_GetTicks();
-    SDL_Rect areas[MAX_PLAYERS + 1];
+    SDL_Rect areas[MAX_PLAYERS + 2];
 
-    for (unsigned i = 0; i < MAX_PLAYERS + 1; i++)
+    for (unsigned i = 0; i < MAX_PLAYERS + 2; i++)
     {
         areas[i].x = 150;
-        areas[i].y = 670 + i * 100;
+        areas[i].y = 570 + i * 100;
         TTF_SizeText(window->fonts->zero4b_30_small, window->txt[ONE_PLAYER + i], &areas[i].w, &areas[i].h);
     }
 
@@ -291,12 +292,23 @@ void select_num_players(struct window *window)
 
         if (window->num_players > 0 && handle_play_event(window))
         {
-            if (window->num_players <= MAX_PLAYERS)
+            if (window->num_players == MAX_PLAYERS + 1)
             {
+                window->num_players = MAX_PLAYERS;
+                window->is_lan = 1;
+                create_or_join(window);
+
+                // To select to correct menu choice
+                window->num_players = MAX_PLAYERS + 1;
+                begin = SDL_GetTicks();
+            }
+            else if (window->num_players <= MAX_PLAYERS)
+            {
+                window->is_lan = 0;
                 select_level(window);
                 begin = SDL_GetTicks();
             }
-            else if (window->num_players == MAX_PLAYERS + 1)
+            else if (window->num_players == MAX_PLAYERS + 2)
                 escape = 1;
         }
 

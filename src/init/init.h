@@ -5,6 +5,7 @@
 #include <SDL2/SDL2_framerate.h>
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_net.h>
 
 #define NUM_LEVELS 9
 #define NUM_ROTATING_FRAMES 180
@@ -62,7 +63,7 @@ enum trophies
     UNITED_WE_STAND,
     IS_IT_POSSIBLE,
     AMMO_COLLECTOR,
-    SIMPLE_GAME,
+    OVER_THE_WORLD,
     NUM_TROPHIES
 };
 
@@ -269,12 +270,43 @@ struct state
 
 };
 
+
+enum msg_type
+{
+    ACCEPT_MSG,
+    RESTART_MSG,
+    MENU_MSG,
+    LEVEL_MSG,
+    POSITION_MSG,
+    SHOOT_MSG,
+    BOMB_MSG,
+    GET_TIME_MSG,
+    TIME_MSG,
+    QUIT_MSG,
+    Z_MSG
+};
+
 struct level
 {
     char level_num;
     char level_difficulty;
     char weapon;
     Uint32 start_mission_ticks;
+};
+
+union msg_content
+{
+    struct level lvl;
+    SDL_Point point;
+    Uint32 ticks;
+    char boolean;
+};
+
+
+struct msg
+{
+    enum msg_type type;
+    union msg_content content;
 };
 
 
@@ -496,12 +528,16 @@ struct window
     struct save *save;
     unsigned num_players;
     struct player player[MAX_PLAYERS];
+    int is_lan;
+    TCPsocket server;
+    TCPsocket client;
     unsigned weapon;
     int touched_anim;
     SDL_Point resolutions[NUM_RESOLUTIONS];
     int resolution_index;
     Uint32 mission_start_time;
     char *txt[NUM_TXT];
+    struct msg_list *msg_list;
     int accepted;
     int restart;
     SDL_Point shake;

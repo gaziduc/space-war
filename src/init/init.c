@@ -8,6 +8,7 @@
 #include "save.h"
 #include "event.h"
 #include "language.h"
+#include "msg_list.h"
 #include "menu.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
@@ -293,11 +294,19 @@ struct window *init_all(void)
 
     load_sounds(window);
 
+    // Init SDL2_net
+    if (SDLNet_Init() == -1)
+        error("Could not initialize SDL2_net", SDLNet_GetError(), window->window, window->renderer);
+
     // Initialize the stars lib
     new_universe(&window->universe, 256, window);
 
     // Load save file and progress
     read_save(window);
+
+    // LAN meesages
+    window->msg_list = xmalloc(sizeof(struct msg_list), window->window, window->renderer);
+    window->msg_list->next = NULL;
 
     // Trophies
     window->trophy.id[0] = -1;

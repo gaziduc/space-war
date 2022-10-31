@@ -2,7 +2,11 @@
 #define VERSION_H
 
     #define VERSION_MAJOR   1
+<<<<<<< HEAD
     #define VERSION_MINOR   20
+=======
+    #define VERSION_MINOR   17
+>>>>>>> parent of 645e7e9 (Removed network features because it was buggy, v1.18.0)
     #define VERSION_PATCH   0
 
     #define VERSION_WIN     VERSION_MAJOR,VERSION_MINOR,VERSION_PATCH,0

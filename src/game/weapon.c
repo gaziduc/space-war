@@ -7,6 +7,7 @@
 #include "event.h"
 #include "game.h"
 #include "ready.h"
+#include "net.h"
 #include "effect.h"
 #include "trophies.h"
 #include "save.h"
@@ -38,6 +39,13 @@ int shoot(struct window *window, struct player *player, int provoked_by_me)
                 if (player->ammo > 0)
                     player->ammo--;
             }
+
+            if (window->is_lan && provoked_by_me)
+            {
+                struct msg msg = { .type = SHOOT_MSG };
+                msg.content.boolean = 2;
+                send_msg(window, &msg);
+            }
         }
         else
         {
@@ -47,6 +55,13 @@ int shoot(struct window *window, struct player *player, int provoked_by_me)
 
             if (player->ammo > 0)
                 player->ammo--;
+
+            if (window->is_lan && provoked_by_me)
+            {
+                struct msg msg = { .type = SHOOT_MSG };
+                msg.content.boolean = 1;
+                send_msg(window, &msg);
+            }
         }
 
         return 1;
@@ -132,6 +147,12 @@ void bomb(struct window *window, int provoked_by_me)
 
     // Set quake effect
     set_shake_effect(window);
+
+    if (window->is_lan && provoked_by_me)
+    {
+        struct msg msg = { .type = BOMB_MSG };
+        send_msg(window, &msg);
+    }
 }
 
 
