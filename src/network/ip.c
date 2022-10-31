@@ -45,7 +45,7 @@ const char* get_online_ip(void)
 
     struct string str;
     if (!init_string(&str))
-        return "Could not find online IP. Malloc failed.";
+        return "Could not find online IP. Memory allocation failed.";
 
     curl_easy_setopt(curl, CURLOPT_URL, "http://ifconfig.me");
 

@@ -23,9 +23,9 @@ dependency_libs=' -lusp10 -lrpcrt4 -L/opt/local/x86_64-w64-mingw32/lib /opt/loca
 weak_library_names=''
 
 # Version information for libSDL2_ttf.
-current=18
-age=18
-revision=0
+current=2000
+age=2000
+revision=1
 
 # Is this an already installed library?
 installed=yes
@@ -38,4 +38,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/Users/valve/release/SDL_ttf/SDL2_ttf-2.0.18/x86_64-w64-mingw32/lib'
+libdir='/Users/valve/release/SDL_ttf/SDL2_ttf-2.20.1/x86_64-w64-mingw32/lib'

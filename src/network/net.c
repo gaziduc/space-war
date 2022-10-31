@@ -607,7 +607,7 @@ void send_msg(struct window *window, struct msg *msg)
             break;
 
         case LEVEL_MSG:
-            protocol_msg[0] = 11; // strlen("L") + sizeof(Uint16) * 3
+            protocol_msg[0] = 11; // strlen("L") + sizeof(Uint16) * 3 + sizeof(Uint32)
             protocol_msg[1] = 'L';
             SDLNet_Write16(msg->content.lvl.level_num, protocol_msg + 2);
             SDLNet_Write16(msg->content.lvl.level_difficulty, protocol_msg + 4);
