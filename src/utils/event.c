@@ -306,6 +306,13 @@ int init_controller(struct input *in, unsigned num_controller, Sint32 which)
     in->c[num_controller].id = SDL_JoystickInstanceID(temp);
 
     // Get force feedback
+    if (SDL_GameControllerHasRumble(in->c[num_controller].controller))
+    {
+        in->c[num_controller].has_rumble = 1;
+        return 1;
+    }
+
+    // If controller hasn't a rumble, it may still be an odd haptic device
     in->c[num_controller].haptic = SDL_HapticOpenFromJoystick(temp);
     if (in->c[num_controller].haptic)
         SDL_HapticRumbleInit(in->c[num_controller].haptic);

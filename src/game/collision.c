@@ -66,7 +66,7 @@ void hurt(struct window *window, struct player *player)
         set_shake_effect(window);
 
         // force feedback
-        force_feedback(window, player, 0.25, 250);
+        force_feedback(window, player, 0.30, 250);
     }
 }
 
@@ -287,7 +287,7 @@ static void check_collisions_list(struct window *window, struct player *player,
                     set_shake_effect(window);
 
                     // Force feedback
-                    force_feedback(window, player, 0.25, 250);
+                    force_feedback(window, player, 0.30, 250);
                 }
             }
             else
@@ -323,7 +323,7 @@ void check_collisions_objects(struct window *window, struct player *player)
                 Mix_PlayChannel(-1, window->sounds->power_up, 0);
 
                 // force feedback
-                force_feedback(window, player, 0.25, 250);
+                force_feedback(window, player, 0.30, 250);
 
 
                 switch (temp->type)

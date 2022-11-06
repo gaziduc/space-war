@@ -111,6 +111,7 @@ struct controller
     char *name;
     char button[SDL_CONTROLLER_BUTTON_MAX];
     struct axis axis[SDL_CONTROLLER_AXIS_MAX];
+    int has_rumble;
     SDL_Haptic *haptic;
 };
 

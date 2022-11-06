@@ -6,6 +6,7 @@
 #include "controls.h"
 #include "string_vec.h"
 #include "file.h"
+#include "effect.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -456,6 +457,8 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
             case 9:
                 Mix_PlayChannel(-1, window->sounds->play, 0);
                 window->settings->is_force_feedback = !window->settings->is_force_feedback;
+                if (window->settings->is_force_feedback)
+                    force_feedback_on_all_controllers(window, 0.5, 500);
                 write_settings(window);
                 break;
 
