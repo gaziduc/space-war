@@ -4,12 +4,15 @@
 #include "weapon.h"
 #include <SDL2/SDL.h>
 
-void set_shot_pos(struct list *new, SDL_FRect *pos_dst, struct window *window)
+void set_shot_pos(struct list *new, SDL_FRect *pos_dst, struct window *window, int override_pos)
 {
     // Setting shot initial position
     int w = 0;
     int h = 0;
-    SDL_QueryTexture(window->img->ship[0]->texture, NULL, NULL, &w, &h);
+
+    if (!override_pos)
+        SDL_QueryTexture(window->img->ship[0]->texture, NULL, NULL, &w, &h);
+    
     new->pos_dst.x = pos_dst->x + w;
     new->pos_dst.y = pos_dst->y + h / 2;
 
@@ -19,8 +22,11 @@ void set_shot_pos(struct list *new, SDL_FRect *pos_dst, struct window *window)
     new->pos_dst.w = w;
     new->pos_dst.h = h;
 
-    new->pos_dst.x -= new->pos_dst.w;
-    new->pos_dst.y -= new->pos_dst.h / 2;
+    if (!override_pos)
+    {
+        new->pos_dst.x -= new->pos_dst.w;
+        new->pos_dst.y -= new->pos_dst.h / 2;
+    }
 }
 
 

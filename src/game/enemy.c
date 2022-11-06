@@ -21,11 +21,13 @@ static int is_rotating(char enemy_type)
 }
 
 void set_enemy_attributes(struct list *new, SDL_FRect *pos,
-                          struct window *window, char enemy_type)
+                          struct window *window, char enemy_type,
+                          float speed_x, int health, int max_health,
+                          int override_pos_and_speed, float speed_y)
 {
-    new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
-    new->health = window->paths->data[window->paths->index].line.enemy_path.health;
-    new->max_health = new->health;
+    new->speed.x = speed_x;
+    new->health = health;
+    new->max_health = max_health;
     new->last_time_hurt = 0;
     new->first_time_hurt = 0;
     new->enemy_type = enemy_type;
@@ -47,8 +49,12 @@ void set_enemy_attributes(struct list *new, SDL_FRect *pos,
 
         case 'D':
             new->texture.texture = window->img->drone;
+
             // Set vertical speed
-            new->speed.y = new->speed.x;
+            if (override_pos_and_speed)
+                new->speed.y = speed_y;
+            else
+                new->speed.y = new->speed.x;
             break;
 
         case 'E':
@@ -65,6 +71,13 @@ void set_enemy_attributes(struct list *new, SDL_FRect *pos,
                   new->rotating ? new->texture.textures[0]->texture
                                 : new->texture.texture->texture,
                   &new->pos_dst);
+
+    if (override_pos_and_speed)
+    {
+        new->pos_dst.x = pos->x;
+        new->pos_dst.y = pos->y;
+    }
+
     new->framecount = 0;
 }
 
@@ -353,7 +366,8 @@ static int is_explose(char enemy_type)
 }
 
 void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
-                               SDL_FRect *ship_pos, char enemy_type, struct window *window)
+                               SDL_FRect *ship_pos, char enemy_type, struct window *window,
+                               SDL_FRect *override_speed, int override_pos)
 {
     if (is_teleguided(enemy_type))
         new->texture.texture = window->img->enemy_shot_teleguided;
@@ -363,8 +377,8 @@ void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
         new->texture.texture = window->img->enemy_shot;
 
     // Setting shot initial position
-    new->pos_dst.x = pos_dst->x + pos_dst->w / 2;
-    new->pos_dst.y = pos_dst->y + pos_dst->h / 2 - 16;
+    new->pos_dst.x = override_pos ? pos_dst->x : pos_dst->x + pos_dst->w / 2;
+    new->pos_dst.y = override_pos ? pos_dst->y : pos_dst->y + pos_dst->h / 2 - 16;
     new->pos_dst.w = 32;
     new->pos_dst.h = 32;
 
@@ -373,13 +387,21 @@ void set_enemy_shot_attributes(struct list *new, SDL_FRect *pos_dst,
     new->pos_src.w = 32;
     new->pos_src.h = 32;
 
-    // Setting shot speed (horizontal and vertical)
-    int gap_x = new->pos_dst.x + new->pos_dst.w / 2 - (ship_pos->x + ship_pos->w / 2);
-    int gap_y = ship_pos->y + ship_pos->h / 2 - (new->pos_dst.y + new->pos_dst.h / 2);
-    float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
+    if (ship_pos == NULL) // if don't need to compute speed
+    {
+        new->speed.x = override_speed->x;
+        new->speed.y = override_speed->y;
+    } 
+    else
+    {
+        // Setting shot speed (horizontal and vertical)
+        int gap_x = new->pos_dst.x + new->pos_dst.w / 2 - (ship_pos->x + ship_pos->w / 2);
+        int gap_y = ship_pos->y + ship_pos->h / 2 - (new->pos_dst.y + new->pos_dst.h / 2);
+        float gap = sqrt(gap_x * gap_x + gap_y * gap_y);
 
-    new->speed.x = enemy_type == '9' ? (gap_x * FINAL_BOSS_SHOT_SPEED) / gap : (gap_x * ENEMY_SHOT_SPEED) / gap;
-    new->speed.y = enemy_type == '9' ? (gap_y * FINAL_BOSS_SHOT_SPEED) / gap : (gap_y * ENEMY_SHOT_SPEED) / gap;
+        new->speed.x = enemy_type == '9' ? (gap_x * FINAL_BOSS_SHOT_SPEED) / gap : (gap_x * ENEMY_SHOT_SPEED) / gap;
+        new->speed.y = enemy_type == '9' ? (gap_y * FINAL_BOSS_SHOT_SPEED) / gap : (gap_y * ENEMY_SHOT_SPEED) / gap;
+    }
 
     new->enemy_type = enemy_type;
 }

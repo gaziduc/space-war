@@ -7,12 +7,8 @@
 #include <SDL2/SDL.h>
 
 void set_boss_attributes(struct list *new, SDL_FRect *pos,
-                         struct window *window, char enemy_type)
+                         struct window *window, char enemy_type, int override, SDL_FRect *speed, int health, int max_health)
 {
-    new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
-    new->speed.y = window->paths->data[window->paths->index].line.enemy_path.speed_x;
-    new->health = window->paths->data[window->paths->index].line.enemy_path.health;
-    new->max_health = new->health;
     new->last_time_hurt = 0;
     new->first_time_hurt = 0;
     new->enemy_type = enemy_type;
@@ -20,7 +16,26 @@ void set_boss_attributes(struct list *new, SDL_FRect *pos,
     new->rotating = 0;
     new->curr_texture = 0;
 
-    init_position_float(DEFAULT_W, pos->y, new->texture.texture->texture, &new->pos_dst);
+
+    if (override)
+    {
+        new->speed.x = speed->x;
+        new->speed.y = speed->y;
+        new->health = health;
+        new->max_health = max_health;
+        new->pos_dst.x = pos->x;
+        new->pos_dst.y = pos->y;
+        new->pos_dst.w = pos->w;
+        new->pos_dst.h = pos->h;
+    }
+    else
+    {
+        new->speed.x = window->paths->data[window->paths->index].line.enemy_path.speed_x;
+        new->speed.y = window->paths->data[window->paths->index].line.enemy_path.speed_x;
+        new->health = window->paths->data[window->paths->index].line.enemy_path.health;
+        new->max_health = new->health;
+        init_position_float(DEFAULT_W, pos->y, new->texture.texture->texture, &new->pos_dst);
+    }
 
     new->framecount = 0;
 }

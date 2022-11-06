@@ -1,9 +1,11 @@
 #ifndef MSG_LIST
 #define MSG_LIST
 
+#define MAX_MESSAGE_SIZE 8192
+
 struct msg_list
 {
-    char msg[128];
+    char msg[MAX_MESSAGE_SIZE];
     struct msg_list *next;
 };
 

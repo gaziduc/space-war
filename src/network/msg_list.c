@@ -2,7 +2,7 @@
 #include "msg_list.h"
 #include "utils.h"
 
-void add_to_msg_list(struct window *window, struct msg_list *msg_list, char msg[128])
+void add_to_msg_list(struct window *window, struct msg_list *msg_list, char msg[MAX_MESSAGE_SIZE])
 {
     struct msg_list *temp = msg_list;
 
@@ -11,7 +11,7 @@ void add_to_msg_list(struct window *window, struct msg_list *msg_list, char msg[
 
     temp->next = xmalloc(sizeof(struct msg_list), window->window, window->renderer);
 
-    for (size_t i = 0; i < 128; i++)
+    for (size_t i = 0; i < MAX_MESSAGE_SIZE; i++)
         temp->next->msg[i] = msg[i];
 
     temp->next->next = NULL;

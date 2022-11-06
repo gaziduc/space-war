@@ -19,6 +19,7 @@
 #include "net.h"
 #include "effect.h"
 #include "msg_list.h"
+#include "string_vec.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -437,9 +438,12 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
     // Load enemy paths and set enemy timer
     char s[50] = { 0 };
-    sprintf(s, "data/level%d.txt", mission_num);
-    window->paths = load_paths(window, s);
-
+    if (!window->is_lan || window->server)
+    {
+        sprintf(s, "data/level%d.txt", mission_num);
+        window->paths = load_paths(window, s);
+    }
+    
     int escape = 0;
     int retry = 1;
 
@@ -458,7 +462,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
             retry = 0;
         }
 
-        window->paths->index = 0;
+        if (!window->is_lan || window->server)
+            window->paths->index = 0;
 
         int dead = 0;
         int won = 0;
@@ -496,7 +501,8 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
                     // Quit game
                     free_background(window->stars);
-                    free_vector(window->paths);
+                    if (!window->is_lan || window->server)
+                        free_vector(window->paths);
                     window->paths = NULL; // important, see free_all in free.c
                     load_music_and_play(window, "data/endgame.ogg", 1);
                     return;
@@ -522,11 +528,6 @@ void play_game(struct window *window, int mission_num, int difficulty)
             move_objects(window);
             move_hud_texts(window);
             move_background(window, framecount);
-
-            // LAN only
-            if (window->is_lan)
-                if (!handle_messages(window, "PSBQ"))
-                    return;
 
             for (unsigned i = 0; i < window->num_players; i++)
             {
@@ -573,8 +574,144 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
 
             // Create enemies, display wave titles...
-            won = execute_path_action(window) && !window->list[BOSS_LIST]->next
-                                              && !window->list[EXPLOSION_LIST]->next;
+            if (!window->is_lan || window->server)
+            {
+                won = execute_path_action(window) && !window->list[BOSS_LIST]->next
+                                                  && !window->list[EXPLOSION_LIST]->next;
+            }
+            
+            if (window->is_lan)
+            {
+                if (window->server && framecount % 15 == 0)
+                {
+                    struct msg msg = { .type = SERVER_ALL_MSG };
+                    msg.content.string_vec = create_string(window);
+
+                    struct list* temp = window->list[ENEMY_LIST]->next;
+                    while (temp)
+                    {
+                        char buffer[22] = { 0 };
+                        buffer[0] = 'e'; // Enemy
+                        write_float(temp->pos_dst.x, buffer + 1);
+                        write_float(temp->pos_dst.y, buffer + 5);
+                        SDLNet_Write16(temp->max_health, buffer + 9);
+                        SDLNet_Write16(temp->health, buffer + 11);
+                        write_float(temp->speed.x, buffer + 13);
+                        write_float(temp->speed.y, buffer + 17);
+                        buffer[21] = temp->enemy_type;
+
+                        add_bytes(window, msg.content.string_vec, buffer, 22);
+
+                        temp = temp->next;
+                    }
+
+                    temp = window->list[MY_SHOTS_LIST]->next;
+                    while (temp)
+                    {
+                        char buffer[9] = { 0 };
+                        buffer[0] = 's'; // My shots
+                        write_float(temp->pos_dst.x, buffer + 1);
+                        write_float(temp->pos_dst.y, buffer + 5);
+
+                        add_bytes(window, msg.content.string_vec, buffer, 9);
+
+                        temp = temp->next;
+                    }
+
+
+                    temp = window->list[ENEMY_SHOT_LIST]->next;
+                    while (temp)
+                    {
+                        char buffer[18] = { 0 };
+                        buffer[0] = 't'; // Enemy shots
+                        write_float(temp->pos_dst.x, buffer + 1);
+                        write_float(temp->pos_dst.y, buffer + 5);
+                        write_float(temp->speed.x, buffer + 9);
+                        write_float(temp->speed.y, buffer + 13);
+                        buffer[17] = temp->enemy_type;
+
+                        add_bytes(window, msg.content.string_vec, buffer, 18);
+
+                        temp = temp->next;
+                    }
+
+                    temp = window->list[OBJECT_LIST]->next;
+                    while (temp)
+                    {
+                        char buffer[10] = { 0 };
+                        buffer[0] = 'o'; // Objects
+                        write_float(temp->pos_dst.x, buffer + 1);
+                        write_float(temp->pos_dst.y, buffer + 5);
+                        buffer[9] = temp->type;
+
+                        add_bytes(window, msg.content.string_vec, buffer, 10);
+
+                        temp = temp->next;
+                    }
+
+                    temp = window->list[EXPLOSION_LIST]->next;
+                    while (temp)
+                    {
+                        char buffer[26] = { 0 };
+                        buffer[0] = 'x'; // Explosion
+                        write_float(temp->pos_dst.x, buffer + 1);
+                        write_float(temp->pos_dst.y, buffer + 5);
+                        write_float(temp->pos_src.x, buffer + 9);
+                        write_float(temp->pos_src.y, buffer + 13);
+                        write_float(temp->pos_src.w, buffer + 17);
+                        write_float(temp->pos_src.h, buffer + 21);
+                        buffer[25] = temp->num_explosion;
+
+                        add_bytes(window, msg.content.string_vec, buffer, 26);
+
+                        temp = temp->next;
+                    }
+
+                    temp = window->list[HUD_LIST]->next;
+                    while (temp)
+                    {
+                        char buffer[21] = { 0 };
+                        buffer[0] = 'h'; // HUD
+                        write_float(temp->pos_dst.x, buffer + 1);
+                        write_float(temp->pos_dst.y, buffer + 5);
+                        write_float(temp->pos_dst.w, buffer + 9);
+                        write_float(temp->pos_dst.h, buffer + 13);
+                        SDLNet_Write32(SDL_GetTicks() - temp->last_time_hurt, buffer + 17);
+
+                        add_bytes(window, msg.content.string_vec, buffer, 21);
+
+                        temp = temp->next;
+                    }
+
+                    temp = window->list[BOSS_LIST]->next;
+                    while (temp)
+                    {
+                        char buffer[30] = { 0 };
+                        buffer[0] = 'b'; // Boss
+                        write_float(temp->pos_dst.x, buffer + 1);
+                        write_float(temp->pos_dst.y, buffer + 5);
+                        write_float(temp->pos_dst.w, buffer + 9);
+                        write_float(temp->pos_dst.h, buffer + 13);
+                        SDLNet_Write16(temp->max_health, buffer + 17);
+                        SDLNet_Write16(temp->health, buffer + 19);
+                        write_float(temp->speed.x, buffer + 21);
+                        write_float(temp->speed.y, buffer + 25);
+                        buffer[29] = temp->enemy_type;
+
+                        add_bytes(window, msg.content.string_vec, buffer, 30);
+
+                        temp = temp->next;
+                    }
+
+                    send_msg(window, &msg);
+
+                    free_string(msg.content.string_vec);
+                }
+
+                // LAN only
+                if (!handle_messages(window, "PSBQ:"))
+                    return;
+            }
 
 
             SDL_RenderPresent(window->renderer);

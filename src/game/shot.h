@@ -4,7 +4,7 @@
 #include "init.h"
 #include <SDL2/SDL.h>
 
-void set_shot_pos(struct list *new, SDL_FRect *pos, struct window *window);
+void set_shot_pos(struct list *new, SDL_FRect *pos, struct window *window, int override_pos);
 
 unsigned compute_combo_score(unsigned combo);
 

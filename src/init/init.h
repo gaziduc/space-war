@@ -283,6 +283,7 @@ enum msg_type
     GET_TIME_MSG,
     TIME_MSG,
     QUIT_MSG,
+    SERVER_ALL_MSG,
     Z_MSG
 };
 
@@ -300,6 +301,7 @@ union msg_content
     SDL_Point point;
     Uint32 ticks;
     char boolean;
+    struct string_vec* string_vec;
 };
 
 

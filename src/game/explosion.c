@@ -5,17 +5,19 @@
 #include <SDL2/SDL.h>
 
 
-void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_dst, SDL_Texture *texture, int explosion_texture_num)
+void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_dst, SDL_Texture *texture, int explosion_texture_num, SDL_FRect *pos_src_override)
 {
     new->num_explosion = explosion_texture_num;
 
-    int exp_w = 0;
-    int exp_h = 0;
-    SDL_QueryTexture(window->img->explosion[new->num_explosion], NULL, NULL, &exp_w, &exp_h);
-
-    SDL_Point anim_sprite = { .x = 0, .y = 0 };
-    switch (explosion_texture_num)
+    if (pos_src_override == NULL)
     {
+        int exp_w = 0;
+        int exp_h = 0;
+        SDL_QueryTexture(window->img->explosion[new->num_explosion], NULL, NULL, &exp_w, &exp_h);
+
+        SDL_Point anim_sprite = { .x = 0, .y = 0 };
+        switch (explosion_texture_num)
+        {
         case 0:
             anim_sprite.x = 8;
             anim_sprite.y = 8;
@@ -28,20 +30,36 @@ void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_d
 
         default:
             break;
-    }
+        }
 
-    // Setting animation to first frame
-    new->pos_src.x = 0;
-    new->pos_src.y = 0;
-    new->pos_src.w = exp_w / anim_sprite.x;
-    new->pos_src.h = exp_h / anim_sprite.y;
+        // Setting animation to first frame
+        new->pos_src.x = 0;
+        new->pos_src.y = 0;
+        new->pos_src.w = exp_w / anim_sprite.x;
+        new->pos_src.h = exp_h / anim_sprite.y;
+    }
+    else
+    {
+        new->pos_src.x = pos_src_override->x;
+        new->pos_src.y = pos_src_override->y;
+        new->pos_src.w = pos_src_override->w;
+        new->pos_src.h = pos_src_override->h;
+    }
+    
 
     int w = 0;
     int h = 0;
-    SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-
-    new->pos_dst.x = pos_dst->x + w / 2 - new->pos_src.w / 2;
-    new->pos_dst.y = pos_dst->y + h / 2 - new->pos_src.h / 2;
+    int pos_src_w = 0;
+    int pos_src_h = 0;
+    if (texture != NULL)
+    {
+        SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+        pos_src_w = new->pos_src.w;
+        pos_src_h = new->pos_src.h;
+    }
+        
+    new->pos_dst.x = pos_dst->x + w / 2 - pos_src_w / 2;
+    new->pos_dst.y = pos_dst->y + h / 2 - pos_src_h / 2;
     new->pos_dst.w = new->pos_src.w;
     new->pos_dst.h = new->pos_src.h;
 }

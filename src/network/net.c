@@ -12,6 +12,13 @@
 #include "background.h"
 #include "vector.h"
 #include "ready.h"
+#include "string_vec.h"
+#include "enemy.h"
+#include "shot.h"
+#include "object.h"
+#include "explosion.h"
+#include "hud.h"
+#include "boss.h"
 #include <stdio.h>
 #include <string.h>
 #include <SDL2/SDL.h>
@@ -185,12 +192,11 @@ static void accept_client(struct window *window, char *ip_str)
             switch (selected_item)
             {
                 case 1: // Accept
-                    ;
+                    SDL_CreateThread(recv_thread, "recv_thread", window);
+
                     struct msg accept_msg = { .type = ACCEPT_MSG };
                     accept_msg.content.boolean = 1;
                     send_msg(window, &accept_msg);
-
-                    SDL_CreateThread(recv_thread, "recv_thread", window);
 
                     while (handle_messages(window, "G"))
                     {
@@ -585,91 +591,102 @@ void connect_to_server(struct window *window)
 
 void send_msg(struct window *window, struct msg *msg)
 {
-    char protocol_msg[128] = { 0 };
+    char protocol_msg[MAX_MESSAGE_SIZE] = { 0 };
 
     switch (msg->type)
     {
         case ACCEPT_MSG:
-            protocol_msg[0] = 2;
-            protocol_msg[1] = 'A';
-            protocol_msg[2] = msg->content.boolean;
+            SDLNet_Write16(2, protocol_msg);
+            protocol_msg[2] = 'A';
+            protocol_msg[3] = msg->content.boolean;
             break;
 
         case RESTART_MSG:
-            protocol_msg[0] = 5;
-            protocol_msg[1] = 'R';
-            SDLNet_Write32(msg->content.ticks, protocol_msg + 2);
+            SDLNet_Write16(5, protocol_msg);
+            protocol_msg[2] = 'R';
+            SDLNet_Write32(msg->content.ticks, protocol_msg + 3);
             break;
 
         case MENU_MSG:
-            protocol_msg[0] = 1;
-            protocol_msg[1] = 'M';
+            SDLNet_Write16(1, protocol_msg);
+            protocol_msg[2] = 'M';
             break;
 
         case LEVEL_MSG:
-            protocol_msg[0] = 11; // strlen("L") + sizeof(Uint16) * 3 + sizeof(Uint32)
-            protocol_msg[1] = 'L';
-            SDLNet_Write16(msg->content.lvl.level_num, protocol_msg + 2);
-            SDLNet_Write16(msg->content.lvl.level_difficulty, protocol_msg + 4);
-            SDLNet_Write16(msg->content.lvl.weapon, protocol_msg + 6);
-            SDLNet_Write32(msg->content.lvl.start_mission_ticks, protocol_msg + 8);
+            SDLNet_Write16(11, protocol_msg); // strlen("L") + sizeof(Uint16) * 3 + sizeof(Uint32)
+            protocol_msg[2] = 'L';
+            SDLNet_Write16(msg->content.lvl.level_num, protocol_msg + 3);
+            SDLNet_Write16(msg->content.lvl.level_difficulty, protocol_msg + 5);
+            SDLNet_Write16(msg->content.lvl.weapon, protocol_msg + 7);
+            SDLNet_Write32(msg->content.lvl.start_mission_ticks, protocol_msg + 9);
             break;
 
         case POSITION_MSG:
-            protocol_msg[0] = 5; // strlen("L") + sizeof(Uint16) * 2
-            protocol_msg[1] = 'P';
-            SDLNet_Write16(msg->content.point.x, protocol_msg + 2);
-            SDLNet_Write16(msg->content.point.y, protocol_msg + 4);
+            SDLNet_Write16(5, protocol_msg); // strlen("L") + sizeof(Uint16) * 2
+            protocol_msg[2] = 'P';
+            SDLNet_Write16(msg->content.point.x, protocol_msg + 3);
+            SDLNet_Write16(msg->content.point.y, protocol_msg + 5);
             break;
 
         case SHOOT_MSG:
-            protocol_msg[0] = 1; // strlen("L") + sizeof(Uint16) * 2
-            protocol_msg[1] = 'S';
+            SDLNet_Write16(1, protocol_msg); // strlen("L") + sizeof(Uint16) * 2
+            protocol_msg[2] = 'S';
             break;
 
         case BOMB_MSG:
-            protocol_msg[0] = 1;
-            protocol_msg[1] = 'B';
+            SDLNet_Write16(1, protocol_msg);
+            protocol_msg[2] = 'B';
             break;
 
         case QUIT_MSG:
-            protocol_msg[0] = 1;
-            protocol_msg[1] = 'Q';
+            SDLNet_Write16(1, protocol_msg);
+            protocol_msg[2] = 'Q';
             break;
 
         case Z_MSG:
-            protocol_msg[0] = 1;
-            protocol_msg[1] = 'Z';
+            SDLNet_Write16(1, protocol_msg);
+            protocol_msg[2] = 'Z';
             break;
 
         case GET_TIME_MSG:
-            protocol_msg[0] = 1;
-            protocol_msg[1] = 'G';
+            SDLNet_Write16(1, protocol_msg);
+            protocol_msg[2] = 'G';
             break;
 
         case TIME_MSG:
-            protocol_msg[0] = 5;
-            protocol_msg[1] = 'T';
-            SDLNet_Write32(msg->content.ticks, protocol_msg + 2);
+            SDLNet_Write16(5, protocol_msg);
+            protocol_msg[2] = 'T';
+            SDLNet_Write32(msg->content.ticks, protocol_msg + 3);
+            break;
+
+        case SERVER_ALL_MSG:
+            ;
+            Uint16 size = (Uint16) msg->content.string_vec->size;
+            SDLNet_Write16(size + 1, protocol_msg);
+            protocol_msg[2] = ':';
+            for (size_t i = 0; i < size; i++)
+               protocol_msg[i + 3] = msg->content.string_vec->ptr[i];
             break;
     }
 
-    SDLNet_TCP_Send(window->client, protocol_msg, 1 + protocol_msg[0]);
+    SDLNet_TCP_Send(window->client, protocol_msg, sizeof(Uint16) + SDLNet_Read16(protocol_msg));
 
-    if (protocol_msg[1] == 'Z')
-        SDLNet_TCP_Send(window->server, protocol_msg, 1 + protocol_msg[0]);
+    if (protocol_msg[2] == 'Z')
+        SDLNet_TCP_Send(window->server, protocol_msg, sizeof(Uint16) + SDLNet_Read16(protocol_msg));
 }
 
 
 void recv_msg(struct window *window, char *msg)
 {
-    Uint8 msg_len = 0;
+    char buffer[2] = { 0 };
 
-    if (SDLNet_TCP_Recv(window->client, &msg_len, sizeof(msg_len)) <= 0)
+    if (SDLNet_TCP_Recv(window->client, buffer, 2) <= 0)
     {
         msg[0] = '\0';
         return;
     }
+
+    const Uint16 msg_len = SDLNet_Read16(buffer);
 
     if (SDLNet_TCP_Recv(window->client, msg, msg_len) <= 0)
     {
@@ -760,6 +777,128 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 Uint32 latency = (window->ticks - window->client_request_time) / 2;
                 window->last_sync_time = server_time + latency;
                 break;
+
+            case ':': // SERVER_ALL_MSG
+                for (enum list_type i = 0; i < NUM_LISTS; i++)
+                    clear_list(window->list[i]);
+
+                int i = 1;
+                while (msg[i])
+                {
+                    struct list* new = xmalloc(sizeof(struct list), window->window, window->renderer);
+                    char* msg_begin = msg + i;
+                    enum list_type type;
+
+                    if (msg_begin[0] == 'e')
+                    {
+                        float pos_x = read_float(msg_begin + 1);
+                        float pos_y = read_float(msg_begin + 5);
+                        SDL_FRect pos = {.x = pos_x, .y = pos_y };
+                        float max_health = SDLNet_Read16(msg_begin + 9);
+                        float health = SDLNet_Read16(msg_begin + 11);
+                        float speed_x = read_float(msg_begin + 13);
+                        float speed_y = read_float(msg_begin + 17);
+                        char enemy_type = msg_begin[21];
+
+                        set_enemy_attributes(new, &pos, window, enemy_type, speed_x, health, max_health, 1, speed_y);
+
+                        type = ENEMY_LIST;
+                        i += 22;
+                    }
+                    else if (msg_begin[0] == 's')
+                    {
+                        float pos_x = read_float(msg_begin + 1);
+                        float pos_y = read_float(msg_begin + 5);
+                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
+                        set_shot_pos(new, &pos, window, 1);
+
+                        type = MY_SHOTS_LIST;
+                        i += 9;
+                    }
+                    else if (msg_begin[0] == 't')
+                    {
+                        float pos_x = read_float(msg_begin + 1);
+                        float pos_y = read_float(msg_begin + 5);
+                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
+                        float speed_x = read_float(msg_begin + 9);
+                        float speed_y = read_float(msg_begin + 13);
+                        SDL_FRect speed = { .x = speed_x, .y = speed_y };
+                        char shot_type = msg_begin[17];
+                        set_enemy_shot_attributes(new, &pos, NULL, shot_type, window, &speed, 1);
+
+                        type = ENEMY_SHOT_LIST;
+                        i += 18;
+                    }
+                    else if (msg_begin[0] == 'o') // Object
+                    {
+                        float pos_x = read_float(msg_begin + 1);
+                        float pos_y = read_float(msg_begin + 5);
+                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
+                        enum object_type object_type = msg_begin[9];
+
+                        set_object_attributes(new, object_type, window->img->objects[object_type], &pos);
+
+                        type = OBJECT_LIST;
+                        i += 10;
+                    }
+                    else if (msg_begin[0] == 'x')
+                    {
+                        float pos_x = read_float(msg_begin + 1);
+                        float pos_y = read_float(msg_begin + 5);
+                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
+
+                        float pos_src_x = read_float(msg_begin + 9);
+                        float pos_src_y = read_float(msg_begin + 13);
+                        float pos_src_w = read_float(msg_begin + 17);
+                        float pos_src_h = read_float(msg_begin + 21);
+                        SDL_FRect pos_src = { .x = pos_src_x, .y = pos_src_y, .w = pos_src_w, .h = pos_src_h };
+                        int explosion_type = msg_begin[25];
+
+                        set_explosion_pos(new, window, &pos, NULL, explosion_type, &pos_src);
+
+                        type = EXPLOSION_LIST;
+                        i += 26;
+                    }
+                    else if (msg_begin[0] == 'h')
+                    {
+                        float pos_x = read_float(msg_begin + 1);
+                        float pos_y = read_float(msg_begin + 5);
+                        float pos_w = read_float(msg_begin + 9);
+                        float pos_h = read_float(msg_begin + 13);
+                        SDL_FRect pos = { .x = pos_x, .y = pos_y, .w = pos_w, .h = pos_h };
+
+                        Uint32 time_diff = SDLNet_Read32(msg_begin + 17);
+                     
+                        set_hud_text(new, &pos, window, 1, SDL_GetTicks() - time_diff);
+
+                        type = HUD_LIST;
+                        i += 21;
+                    }
+                    else if (msg_begin[0] == 'b')
+                    {
+                        float pos_x = read_float(msg_begin + 1);
+                        float pos_y = read_float(msg_begin + 5);
+                        float pos_w = read_float(msg_begin + 9);
+                        float pos_h = read_float(msg_begin + 13);
+                        SDL_FRect pos = { .x = pos_x, .y = pos_y, .w = pos_w, .h = pos_h };
+                        float max_health = SDLNet_Read16(msg_begin + 17);
+                        float health = SDLNet_Read16(msg_begin + 19);
+                        float speed_x = read_float(msg_begin + 21);
+                        float speed_y = read_float(msg_begin + 25);
+                        SDL_FRect speed = { .x = speed_x, .y = speed_y };
+                        char enemy_type = msg_begin[29];
+
+                        set_boss_attributes(new, &pos, window, enemy_type, 1, &speed, health, max_health);
+
+                        type = BOSS_LIST;
+                        i += 30;
+                    }
+
+                    // Pushing element in front of the correct list
+                    new->next = window->list[type]->next;
+                    window->list[type]->next = new;
+                }
+                break;
         }
     }
 
@@ -823,13 +962,13 @@ int connecting_thread(void *data)
 int recv_thread(void *data)
 {
     struct window *window = data;
-    char msg[128] = { 0 };
+    char msg[MAX_MESSAGE_SIZE] = { 0 };
 
     do
     {
         recv_msg(window, msg);
 
-        if (msg[0]) // msg[0] != '\0'
+        if (msg[0])
             add_to_msg_list(window, window->msg_list, msg);
 
     } while (msg[0] && msg[0] != 'Z');
@@ -852,5 +991,20 @@ int get_online_ip_thread(void *data)
     has_online_ip = 2;
 
     return 0;
+}
+
+float read_float(char* buffer)
+{
+    Uint32 data = SDLNet_Read32(buffer);
+    float res = 0.0;
+    memcpy(&res, &data, sizeof(data));
+    return res;
+}
+
+void write_float(float number, char* buffer_to_write_to)
+{
+    Uint32 unsigned_num = 0;
+    memcpy(&unsigned_num, &number, sizeof(number));
+    SDLNet_Write32(unsigned_num, buffer_to_write_to);
 }
 

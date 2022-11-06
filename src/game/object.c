@@ -5,12 +5,17 @@
 #include <SDL2/SDL.h>
 
 void set_object_attributes(struct list *new, enum object_type type,
-                           struct collision_texture *collision)
+                           struct collision_texture *collision, SDL_FRect* override_pos)
 {
     new->texture.texture = collision;
     new->rotating = 0;
 
     init_position_float(DEFAULT_W, POS_CENTERED, new->texture.texture->texture, &new->pos_dst);
+    if (override_pos)
+    {
+        new->pos_dst.x = override_pos->x;
+        new->pos_dst.y = override_pos->y;
+    }
 
     new->type = type;
     new->framecount = 0;

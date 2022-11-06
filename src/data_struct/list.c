@@ -1,3 +1,4 @@
+#include "path.h"
 #include "list.h"
 #include "utils.h"
 #include "shot.h"
@@ -29,25 +30,29 @@ void list_push_front(SDL_FRect *pos, struct window *window,
     switch (type)
     {
         case MY_SHOTS_LIST: // Setting shot initial position
-            set_shot_pos(new, pos, window);
+            set_shot_pos(new, pos, window, 0);
             break;
         case ENEMY_LIST: // Setting enemy initial position and speed
-            set_enemy_attributes(new, pos, window, enemy_type);
+            ;
+            int health = window->paths->data[window->paths->index].line.enemy_path.health;
+            set_enemy_attributes(new, pos, window, enemy_type,
+                                 window->paths->data[window->paths->index].line.enemy_path.speed_x,
+                                 health, health, 0, 0);
             break;
         case EXPLOSION_LIST:
-            set_explosion_pos(new, window, pos, texture, explosion_num);
+            set_explosion_pos(new, window, pos, texture, explosion_num, NULL);
             break;
         case ENEMY_SHOT_LIST:
-            set_enemy_shot_attributes(new, pos, ship_pos, enemy_type, window);
+            set_enemy_shot_attributes(new, pos, ship_pos, enemy_type, window, NULL, 0);
             break;
         case BOSS_LIST:
-            set_boss_attributes(new, pos, window, enemy_type);
+            set_boss_attributes(new, pos, window, enemy_type, 0, NULL, 0, 0);
             break;
         case OBJECT_LIST:
-            set_object_attributes(new, object, window->img->objects[object]);
+            set_object_attributes(new, object, window->img->objects[object], NULL);
             break;
         case HUD_LIST:
-            set_hud_text(new, pos, window);
+            set_hud_text(new, pos, window, 0, 0);
             break;
 
         default:

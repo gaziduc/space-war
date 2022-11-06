@@ -193,15 +193,26 @@ void render_hud(struct window *window)
 }
 
 
-void set_hud_text(struct list *new, SDL_FRect *pos_dst, struct window *window)
+void set_hud_text(struct list *new, SDL_FRect *pos_dst, struct window *window, int override_pos_and_time, Uint32 last_time_hurt)
 {
-    /* Get text width */
-    int w = 0;
-    TTF_SizeText(window->fonts->craft, "+100", &w, NULL);
+    if (override_pos_and_time)
+    {
+        new->pos_dst.x = pos_dst->x;
+        new->pos_dst.y = pos_dst->y;
+        new->pos_dst.w = pos_dst->w;
+        new->pos_dst.h = pos_dst->h;
+        new->last_time_hurt = last_time_hurt;
+    }
+    else
+    {
+        /* Get text width */
+        int w = 0;
+        TTF_SizeText(window->fonts->craft, "+100", &w, NULL);
 
-    new->pos_dst.x = pos_dst->x + pos_dst->w / 2 - w / 2;
-    new->pos_dst.y = pos_dst->y;
-    new->last_time_hurt = SDL_GetTicks();
+        new->pos_dst.x = pos_dst->x + pos_dst->w / 2 - w / 2;
+        new->pos_dst.y = pos_dst->y;
+        new->last_time_hurt = SDL_GetTicks();
+    }
 }
 
 

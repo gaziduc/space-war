@@ -41,6 +41,26 @@ void add_string(struct window *window, struct string_vec *str, const char *to_ad
 }
 
 
+/*
+* Warning: this function is not intended for use as normal string...
+*/
+void add_bytes(struct window* window, struct string_vec* str, const char* to_add, long bytes_size)
+{
+    for (size_t index = 0; index < bytes_size; index++)
+    {
+        // If string_vec too small
+        if (str->size + 1 >= str->capacity)
+            double_string_capacity(str, window);
+
+        str->ptr[str->size] = to_add[index];
+
+        str->size++;
+    }
+
+    str->ptr[str->size] = '\0';
+}
+
+
 void free_string(struct string_vec *str)
 {
     free(str->ptr);

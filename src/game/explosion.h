@@ -7,7 +7,7 @@
 #define EXPLOSION_2_NUM_TILES_X 5
 #define EXPLOSION_2_NUM_TILES_Y 4
 
-void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_dst, SDL_Texture *texture, int explosion_texture_num);
+void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_dst, SDL_Texture *texture, int explosion_texture_num, SDL_FRect* pos_src_override);
 
 void move_explosions(struct window *window);
 

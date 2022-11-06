@@ -21,4 +21,8 @@ int recv_thread(void *data);
 
 int get_online_ip_thread(void *data);
 
+float read_float(char* buffer);
+
+void write_float(float number, char* buffer_to_write_to);
+
 #endif /* !NET_H */
