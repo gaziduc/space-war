@@ -511,9 +511,10 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
             for (unsigned i = 0; i < window->num_players; i++)
             {
+                window->player[i].frame_num = get_ship_frame_num(framecount);
+
                 if (i == 0 || (i == 1 && !window->is_lan))
-                {
-                    window->player[i].frame_num = get_ship_frame_num(framecount);
+                {    
                     handle_arrow_event(window, &window->player[i]);
                     handle_shot_event(window, &window->player[i]);
                     handle_bomb_event(window, &window->player[i]);
