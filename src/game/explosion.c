@@ -49,17 +49,11 @@ void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_d
 
     int w = 0;
     int h = 0;
-    int pos_src_w = 0;
-    int pos_src_h = 0;
     if (texture != NULL)
-    {
         SDL_QueryTexture(texture, NULL, NULL, &w, &h);
-        pos_src_w = new->pos_src.w;
-        pos_src_h = new->pos_src.h;
-    }
-        
-    new->pos_dst.x = pos_dst->x + w / 2 - pos_src_w / 2;
-    new->pos_dst.y = pos_dst->y + h / 2 - pos_src_h / 2;
+
+    new->pos_dst.x = pos_dst->x + w / 2 - new->pos_src.w / 2;
+    new->pos_dst.y = pos_dst->y + h / 2 - new->pos_src.h / 2;
     new->pos_dst.w = new->pos_src.w;
     new->pos_dst.h = new->pos_src.h;
 }
