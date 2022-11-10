@@ -19,13 +19,13 @@ void set_explosion_pos(struct list *new, struct window *window, SDL_FRect *pos_d
         switch (explosion_texture_num)
         {
         case 0:
-            anim_sprite.x = 8;
-            anim_sprite.y = 8;
+            anim_sprite.x = EXPLOSION_1_NUM_TILES_X;
+            anim_sprite.y = EXPLOSION_1_NUM_TILES_Y;
             break;
 
         case 1:
-            anim_sprite.x = 5;
-            anim_sprite.y = 4;
+            anim_sprite.x = EXPLOSION_2_NUM_TILES_X;
+            anim_sprite.y = EXPLOSION_2_NUM_TILES_Y;
             break;
 
         default:

@@ -20,6 +20,7 @@
 #include "hud.h"
 #include "boss.h"
 #include <stdio.h>
+#include <stdlib.h> // for atoi
 #include <string.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_thread.h>
