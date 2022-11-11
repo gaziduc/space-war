@@ -19,6 +19,7 @@
 #include "explosion.h"
 #include "hud.h"
 #include "boss.h"
+#include "list.h"
 #include <stdio.h>
 #include <stdlib.h> // for atoi
 #include <string.h>

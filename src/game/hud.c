@@ -162,7 +162,7 @@ void render_hud(struct window *window)
         if (alpha < 6000)
             alpha = 255;
         else if (alpha <= 6255)
-            alpha = -(alpha - 6000) + 255;
+            alpha = -((int) alpha - 6000) + 255;
         else
             alpha = 0;
     }
