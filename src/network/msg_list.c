@@ -20,7 +20,11 @@ void add_to_msg_list(struct window *window, struct msg_list *msg_list, char msg[
 static void clear_msg_list_rec(struct msg_list *msg_list)
 {
     if (msg_list->next)
+    {
         clear_msg_list_rec(msg_list->next);
+        msg_list->next = NULL;
+    }
+        
 
     free(msg_list);
 }
@@ -28,7 +32,8 @@ static void clear_msg_list_rec(struct msg_list *msg_list)
 void clear_msg_list(struct msg_list *msg_list)
 {
     if (msg_list->next)
+    {
         clear_msg_list_rec(msg_list->next);
-
-    msg_list->next = NULL;
+        msg_list->next = NULL;
+    }    
 }

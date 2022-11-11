@@ -23,7 +23,7 @@ static int is_rotating(char enemy_type)
 void set_enemy_attributes(struct list *new, SDL_FRect *pos,
                           struct window *window, char enemy_type,
                           float speed_x, int health, int max_health,
-                          int override_pos_and_speed, float speed_y)
+                          int override_pos_and_speed, float speed_y, Uint16 curr_texture)
 {
     new->speed.x = speed_x;
     new->health = health;
@@ -66,7 +66,7 @@ void set_enemy_attributes(struct list *new, SDL_FRect *pos,
     }
 
     new->rotating = is_rotating(enemy_type);
-    new->curr_texture = 0;
+    new->curr_texture = override_pos_and_speed && new->rotating ? curr_texture : 0;
     init_position_float(DEFAULT_W, pos->y,
                   new->rotating ? new->texture.textures[0]->texture
                                 : new->texture.texture->texture,

@@ -577,6 +577,12 @@ void play_game(struct window *window)
             {
                 won = execute_path_action(window) && !window->list[BOSS_LIST]->next
                                                   && !window->list[EXPLOSION_LIST]->next;
+
+                if (won && window->server)
+                {
+                    struct msg msg = { .type = WON_MSG };
+                    send_msg(window, &msg);
+                }
             }
             
             if (window->is_lan)
@@ -586,10 +592,16 @@ void play_game(struct window *window)
                     struct msg msg = { .type = SERVER_ALL_MSG };
                     msg.content.string_vec = create_string(window);
 
+                    char buf[8] = { 0 };
+                    SDLNet_Write16(window->player[0].health, buf);
+                    SDLNet_Write16(window->player[1].health, buf + 2);
+                    SDLNet_Write32(window->score, buf + 4);
+                    add_bytes(window, msg.content.string_vec, buf, 8);
+
                     struct list* temp = window->list[ENEMY_LIST]->next;
                     while (temp)
                     {
-                        char buffer[22] = { 0 };
+                        char buffer[24] = { 0 };
                         buffer[0] = 'e'; // Enemy
                         write_float(temp->pos_dst.x, buffer + 1);
                         write_float(temp->pos_dst.y, buffer + 5);
@@ -598,8 +610,9 @@ void play_game(struct window *window)
                         write_float(temp->speed.x, buffer + 13);
                         write_float(temp->speed.y, buffer + 17);
                         buffer[21] = temp->enemy_type;
+                        SDLNet_Write16(temp->curr_texture, buffer + 22);
 
-                        add_bytes(window, msg.content.string_vec, buffer, 22);
+                        add_bytes(window, msg.content.string_vec, buffer, 24);
 
                         temp = temp->next;
                     }
@@ -708,8 +721,11 @@ void play_game(struct window *window)
                 }
 
                 // LAN only
-                if (!handle_messages(window, "PSBQ:"))
+                int res = handle_messages(window, "PSBQ:W");
+                if (!res)
                     return;
+                if (res == 3)
+                    won = 1;
             }
 
 

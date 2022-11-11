@@ -285,7 +285,8 @@ enum msg_type
     TIME_MSG,
     QUIT_MSG,
     SERVER_ALL_MSG,
-    Z_MSG
+    Z_MSG,
+    WON_MSG
 };
 
 struct level

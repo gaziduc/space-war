@@ -37,7 +37,7 @@ void list_push_front(SDL_FRect *pos, struct window *window,
             int health = window->paths->data[window->paths->index].line.enemy_path.health;
             set_enemy_attributes(new, pos, window, enemy_type,
                                  window->paths->data[window->paths->index].line.enemy_path.speed_x,
-                                 health, health, 0, 0);
+                                 health, health, 0, 0, 0);
             break;
         case EXPLOSION_LIST:
             set_explosion_pos(new, window, pos, texture, explosion_num, NULL);

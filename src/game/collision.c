@@ -60,6 +60,9 @@ void hurt(struct window *window, struct player *player)
         end_combo(window);
 
         player->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+        // Fix for online 
+        if (player->health < 0)
+            player->health = 0;
         window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
 
         // Set shake effect
@@ -214,7 +217,13 @@ static void check_collisions_list(struct window *window, struct player *player,
                 if (SDL_GetTicks() - window->player[0].shield_time < SHIELD_TIME) // If shield
                     player->shield_time = 0;
                 else
+                {
                     player->health -= HEALTH_TO_DECREASE_WHEN_HURT * 5;
+                    // Fix for online 
+                    if (player->health < 0)
+                        player->health = 0;
+                }
+                   
 
                 window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
 
@@ -281,6 +290,9 @@ static void check_collisions_list(struct window *window, struct player *player,
                     end_combo(window);
 
                     player->health -= HEALTH_TO_DECREASE_WHEN_HURT;
+                    // Fix for online 
+                    if (player->health < 0)
+                        player->health = 0;
                     window->touched_anim = TOUCHED_EFFECT_MAX_ALPHA;
 
                     // Set shake effect

@@ -12,7 +12,7 @@
 void set_enemy_attributes(struct list* new, SDL_FRect* pos,
                           struct window* window, char enemy_type,
                           float speed_x, int health, int max_health,
-                          int override_pos_and_speed, float speed_y);
+                          int override_pos_and_speed, float speed_y, Uint16 curr_texture);
 
 void create_enemies(struct window *window);
 

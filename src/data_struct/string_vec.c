@@ -49,15 +49,13 @@ void add_bytes(struct window* window, struct string_vec* str, const char* to_add
     for (size_t index = 0; index < bytes_size; index++)
     {
         // If string_vec too small
-        if (str->size + 1 >= str->capacity)
+        if (str->size >= str->capacity)
             double_string_capacity(str, window);
 
         str->ptr[str->size] = to_add[index];
 
         str->size++;
     }
-
-    str->ptr[str->size] = '\0';
 }
 
 

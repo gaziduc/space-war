@@ -663,10 +663,19 @@ void send_msg(struct window* window, struct msg* msg)
     case SERVER_ALL_MSG:
         ;
         Uint16 size = (Uint16) msg->content.string_vec->size;
+        if (size > 8000)
+        {
+            exit(2);
+        }
         SDLNet_Write16(size + 1, protocol_msg);
         protocol_msg[2] = ':';
-        for (size_t i = 0; i < size; i++)
-            protocol_msg[i + 3] = msg->content.string_vec->ptr[i];
+        for (Uint16 i = 0; i < size; i++)
+            protocol_msg[i + 3] = msg->content.string_vec->ptr[i]; 
+        break;
+
+    case WON_MSG:
+        SDLNet_Write16(1, protocol_msg);
+        protocol_msg[2] = 'W';
         break;
     }
 
@@ -694,8 +703,6 @@ void recv_msg(struct window *window, char *msg)
         msg[0] = '\0';
         return;
     }
-
-    msg[msg_len] = '\0';
 }
 
 
@@ -772,11 +779,18 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 window->last_sync_time = server_time + latency;
                 break;
 
+            case 'W':
+                return 3;
+
             case ':': // SERVER_ALL_MSG
                 for (enum list_type i = 0; i < NUM_LISTS; i++)
                     clear_list(window->list[i]);
 
-                int i = 1;
+                window->player[1].health = SDLNet_Read16(msg + 1);
+                window->player[0].health = SDLNet_Read16(msg + 3);
+                window->score = SDLNet_Read32(msg + 5);
+
+                int i = 9;
                 while (msg[i])
                 {
                     struct list* new = xmalloc(sizeof(struct list), window->window, window->renderer);
@@ -793,11 +807,12 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                         float speed_x = read_float(msg_begin + 13);
                         float speed_y = read_float(msg_begin + 17);
                         char enemy_type = msg_begin[21];
+                        Uint16 curr_texture = SDLNet_Read16(msg_begin + 22);
 
-                        set_enemy_attributes(new, &pos, window, enemy_type, speed_x, health, max_health, 1, speed_y);
+                        set_enemy_attributes(new, &pos, window, enemy_type, speed_x, health, max_health, 1, speed_y, curr_texture);
 
                         type = ENEMY_LIST;
-                        i += 22;
+                        i += 24;
                     }
                     else if (msg_begin[0] == 's')
                     {
@@ -908,7 +923,7 @@ int handle_messages(struct window *window, char *msg_prefixes_to_handle)
     {
         int res = handle_msg(window, curr_msg->msg, msg_prefixes_to_handle);
 
-        if (!res || res == 2)
+        if (!res || res > 1)
         {
             clear_msg_list(window->msg_list);
             return res;
@@ -973,7 +988,11 @@ int recv_thread(void *data)
                 break;
             }
             else
+            {
                 add_to_msg_list(window, window->msg_list, msg);
+                memset(msg, 0, MAX_MESSAGE_SIZE);
+            }
+                
         }    
         else
             break;
@@ -1007,4 +1026,3 @@ void write_float(float number, char* buffer_to_write_to)
     memcpy(&unsigned_num, &number, sizeof(number));
     SDLNet_Write32(unsigned_num, buffer_to_write_to);
 }
-
