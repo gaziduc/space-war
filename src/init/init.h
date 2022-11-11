@@ -555,6 +555,9 @@ struct window
     struct trophy trophy;
     int combo_lover;
     int num_enemies_collided;
+    int level_difficulty;
+    int level_num;
+    Uint32 start_mission_ticks;
 };
 
 void render_loading_screen(struct window *window);

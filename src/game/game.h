@@ -12,8 +12,10 @@
 void render_trail(struct window *window, struct player *player, SDL_FRect *pos,
                   int is_lan_player, int is_enemy);
 
-void reset_game_attributes(struct window *window, int difficulty, int all_reset);
+void reset_game_attributes(struct window *window, int all_reset);
 
-void play_game(struct window *window, int mission_num, int difficulty);
+void play_game(struct window *window);
+
+void quit_game(struct window* window);
 
 #endif /* !GAME_H */

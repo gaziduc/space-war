@@ -5,6 +5,7 @@
 #include "game.h"
 #include "menu.h"
 #include "net.h"
+#include "ready.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_net.h>
 
@@ -24,8 +25,15 @@ void lobby(struct window *window)
         SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
         SDL_RenderClear(window->renderer);
 
-        if (!handle_messages(window, "LZT"))
+        int res = handle_messages(window, "LZT");
+        if (!res)
             escape = 1;
+        else if (res == 2)
+        {
+            waiting_screen(window, SDL_GetTicks() + window->start_mission_ticks - window->client_time);
+            play_game(window);
+        }
+            
 
         // Process/Draw all the things
         render_stars(window);
@@ -44,5 +52,8 @@ void lobby(struct window *window)
 
         // Wait a frame
         frame_delay(window->fps);
+
+        if (window->client == NULL)
+            break;
     }
 }

@@ -83,13 +83,13 @@ static void render_success_texts(struct window *window, Uint32 begin, int is_bes
 
 
 
-void success(struct window *window, const int level_num, const int difficulty)
+void success(struct window *window, const int level_num)
 {
     if (level_num == 0)
         return;
 
-    if (window->save->progress[window->num_players - 1][level_num - 1] < difficulty)
-        window->save->progress[window->num_players - 1][level_num - 1] = difficulty;
+    if (window->save->progress[window->num_players - 1][level_num - 1] < window->level_difficulty)
+        window->save->progress[window->num_players - 1][level_num - 1] = window->level_difficulty;
 
     int final_score = window->score + window->num_bombs * 100 + window->bonus;
     for (unsigned i = 0; i < window->num_players; i++)
@@ -107,7 +107,7 @@ void success(struct window *window, const int level_num, const int difficulty)
     if (window->combo_lover && !window->save->trophies[COMBO_LOVER])
         achieve_trophy(window, COMBO_LOVER);
 
-    if (difficulty == REALLY_HARD && !window->save->trophies[REALLY_HARD_SUCCESS])
+    if (window->level_difficulty == REALLY_HARD && !window->save->trophies[REALLY_HARD_SUCCESS])
         achieve_trophy(window, REALLY_HARD_SUCCESS);
 
     if (level_num == NUM_LEVELS + 1 && !window->save->trophies[ARCADE_SUCCESS])
@@ -125,7 +125,7 @@ void success(struct window *window, const int level_num, const int difficulty)
     if (window->num_enemies_collided >= 4 && !window->save->trophies[IS_IT_POSSIBLE])
         achieve_trophy(window, IS_IT_POSSIBLE);
 
-    if (difficulty == REALLY_HARD && window->player[0].ammo >= 100 && !window->save->trophies[AMMO_COLLECTOR])
+    if (window->level_difficulty == REALLY_HARD && window->player[0].ammo >= 100 && !window->save->trophies[AMMO_COLLECTOR])
         achieve_trophy(window, AMMO_COLLECTOR);
 
     if (window->is_lan && !window->save->trophies[OVER_THE_WORLD])

@@ -590,88 +590,88 @@ void connect_to_server(struct window *window)
 
 
 
-void send_msg(struct window *window, struct msg *msg)
+void send_msg(struct window* window, struct msg* msg)
 {
     char protocol_msg[MAX_MESSAGE_SIZE] = { 0 };
 
     switch (msg->type)
     {
-        case ACCEPT_MSG:
-            SDLNet_Write16(2, protocol_msg);
-            protocol_msg[2] = 'A';
-            protocol_msg[3] = msg->content.boolean;
-            break;
+    case ACCEPT_MSG:
+        SDLNet_Write16(2, protocol_msg);
+        protocol_msg[2] = 'A';
+        protocol_msg[3] = msg->content.boolean;
+        break;
 
-        case RESTART_MSG:
-            SDLNet_Write16(5, protocol_msg);
-            protocol_msg[2] = 'R';
-            SDLNet_Write32(msg->content.ticks, protocol_msg + 3);
-            break;
+    case RESTART_MSG:
+        SDLNet_Write16(5, protocol_msg);
+        protocol_msg[2] = 'R';
+        SDLNet_Write32(msg->content.ticks, protocol_msg + 3);
+        break;
 
-        case MENU_MSG:
-            SDLNet_Write16(1, protocol_msg);
-            protocol_msg[2] = 'M';
-            break;
+    case MENU_MSG:
+        SDLNet_Write16(1, protocol_msg);
+        protocol_msg[2] = 'M';
+        break;
 
-        case LEVEL_MSG:
-            SDLNet_Write16(11, protocol_msg); // strlen("L") + sizeof(Uint16) * 3 + sizeof(Uint32)
-            protocol_msg[2] = 'L';
-            SDLNet_Write16(msg->content.lvl.level_num, protocol_msg + 3);
-            SDLNet_Write16(msg->content.lvl.level_difficulty, protocol_msg + 5);
-            SDLNet_Write16(msg->content.lvl.weapon, protocol_msg + 7);
-            SDLNet_Write32(msg->content.lvl.start_mission_ticks, protocol_msg + 9);
-            break;
+    case LEVEL_MSG:
+        SDLNet_Write16(11, protocol_msg); // strlen("L") + sizeof(Uint16) * 3 + sizeof(Uint32)
+        protocol_msg[2] = 'L';
+        SDLNet_Write16(msg->content.lvl.level_num, protocol_msg + 3);
+        SDLNet_Write16(msg->content.lvl.level_difficulty, protocol_msg + 5);
+        SDLNet_Write16(msg->content.lvl.weapon, protocol_msg + 7);
+        SDLNet_Write32(msg->content.lvl.start_mission_ticks, protocol_msg + 9);
+        break;
 
-        case POSITION_MSG:
-            SDLNet_Write16(5, protocol_msg); // strlen("L") + sizeof(Uint16) * 2
-            protocol_msg[2] = 'P';
-            SDLNet_Write16(msg->content.point.x, protocol_msg + 3);
-            SDLNet_Write16(msg->content.point.y, protocol_msg + 5);
-            break;
+    case POSITION_MSG:
+        SDLNet_Write16(5, protocol_msg); // strlen("L") + sizeof(Uint16) * 2
+        protocol_msg[2] = 'P';
+        SDLNet_Write16(msg->content.point.x, protocol_msg + 3);
+        SDLNet_Write16(msg->content.point.y, protocol_msg + 5);
+        break;
 
-        case SHOOT_MSG:
-            SDLNet_Write16(1, protocol_msg); // strlen("L") + sizeof(Uint16) * 2
-            protocol_msg[2] = 'S';
-            break;
+    case SHOOT_MSG:
+        SDLNet_Write16(1, protocol_msg); // strlen("L") + sizeof(Uint16) * 2
+        protocol_msg[2] = 'S';
+        break;
 
-        case BOMB_MSG:
-            SDLNet_Write16(1, protocol_msg);
-            protocol_msg[2] = 'B';
-            break;
+    case BOMB_MSG:
+        SDLNet_Write16(1, protocol_msg);
+        protocol_msg[2] = 'B';
+        break;
 
-        case QUIT_MSG:
-            SDLNet_Write16(1, protocol_msg);
-            protocol_msg[2] = 'Q';
-            break;
+    case QUIT_MSG:
+        SDLNet_Write16(1, protocol_msg);
+        protocol_msg[2] = 'Q';
+        break;
 
-        case Z_MSG:
-            SDLNet_Write16(1, protocol_msg);
-            protocol_msg[2] = 'Z';
-            break;
+    case Z_MSG:
+        SDLNet_Write16(1, protocol_msg);
+        protocol_msg[2] = 'Z';
+        break;
 
-        case GET_TIME_MSG:
-            SDLNet_Write16(1, protocol_msg);
-            protocol_msg[2] = 'G';
-            break;
+    case GET_TIME_MSG:
+        SDLNet_Write16(1, protocol_msg);
+        protocol_msg[2] = 'G';
+        break;
 
-        case TIME_MSG:
-            SDLNet_Write16(5, protocol_msg);
-            protocol_msg[2] = 'T';
-            SDLNet_Write32(msg->content.ticks, protocol_msg + 3);
-            break;
+    case TIME_MSG:
+        SDLNet_Write16(5, protocol_msg);
+        protocol_msg[2] = 'T';
+        SDLNet_Write32(msg->content.ticks, protocol_msg + 3);
+        break;
 
-        case SERVER_ALL_MSG:
-            ;
-            Uint16 size = (Uint16) msg->content.string_vec->size;
-            SDLNet_Write16(size + 1, protocol_msg);
-            protocol_msg[2] = ':';
-            for (size_t i = 0; i < size; i++)
-               protocol_msg[i + 3] = msg->content.string_vec->ptr[i];
-            break;
+    case SERVER_ALL_MSG:
+        ;
+        Uint16 size = (Uint16) msg->content.string_vec->size;
+        SDLNet_Write16(size + 1, protocol_msg);
+        protocol_msg[2] = ':';
+        for (size_t i = 0; i < size; i++)
+            protocol_msg[i + 3] = msg->content.string_vec->ptr[i];
+        break;
     }
 
     SDLNet_TCP_Send(window->client, protocol_msg, sizeof(Uint16) + SDLNet_Read16(protocol_msg));
-
+    
     if (protocol_msg[2] == 'Z')
         SDLNet_TCP_Send(window->server, protocol_msg, sizeof(Uint16) + SDLNet_Read16(protocol_msg));
 }
@@ -711,17 +711,13 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
 
             case 'L':
                 ;
-                Uint16 level_num = SDLNet_Read16(msg + 1);
-                Uint16 level_difficulty = SDLNet_Read16(msg + 3);
+                window->level_num = SDLNet_Read16(msg + 1);
+                window->level_difficulty = SDLNet_Read16(msg + 3);
                 window->weapon = SDLNet_Read16(msg + 5);
-                Uint32 start_mission_ticks = SDLNet_Read32(msg + 7);
-
+                window->start_mission_ticks = SDLNet_Read32(msg + 7);
                 window->client_time = window->last_sync_time + SDL_GetTicks() - window->ticks;
 
-                waiting_screen(window, SDL_GetTicks() + start_mission_ticks - window->client_time);
-
-                play_game(window, level_num, level_difficulty);
-                break;
+                return 2;
 
             case 'R': // Restart when in success/failure screen
                 window->restart = 1;
@@ -755,10 +751,7 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 break;
 
             case 'Q': // Quit level
-                free_background(window->stars);
-                free_vector(window->paths);
-                window->paths = NULL; // important, see free_all in free.c
-                load_music_and_play(window, "data/endgame.ogg", 1);
+                quit_game(window);
                 return 0;
 
             case 'Z': // Quit online
@@ -913,10 +906,12 @@ int handle_messages(struct window *window, char *msg_prefixes_to_handle)
 
     while (curr_msg)
     {
-        if (!handle_msg(window, curr_msg->msg, msg_prefixes_to_handle))
+        int res = handle_msg(window, curr_msg->msg, msg_prefixes_to_handle);
+
+        if (!res || res == 2)
         {
             clear_msg_list(window->msg_list);
-            return 0;
+            return res;
         }
 
         curr_msg = curr_msg->next;
@@ -965,19 +960,23 @@ int recv_thread(void *data)
     struct window *window = data;
     char msg[MAX_MESSAGE_SIZE] = { 0 };
 
-    do
+    while (1)
     {
         recv_msg(window, msg);
-
+           
         if (msg[0])
-            add_to_msg_list(window, window->msg_list, msg);
-
-    } while (msg[0] && msg[0] != 'Z');
-
-    if (window->server)
-    {
-        SDLNet_TCP_Close(window->client);
-        window->client = NULL;
+        {
+            if (msg[0] == 'Z')
+            {
+                SDLNet_TCP_Close(window->client);
+                window->client = NULL;
+                break;
+            }
+            else
+                add_to_msg_list(window, window->msg_list, msg);
+        }    
+        else
+            break;
     }
 
     return 0;

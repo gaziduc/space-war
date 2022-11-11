@@ -90,7 +90,7 @@ void waiting_screen(struct window *window, Uint32 start_mission_ticks)
 }
 
 
-int ready(struct window *window, int selected_level, int selected_difficulty, const char *str)
+int ready(struct window *window, const char *str)
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
@@ -118,8 +118,8 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
                 if (window->is_lan)
                 {
                     struct msg msg = { .type =  LEVEL_MSG };
-                    msg.content.lvl.level_num = selected_level;
-                    msg.content.lvl.level_difficulty = selected_difficulty;
+                    msg.content.lvl.level_num = window->level_num;
+                    msg.content.lvl.level_difficulty = window->level_difficulty;
                     msg.content.lvl.weapon = window->weapon;
                     Uint32 ticks = SDL_GetTicks() + 3000;
                     msg.content.lvl.start_mission_ticks = ticks; // Start mission in 3 sec
@@ -129,7 +129,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
 
                 }
 
-                play_game(window, selected_level, selected_difficulty);
+                play_game(window);
                 return 1;
             }
             else
@@ -144,7 +144,7 @@ int ready(struct window *window, int selected_level, int selected_difficulty, co
 
         // Process/Draw all the things
         render_stars(window);
-        render_ok(window, selected_level, selected_difficulty, begin, str, selected_item);
+        render_ok(window, window->level_num, window->level_difficulty, begin, str, selected_item);
         render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 

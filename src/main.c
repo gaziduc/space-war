@@ -25,7 +25,9 @@ int main(int argc, char *argv[])
     {
         window->is_lan = 0;
         window->num_players = 1;
-        play_game(window, 0, EASY);
+        window->level_num = 0;
+        window->level_difficulty = EASY;
+        play_game(window);
 
         window->settings->show_tutorial = 0;
         write_settings(window);

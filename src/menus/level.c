@@ -54,8 +54,7 @@ static void render_selected_level_title(struct window *window, const char *s, Ui
 
 
 
-static void render_level_difficulties(struct window *window, Uint32 begin,
-                                      int level, int selected_difficulty)
+static void render_level_difficulties(struct window *window, Uint32 begin, int selected_difficulty)
 {
     Uint32 alpha = SDL_GetTicks() - begin;
 
@@ -74,7 +73,7 @@ static void render_level_difficulties(struct window *window, Uint32 begin,
         int y = 360 + (i - 1) * 100;
         char s[100] = { 0 };
 
-        if (window->save->progress[window->num_players - 1][level - 1] < i)
+        if (window->save->progress[window->num_players - 1][window->level_num - 1] < i)
         {
             if (i != selected_difficulty)
                 snprintf(s, strlen(s_list[i - 1]) - 1, "%s", s_list[i - 1]);
@@ -127,8 +126,9 @@ static void level_difficulty(struct window *window, int selected_level, const ch
     int escape = 0;
     unsigned selected_difficulty = 0;
     Uint32 begin = SDL_GetTicks();
-
     char s[50] = { 0 };
+
+    window->level_num = selected_level;
 
     if (selected_level == NUM_LEVELS + 1)
         sprintf(s, window->txt[ARCADE_MODE]);
@@ -154,7 +154,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
         {
             if (selected_difficulty <= NUM_DIFFICULTIES)
             {
-                choose_weapons(window, selected_level, selected_difficulty, str);
+                choose_weapons(window, selected_difficulty, str);
                 begin = SDL_GetTicks();
             }
             else if (selected_difficulty == NUM_DIFFICULTIES + 1)
@@ -182,7 +182,7 @@ static void level_difficulty(struct window *window, int selected_level, const ch
 
         render_text(window, window->fonts->zero4b_30_extra_small, s, orange, 150, 150);
         render_text(window, window->fonts->zero4b_30_extra_small, window->txt[CHOOSE_DIFFICULTY], orange, 150, 225);
-        render_level_difficulties(window, begin, selected_level, selected_difficulty);
+        render_level_difficulties(window, begin, selected_difficulty);
         render_controller_input_texts(window, begin, 1);
         SDL_RenderPresent(window->renderer);
 

@@ -213,12 +213,14 @@ static void render_weapons(struct window *window, int choice, Uint32 begin)
 }
 
 
-void choose_weapons(struct window *window, int selected_level, int selected_difficulty, const char *str)
+void choose_weapons(struct window *window, int selected_difficulty, const char *str)
 {
     int escape = 0;
     Uint32 begin = SDL_GetTicks();
     window->weapon = 0;
     SDL_Rect areas[4];
+
+    window->level_difficulty = selected_difficulty;
 
     for (unsigned i = 0; i < 4; i++)
     {
@@ -254,7 +256,7 @@ void choose_weapons(struct window *window, int selected_level, int selected_diff
                 // Decrement window->weapon to get a 0 based number
                 window->weapon--;
 
-                int was_ready = ready(window, selected_level, selected_difficulty, str);
+                int was_ready = ready(window, str);
 
                 window->weapon++;
 

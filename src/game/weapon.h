@@ -10,7 +10,7 @@ int shoot(struct window *window, struct player *player, int provoked_by_me);
 
 void bomb(struct window *window, int provoked_by_me);
 
-void choose_weapons(struct window *window, int selected_level, int selected_difficulty, const char *str);
+void choose_weapons(struct window *window, int selected_difficulty, const char *str);
 
 int get_weapon_damage(int weapon);
 

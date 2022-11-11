@@ -288,7 +288,7 @@ static int respawn(struct window *window, struct player *player)
 }
 
 
-void reset_game_attributes(struct window *window, int difficulty, int all_reset)
+void reset_game_attributes(struct window *window, int all_reset)
 {
     if (all_reset)
     {
@@ -315,7 +315,7 @@ void reset_game_attributes(struct window *window, int difficulty, int all_reset)
                 window->player[i].missile_around = 0;
     }
 
-    switch (difficulty)
+    switch (window->level_difficulty)
     {
         case EASY:
             if (all_reset)
@@ -424,23 +424,25 @@ static void load_correct_music(struct window *window, int mission_num, int is_ar
 }
 
 
-void play_game(struct window *window, int mission_num, int difficulty)
+void play_game(struct window *window)
 {
     int is_arcade = 0;
     window->restart = 0;
 
+    int level_num = window->level_num;
+
     // Set mode to arcade if necessary
-    if (mission_num == NUM_LEVELS + 1)
+    if (level_num == NUM_LEVELS + 1)
     {
         is_arcade = 1;
-        mission_num = 1;
+        level_num = 1;
     }
 
     // Load enemy paths and set enemy timer
     char s[50] = { 0 };
     if (!window->is_lan || window->server)
     {
-        sprintf(s, "data/level%d.txt", mission_num);
+        sprintf(s, "data/level%d.txt", level_num);
         window->paths = load_paths(window, s);
     }
     
@@ -449,11 +451,11 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
     while (!escape)
     {
-        reset_game_attributes(window, difficulty, retry);
+        reset_game_attributes(window, retry);
 
         if (retry)
         {
-            load_correct_music(window, mission_num, is_arcade);
+            load_correct_music(window, level_num, is_arcade);
             init_background(window);
 
             for (unsigned i = 0; i < window->num_players; i++)
@@ -500,11 +502,7 @@ void play_game(struct window *window, int mission_num, int difficulty)
                     send_msg(window, &msg);
 
                     // Quit game
-                    free_background(window->stars);
-                    if (!window->is_lan || window->server)
-                        free_vector(window->paths);
-                    window->paths = NULL; // important, see free_all in free.c
-                    load_music_and_play(window, "data/endgame.ogg", 1);
+                    quit_game(window);
                     return;
                 }
             }
@@ -543,9 +541,9 @@ void play_game(struct window *window, int mission_num, int difficulty)
 
 
             // Display textures
-            if (mission_num <= 3)
+            if (level_num <= 3)
                 SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
-            else if (mission_num <= 6)
+            else if (level_num <= 6)
                 SDL_SetRenderDrawColor(window->renderer, 32, 32, 128, 255);
             else
                 SDL_SetRenderDrawColor(window->renderer, 192, 128, 0, 255);
@@ -727,22 +725,27 @@ void play_game(struct window *window, int mission_num, int difficulty)
         {
             window->score += compute_combo_score(window->combo);
 
-            if (is_arcade && mission_num < NUM_LEVELS)
+            if (is_arcade && level_num < NUM_LEVELS)
             {
-                free_vector(window->paths);
+                if (!window->is_lan || window->server)
+                    free_vector(window->paths);
                 window->paths = NULL; // important, see free_all in free.c
 
-                mission_num++;
-                sprintf(s, "data/level%d.txt", mission_num);
-                window->paths = load_paths(window, s);
+                level_num++;
+                if (!window->is_lan || window->server)
+                {
+                    sprintf(s, "data/level%d.txt", level_num);
+                    window->paths = load_paths(window, s);
+                }
+                
 
-                load_correct_music(window, mission_num, is_arcade);
+                load_correct_music(window, level_num, is_arcade);
             }
             else
             {
                 free_background(window->stars);
 
-                success(window, is_arcade ? NUM_LEVELS + 1 : mission_num, difficulty);
+                success(window, is_arcade ? NUM_LEVELS + 1 : level_num);
                 escape = 1;
             }
         }
@@ -751,23 +754,36 @@ void play_game(struct window *window, int mission_num, int difficulty)
         {
             free_background(window->stars);
             if (is_arcade)
-                mission_num = 1;
+                level_num = 1;
 
-            escape = failure(window, is_arcade ? NUM_LEVELS + 1 : mission_num);
+            escape = failure(window, is_arcade ? NUM_LEVELS + 1 : level_num);
             if (!escape)
             {
                 retry = 1;
                 if (is_arcade)
                 {
-                    free_vector(window->paths);
+                    if (!window->is_lan || window->server)
+                        free_vector(window->paths);
                     window->paths = NULL; // important, see free_all in free.c
-                    window->paths = load_paths(window, "data/level1.txt");
+                    
+                    if (!window->is_lan || window->server)
+                        window->paths = load_paths(window, "data/level1.txt");
                 }
             }
         }
     }
 
-    free_vector(window->paths);
+    if (window->server)
+        free_vector(window->paths);
+    window->paths = NULL; // important, see free_all in free.c
+    load_music_and_play(window, "data/endgame.ogg", 1);
+}
+
+void quit_game(struct window* window)
+{
+    free_background(window->stars);
+    if (!window->is_lan || window->server)
+        free_vector(window->paths);
     window->paths = NULL; // important, see free_all in free.c
     load_music_and_play(window, "data/endgame.ogg", 1);
 }
