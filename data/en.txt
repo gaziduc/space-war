@@ -172,3 +172,4 @@ Press %s, %s, %s or %s to move.
 Press %s to shoot.
 Press %s to use bomb.
 Don't let any enemy go through the left of the screen, or you loose. Press Y to continue.
+Monitor: %s

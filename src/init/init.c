@@ -87,8 +87,7 @@ static struct window *init_window(void)
                                       SDL_WINDOWPOS_CENTERED,
                                       window->w,
                                       window->h,
-                                      window->settings->is_fullscreen ? SDL_WINDOW_FULLSCREEN
-                                                                      : 0);
+                                      0);
 
     if (!window->window)
         error("Could not create window", SDL_GetError(), NULL, NULL);
@@ -99,10 +98,20 @@ static struct window *init_window(void)
         error("Could not create renderer", SDL_GetError(), window->window, NULL);
 
 
+    if (window->settings->display_num >= SDL_GetNumVideoDisplays())
+    {
+        window->settings->display_num = 0;
+        write_settings(window);
+    }
+
     // To fix a bug on linux...
     SDL_SetWindowPosition(window->window,
-                          SDL_WINDOWPOS_CENTERED,
-                          SDL_WINDOWPOS_CENTERED);
+                          SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+                          SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
+
+    // Put it here so we have already chosen the correct display monitor
+    if (window->settings->is_fullscreen)
+        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
     return window;
 }

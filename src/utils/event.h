@@ -4,7 +4,8 @@
 #include "init.h"
 #include <SDL2/SDL.h>
 
-#define DEAD_ZONE 8196
+#define DEAD_ZONE 8192
+#define MENU_DEAD_ZONE 16384
 
 void update_events(struct input *in, struct window *window, int is_in_level);
 

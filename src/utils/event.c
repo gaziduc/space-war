@@ -3,6 +3,7 @@
 #include "free.h"
 #include "pause.h"
 #include "setting.h"
+#include <string.h>
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
@@ -123,8 +124,8 @@ void update_events(struct input *in, struct window *window, int is_in_level)
                 if (event.cdevice.which == in->c[i].id)
                 {
                     // For menus
-                    if (abs(event.caxis.value) >= DEAD_ZONE
-                        && abs(in->c[i].axis[event.caxis.axis].value) < DEAD_ZONE)
+                    if (abs(event.caxis.value) >= MENU_DEAD_ZONE
+                        && abs(in->c[i].axis[event.caxis.axis].value) < MENU_DEAD_ZONE)
                         in->c[i].axis[event.caxis.axis].state = 1;
 
                     in->c[i].axis[event.caxis.axis].value = event.caxis.value;
@@ -229,9 +230,9 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     if (window->in->key[SDL_SCANCODE_UP]
         || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_UP]
         || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_UP]
-        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -MENU_DEAD_ZONE
             && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].state)
-        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -DEAD_ZONE
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].value <= -MENU_DEAD_ZONE
             && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].state))
     {
         window->in->key[SDL_SCANCODE_UP] = 0;
@@ -254,9 +255,9 @@ void handle_select_arrow_event(struct window *window, unsigned *selected, unsign
     if (window->in->key[SDL_SCANCODE_DOWN]
         || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
         || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_DOWN]
-        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].value >= MENU_DEAD_ZONE
             && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTY].state)
-        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].value >= DEAD_ZONE
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].value >= MENU_DEAD_ZONE
             && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTY].state))
     {
         window->in->key[SDL_SCANCODE_DOWN] = 0;

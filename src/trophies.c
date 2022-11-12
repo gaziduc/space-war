@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "menu.h"
 #include "event.h"
+#include <string.h>
 
 void achieve_trophy(struct window *window, enum trophies id)
 {
@@ -93,9 +94,9 @@ static void handle_arrow_event(struct window *window, int *page)
     // Left
     if (window->in->key[SDL_SCANCODE_LEFT]
         || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
-        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -MENU_DEAD_ZONE
             && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].state)
-        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -MENU_DEAD_ZONE
             && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].state))
     {
         window->in->key[SDL_SCANCODE_LEFT] = 0;
@@ -107,9 +108,9 @@ static void handle_arrow_event(struct window *window, int *page)
     }
     if (window->in->key[SDL_SCANCODE_RIGHT]
         || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
-        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= MENU_DEAD_ZONE
             && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].state)
-        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= MENU_DEAD_ZONE
             && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].state))
     {
         window->in->key[SDL_SCANCODE_RIGHT] = 0;

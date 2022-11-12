@@ -8,6 +8,7 @@
 #include "file.h"
 #include "effect.h"
 #include <stdio.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 
 
@@ -15,7 +16,7 @@ int is_fullscreen(struct window *window)
 {
     Uint32 flags = SDL_GetWindowFlags(window->window);
 
-    return (flags & SDL_WINDOW_FULLSCREEN) == SDL_WINDOW_FULLSCREEN;
+    return (flags & SDL_WINDOW_FULLSCREEN_DESKTOP) == SDL_WINDOW_FULLSCREEN_DESKTOP;
 }
 
 static void populate_settings_texts(struct window *window, char s_list[NUM_SETTINGS + NUM_TITLES_SETTINGS + 1][128])
@@ -26,21 +27,37 @@ static void populate_settings_texts(struct window *window, char s_list[NUM_SETTI
     strcpy(s_list[VIDEO - 1], window->txt[VIDEO_TXT]);
     sprintf(s_list[4], window->txt[FULLSCREEN_S], is_fullscreen(window) ? window->txt[YES] : window->txt[NO]);
     sprintf(s_list[5], window->txt[RESOLUTION_DXD_S], window->w, window->h, window->resolution_index == 0 ? window->txt[NATIVE] : "");
+
+    char short_monitor_name[30] = { 0 };
+    const char* long_display_name = SDL_GetDisplayName(window->settings->display_num);
+    if (long_display_name)
+    {
+        strncpy(short_monitor_name, long_display_name, 21);
+        if (strlen(long_display_name) > 21)
+            strcat(short_monitor_name, "...");
+    }
+    else
+    {
+        strcpy(short_monitor_name, "Cannot get display name...");
+    }
+    
+
+    sprintf(s_list[6], window->txt[DEFAULT_MONITOR_S], short_monitor_name);
     strcpy(s_list[INPUTS - 1], window->txt[INPUTS_TXT]);
 
     for (unsigned i = 0; i < MAX_PLAYERS; i++)
     {
         char temp[128] = { 0 };
         sprintf(temp, "%s [C.%d]", window->in->c[window->player[i].controller_num].name, window->player[i].controller_num + 1);
-        sprintf(s_list[7 + i], window->txt[P1_INPUT_S + i], window->player[i].input_type == KEYBOARD ? window->txt[KEYBOARD_TXT] :
+        sprintf(s_list[8 + i], window->txt[P1_INPUT_S + i], window->player[i].input_type == KEYBOARD ? window->txt[KEYBOARD_TXT] :
                                            window->player[i].input_type == MOUSE ? window->txt[MOUSE_TXT] :
                                            temp);
     }
 
-    strcpy(s_list[9], window->txt[KEYBOARD_CONTROLS]);
-    sprintf(s_list[10], window->txt[MOUSE_SENSITIVITY_S], window->settings->mouse_sensitivity == 0 ? window->txt[LOW_X1] : window->txt[HIGH_X2]);
-    sprintf(s_list[11], window->txt[CONTROLLER_FORCE_FEEDBACK_S], window->settings->is_force_feedback ? window->txt[YES] : window->txt[NO]);
-    strcpy(s_list[12], window->txt[BACK_7]);
+    strcpy(s_list[10], window->txt[KEYBOARD_CONTROLS]);
+    sprintf(s_list[11], window->txt[MOUSE_SENSITIVITY_S], window->settings->mouse_sensitivity == 0 ? window->txt[LOW_X1] : window->txt[HIGH_X2]);
+    sprintf(s_list[12], window->txt[CONTROLLER_FORCE_FEEDBACK_S], window->settings->is_force_feedback ? window->txt[YES] : window->txt[NO]);
+    strcpy(s_list[13], window->txt[BACK_7]);
 }
 
 
@@ -49,8 +66,9 @@ static int get_setting_x_offset(struct window *window, int setting_num)
     if ((setting_num == 2 && window->settings->music_volume > 0)
         || (setting_num == 3 && window->settings->sfx_volume > 0)
         || (setting_num == 6 && window->resolution_index > 0)
-        || (setting_num == 8 && window->player[0].input_type > 0)
-        || (setting_num == 9 && window->player[1].input_type > 0))
+        || (setting_num == 7 && window->settings->display_num > 0)
+        || (setting_num == 9 && window->player[0].input_type > 0)
+        || (setting_num == 10 && window->player[1].input_type > 0))
     {
         return 60;
     }
@@ -64,8 +82,9 @@ static int has_setting_x_right_arrow(struct window *window, int setting_num)
     if ((setting_num == 2 && window->settings->music_volume < MIX_MAX_VOLUME)
         || (setting_num == 3 && window->settings->sfx_volume < MIX_MAX_VOLUME)
         || (setting_num == 6 && window->resolution_index < NUM_RESOLUTIONS - 1)
-        || (setting_num == 8 && (window->player[0].input_type < CONTROLLER || window->player[0].controller_num == 0))
-        || (setting_num == 9 && (window->player[1].input_type < CONTROLLER || window->player[1].controller_num == 0)))
+        || (setting_num == 7 && window->settings->display_num < SDL_GetNumVideoDisplays())
+        || (setting_num == 9 && (window->player[0].input_type < CONTROLLER || window->player[0].controller_num == 0))
+        || (setting_num == 10 && (window->player[1].input_type < CONTROLLER || window->player[1].controller_num == 0)))
     {
         return 1;
     }
@@ -107,8 +126,8 @@ static void render_settings(struct window *window, Uint32 begin, int selected_it
         }
         else
         {
-            int x = i != 13 ? 430 : 150;
-            int y = i != 13 ? 280 + (setting_index - 1) * 55 + (i - setting_index - 1) * 30 : 900;
+            int x = i != 14 ? 430 : 150;
+            int y = i != 14 ? 280 + (setting_index - 1) * 55 + (i - setting_index - 1) * 30 : 900;
             int x_offset = get_setting_x_offset(window, i);
 
             int w = 0;
@@ -157,6 +176,8 @@ void write_settings(struct window *window)
     sprintf(buffer, "resolution_index=%d\n", window->resolution_index);
     add_string(window, str, buffer);
 
+    sprintf(buffer, "monitor_num=%d\n", window->settings->display_num);
+    add_string(window, str, buffer);
 
     // INPUTS
     add_string(window, str, "\n");
@@ -230,6 +251,7 @@ void load_settings(struct window *window)
     if (!str)
     {
         window->settings->is_fullscreen = 0;
+        window->settings->display_num = 0;
         window->settings->music_volume = MIX_MAX_VOLUME / 2;
         window->settings->sfx_volume = MIX_MAX_VOLUME / 2;
         window->settings->is_force_feedback = 1;
@@ -277,6 +299,9 @@ void load_settings(struct window *window)
     go_to_next_line(&index, str->ptr);
 
     sscanf(str->ptr + index, "resolution_index=%d\n", &window->resolution_index);
+    go_to_next_line(&index, str->ptr);
+
+    sscanf(str->ptr + index, "monitor_num=%d\n", &window->settings->display_num);
     go_to_next_line(&index, str->ptr);
 
     sscanf(str->ptr + index, "\n");
@@ -340,9 +365,9 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
 {
     if (window->in->key[SDL_SCANCODE_LEFT]
         || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT] || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_LEFT]
-        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -MENU_DEAD_ZONE
             && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].state)
-        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -DEAD_ZONE
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value <= -MENU_DEAD_ZONE
             && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].state))
     {
         window->in->key[SDL_SCANCODE_LEFT] = 0;
@@ -378,8 +403,8 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
 
                     SDL_SetWindowSize(window->window, window->w, window->h);
                     SDL_SetWindowPosition(window->window,
-                                          SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED);
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
 
                     SDL_Rect new_mouse_pos = { .x = area->x + 5, .y = area->y + 5, .w = 3, .h = 3 };
                     resize_pos_for_resolution(window, &new_mouse_pos);
@@ -390,6 +415,29 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 break;
 
             case 5:
+                if (window->settings->display_num > 0)
+                {
+                    window->settings->display_num--;
+
+                    int was_fullscreen = 0;
+                    if (is_fullscreen(window))
+                    {
+                        SDL_SetWindowFullscreen(window->window, 0);
+                        was_fullscreen = 1;
+                    }
+
+                    SDL_SetWindowPosition(window->window,
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
+
+                    if (was_fullscreen)
+                        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+                    write_settings(window);
+                }
+                break;
+
+            case 6:
                 if (window->player[0].input_type == CONTROLLER && window->player[0].controller_num > 0)
                     window->player[0].controller_num--;
                 else if (window->player[0].input_type > 0)
@@ -397,7 +445,7 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 write_settings(window);
                 break;
 
-            case 6:
+            case 7:
                 if (window->player[1].input_type == CONTROLLER && window->player[1].controller_num > 0)
                     window->player[1].controller_num--;
                 else if (window->player[1].input_type > 0)
@@ -431,30 +479,30 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                     window->settings->is_fullscreen = 0;
                     SDL_SetWindowFullscreen(window->window, 0);
                     SDL_SetWindowPosition(window->window,
-                                          SDL_WINDOWPOS_CENTERED,
-                                          SDL_WINDOWPOS_CENTERED);
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
                 }
                 else
                 {
                     window->settings->is_fullscreen = 1;
-                    SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN);
+                    SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
                 }
                 write_settings(window);
                 break;
 
-            case 7:
+            case 8:
                 Mix_PlayChannel(-1, window->sounds->play, 0);
                 controls(window);
                 *begin = SDL_GetTicks();
                 break;
 
-            case 8:
+            case 9:
                 Mix_PlayChannel(-1, window->sounds->play, 0);
                 window->settings->mouse_sensitivity = !window->settings->mouse_sensitivity;
                 write_settings(window);
                 break;
 
-            case 9:
+            case 10:
                 Mix_PlayChannel(-1, window->sounds->play, 0);
                 window->settings->is_force_feedback = !window->settings->is_force_feedback;
                 if (window->settings->is_force_feedback)
@@ -462,7 +510,8 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 write_settings(window);
                 break;
 
-            case 10:
+            case 11:
+                Mix_PlayChannel(-1, window->sounds->play, 0);
                 return 0;
 
             default:
@@ -472,9 +521,9 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
 
     if (window->in->key[SDL_SCANCODE_RIGHT]
         || window->in->c[0].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT] || window->in->c[1].button[SDL_CONTROLLER_BUTTON_DPAD_RIGHT]
-        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+        || (window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= MENU_DEAD_ZONE
             && window->in->c[0].axis[SDL_CONTROLLER_AXIS_LEFTX].state)
-        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= DEAD_ZONE
+        || (window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].value >= MENU_DEAD_ZONE
             && window->in->c[1].axis[SDL_CONTROLLER_AXIS_LEFTX].state))
     {
         window->in->key[SDL_SCANCODE_RIGHT] = 0;
@@ -516,8 +565,8 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
 
                 SDL_SetWindowSize(window->window, window->w, window->h);
                 SDL_SetWindowPosition(window->window,
-                                      SDL_WINDOWPOS_CENTERED,
-                                      SDL_WINDOWPOS_CENTERED);
+                    SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+                    SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
 
                 SDL_Rect new_mouse_pos = { .x = area->x + 5, .y = area->y + 5, .w = 3, .h = 3 };
                 resize_pos_for_resolution(window, &new_mouse_pos);
@@ -527,6 +576,31 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 break;
 
             case 5:
+                ;
+                int num_displays = SDL_GetNumVideoDisplays();
+                if (window->settings->display_num < num_displays - 1)
+                {
+                    window->settings->display_num++;
+                    // Bug fix
+                    int was_fullscreen = 0;
+                    if (is_fullscreen(window))
+                    {
+                        SDL_SetWindowFullscreen(window->window, 0);
+                        was_fullscreen = 1;
+                    }
+
+                    SDL_SetWindowPosition(window->window,
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
+
+                    if (was_fullscreen)
+                        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+                 
+                    write_settings(window);
+                }
+                break;
+
+            case 6:
                 if (window->player[0].input_type == CONTROLLER && window->player[0].controller_num < 1)
                     window->player[0].controller_num++;
                 else if (window->player[0].input_type < CONTROLLER)
@@ -538,7 +612,7 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 write_settings(window);
                 break;
 
-            case 6:
+            case 7:
                if (window->player[1].input_type == CONTROLLER && window->player[1].controller_num < 1)
                     window->player[1].controller_num++;
                 else if (window->player[1].input_type < CONTROLLER)
@@ -583,10 +657,10 @@ void settings(struct window *window)
             if (i == AUDIO || i == VIDEO || i == INPUTS)
                 continue;
 
-            areas[setting_index].x = i != 13 ? 430 : 150;
-            areas[setting_index].y = i != 13 ? 280 + setting_index * 55 + (i - setting_index - 2) * 30 : 900;
+            areas[setting_index].x = i != 14 ? 430 : 150;
+            areas[setting_index].y = i != 14 ? 280 + setting_index * 55 + (i - setting_index - 2) * 30 : 900;
             TTF_SizeText(window->fonts->zero4b_30_extra_small, s_list[i - 1], &areas[setting_index].w, &areas[setting_index].h);
-            if (i != 13)
+            if (i != 14)
                 areas[setting_index].w += 120;
 
             setting_index++;

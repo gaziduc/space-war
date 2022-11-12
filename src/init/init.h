@@ -227,6 +227,7 @@ struct settings
     SDL_Scancode controls[NUM_CONTROLS];
     int mouse_sensitivity;
     int show_tutorial;
+    int display_num;
 };
 
 
@@ -490,6 +491,7 @@ enum texts
     TUTORIAL_2,
     TUTORIAL_3,
     TUTORIAL_4,
+    DEFAULT_MONITOR_S,
     NUM_TXT
 };
 

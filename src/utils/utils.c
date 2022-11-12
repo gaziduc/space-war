@@ -40,7 +40,7 @@ struct collision_texture *get_texture_collision(SDL_Surface *surface, struct win
 
     collision->w = surface->w;
     collision->h = surface->h;
-    collision->collision = xmalloc(surface->w * surface->h * sizeof(short), window->window, window->renderer);
+    collision->collision = xmalloc(surface->w * surface->h * sizeof(char), window->window, window->renderer);
 
     if (SDL_MUSTLOCK(surface))
         SDL_LockSurface(surface);

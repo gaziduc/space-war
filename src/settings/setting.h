@@ -1,14 +1,14 @@
 #ifndef SETTING_H
 #define SETTING_H
 
-#define NUM_SETTINGS 9
+#define NUM_SETTINGS 10
 #define NUM_TITLES_SETTINGS 3
 
 enum settings_titles
 {
     AUDIO = 1,
     VIDEO = 4,
-    INPUTS = 7
+    INPUTS = 8
 };
 
 int is_fullscreen(struct window *window);
