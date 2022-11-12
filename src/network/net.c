@@ -341,7 +341,19 @@ void create_server(struct window *window)
         SDL_Color orange = { 255, 127, 39, alpha };
         SDL_Color white = { 195, 195, 195, alpha };
 
-        render_text(window, window->fonts->zero4b_30_small, window->txt[WAITING_FOR_SOMEONE],
+        Uint32 diff = (SDL_GetTicks() - begin) % 1000;
+        int num_dots = diff / 250;
+        char waiting_text[64] = { 0 };
+        strcpy(waiting_text, window->txt[WAITING_FOR_SOMEONE]);
+        size_t len = strlen(waiting_text);
+        for (int i = 0; i < num_dots; i++)
+        {
+            waiting_text[len] = '.';
+            len++;
+        }
+        waiting_text[len] = '\0';
+
+        render_text(window, window->fonts->zero4b_30_small, waiting_text,
                     orange, 150, 150);
 
         render_text(window, window->fonts->zero4b_30_extra_small, window->txt[YOUR_IP_LOCAL],

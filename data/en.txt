@@ -46,7 +46,7 @@ BACK
 User at %s wants to play with you.
 ACCEPT
 DECLINE
-Waiting for someone...
+Waiting for someone
 Your IP (local network):
 Your IP (online):
 Searching for online IP...

@@ -82,7 +82,7 @@ static int has_setting_x_right_arrow(struct window *window, int setting_num)
     if ((setting_num == 2 && window->settings->music_volume < MIX_MAX_VOLUME)
         || (setting_num == 3 && window->settings->sfx_volume < MIX_MAX_VOLUME)
         || (setting_num == 6 && window->resolution_index < NUM_RESOLUTIONS - 1)
-        || (setting_num == 7 && window->settings->display_num < SDL_GetNumVideoDisplays())
+        || (setting_num == 7 && window->settings->display_num < SDL_GetNumVideoDisplays() - 1)
         || (setting_num == 9 && (window->player[0].input_type < CONTROLLER || window->player[0].controller_num == 0))
         || (setting_num == 10 && (window->player[1].input_type < CONTROLLER || window->player[1].controller_num == 0)))
     {
@@ -361,6 +361,81 @@ void load_settings(struct window *window)
 }
 
 
+static void go_to_next_resolution(struct window* window, SDL_Rect *area, const int loop)
+{
+    SDL_DisplayMode dm;
+    if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
+        error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
+
+    // Check if resolution is supported
+    if (window->resolution_index + 1 < NUM_RESOLUTIONS
+        && dm.w >= window->resolutions[window->resolution_index + 1].x
+        && dm.h >= window->resolutions[window->resolution_index + 1].y)
+        window->resolution_index++;
+    else if (loop)
+        window->resolution_index = 0;
+
+    set_resolution_with_index(window);
+
+    SDL_SetWindowSize(window->window, window->w, window->h);
+    SDL_SetWindowPosition(window->window,
+        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
+
+    SDL_Rect new_mouse_pos = { .x = area->x + 5, .y = area->y + 5, .w = 3, .h = 3 };
+    resize_pos_for_resolution(window, &new_mouse_pos);
+    SDL_WarpMouseInWindow(window->window, new_mouse_pos.x, new_mouse_pos.y);
+
+    write_settings(window);
+}
+
+
+static void go_to_next_display(struct window* window, const int loop)
+{
+    int num_displays = SDL_GetNumVideoDisplays();
+    if (window->settings->display_num < num_displays - 1)
+        window->settings->display_num++;
+    else if (loop)
+        window->settings->display_num = 0;
+
+    // Bug fix
+    int was_fullscreen = 0;
+    if (is_fullscreen(window))
+    {
+        SDL_SetWindowFullscreen(window->window, 0);
+        was_fullscreen = 1;
+    }
+
+    SDL_SetWindowPosition(window->window,
+        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
+
+    if (was_fullscreen)
+        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+
+    write_settings(window);
+}
+
+
+static void go_to_next_input_type(struct window* window, const int player_num, const int loop)
+{
+    if (window->player[player_num].input_type == CONTROLLER && window->player[player_num].controller_num < 1)
+        window->player[player_num].controller_num++;
+    else if (window->player[player_num].input_type < CONTROLLER)
+    {
+        window->player[player_num].input_type++;
+        window->player[player_num].controller_num = 0;
+    }
+    else if (loop)
+    {
+        window->player[player_num].input_type = KEYBOARD;
+        window->player[player_num].controller_num = 0;
+    }
+
+    write_settings(window);
+}
+
+
 static int handle_arrow_event(struct window *window, const int selected_item, Uint32 *begin, SDL_Rect *area)
 {
     if (window->in->key[SDL_SCANCODE_LEFT]
@@ -472,6 +547,27 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
 
         switch (selected_item)
         {
+            case 1:
+                if (window->settings->music_volume < MIX_MAX_VOLUME)
+                    window->settings->music_volume += MIX_MAX_VOLUME / 16; // -= 8
+                else
+                    window->settings->music_volume = 0;
+
+                Mix_VolumeMusic(window->settings->music_volume);
+                write_settings(window);
+                break;
+
+            case 2:
+                if (window->settings->sfx_volume < MIX_MAX_VOLUME)
+                    window->settings->sfx_volume += MIX_MAX_VOLUME / 16; // -= 8
+                else
+                    window->settings->sfx_volume = 0;
+
+                Mix_Volume(-1, window->settings->sfx_volume);
+                Mix_PlayChannel(-1, window->sounds->select, 0);
+                write_settings(window);
+                break;
+
             case 3:
                 Mix_PlayChannel(-1, window->sounds->play, 0);
                 if (is_fullscreen(window))
@@ -488,6 +584,22 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                     SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
                 }
                 write_settings(window);
+                break;
+
+            case 4:
+                go_to_next_resolution(window, area, 1);
+                break;
+
+            case 5:
+                go_to_next_display(window, 1);
+                break;
+
+            case 6:
+                go_to_next_input_type(window, 0, 1);
+                break;
+
+            case 7:
+                go_to_next_input_type(window, 1, 1);
                 break;
 
             case 8:
@@ -550,78 +662,19 @@ static int handle_arrow_event(struct window *window, const int selected_item, Ui
                 break;
 
             case 4:
-                ;
-                SDL_DisplayMode dm;
-                if (SDL_GetDesktopDisplayMode(0, &dm) != 0)
-                    error("SDL_GetDesktopDisplayMode failed", SDL_GetError(), window->window, window->renderer);
-
-                // Check if resolution is supported
-                if (window->resolution_index + 1 < NUM_RESOLUTIONS
-                    && dm.w >= window->resolutions[window->resolution_index + 1].x
-                    && dm.h >= window->resolutions[window->resolution_index + 1].y)
-                    window->resolution_index++;
-
-                set_resolution_with_index(window);
-
-                SDL_SetWindowSize(window->window, window->w, window->h);
-                SDL_SetWindowPosition(window->window,
-                    SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
-                    SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
-
-                SDL_Rect new_mouse_pos = { .x = area->x + 5, .y = area->y + 5, .w = 3, .h = 3 };
-                resize_pos_for_resolution(window, &new_mouse_pos);
-                SDL_WarpMouseInWindow(window->window, new_mouse_pos.x, new_mouse_pos.y);
-
-                write_settings(window);
+                go_to_next_resolution(window, area, 0);
                 break;
 
             case 5:
-                ;
-                int num_displays = SDL_GetNumVideoDisplays();
-                if (window->settings->display_num < num_displays - 1)
-                {
-                    window->settings->display_num++;
-                    // Bug fix
-                    int was_fullscreen = 0;
-                    if (is_fullscreen(window))
-                    {
-                        SDL_SetWindowFullscreen(window->window, 0);
-                        was_fullscreen = 1;
-                    }
-
-                    SDL_SetWindowPosition(window->window,
-                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
-                        SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num));
-
-                    if (was_fullscreen)
-                        SDL_SetWindowFullscreen(window->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-                 
-                    write_settings(window);
-                }
+                go_to_next_display(window, 0);
                 break;
 
             case 6:
-                if (window->player[0].input_type == CONTROLLER && window->player[0].controller_num < 1)
-                    window->player[0].controller_num++;
-                else if (window->player[0].input_type < CONTROLLER)
-                {
-                    window->player[0].input_type++;
-                    window->player[0].controller_num = 0;
-                }
-
-                write_settings(window);
+                go_to_next_input_type(window, 0, 0);
                 break;
 
             case 7:
-               if (window->player[1].input_type == CONTROLLER && window->player[1].controller_num < 1)
-                    window->player[1].controller_num++;
-                else if (window->player[1].input_type < CONTROLLER)
-                {
-                    window->player[1].input_type++;
-                    window->player[1].controller_num = 0;
-                }
-
-                write_settings(window);
+                go_to_next_input_type(window, 1, 0);
                 break;
 
             default:

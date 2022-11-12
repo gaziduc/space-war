@@ -83,8 +83,8 @@ static struct window *init_window(void)
     load_settings(window);
 
     window->window = SDL_CreateWindow("Space War",
-                                      SDL_WINDOWPOS_CENTERED,
-                                      SDL_WINDOWPOS_CENTERED,
+                                      SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
+                                      SDL_WINDOWPOS_CENTERED_DISPLAY(window->settings->display_num),
                                       window->w,
                                       window->h,
                                       0);

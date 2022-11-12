@@ -124,11 +124,12 @@ void init_position_float(int x, int y, SDL_Texture *texture, SDL_FRect *pos)
 
 void error(const char *title, const char *text, SDL_Window *window, SDL_Renderer *renderer)
 {
-    if (window)
-        SDL_DestroyWindow(window);
-
+    // Destroy renderer BEFORE window
     if (renderer)
         SDL_DestroyRenderer(renderer);
+
+    if (window)
+        SDL_DestroyWindow(window);
 
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, title, text, NULL);
     exit(EXIT_FAILURE);
