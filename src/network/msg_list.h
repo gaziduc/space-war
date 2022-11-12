@@ -1,7 +1,7 @@
 #ifndef MSG_LIST
 #define MSG_LIST
 
-#define MAX_MESSAGE_SIZE 8192
+#define MAX_MESSAGE_SIZE 16384
 
 struct msg_list
 {
