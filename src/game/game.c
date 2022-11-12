@@ -20,6 +20,8 @@
 #include "effect.h"
 #include "msg_list.h"
 #include "string_vec.h"
+#include "menu.h"
+#include "wave.h"
 #include <stdio.h>
 #include <SDL2/SDL.h>
 
@@ -428,6 +430,7 @@ void play_game(struct window *window)
 {
     int is_arcade = 0;
     window->restart = 0;
+    window->wave_title_for_lan[0] = '\0';
 
     int level_num = window->level_num;
 
@@ -601,7 +604,7 @@ void play_game(struct window *window)
                     struct list* temp = window->list[ENEMY_LIST]->next;
                     while (temp)
                     {
-                        char buffer[24] = { 0 };
+                        char buffer[32] = { 0 };
                         buffer[0] = 'e'; // Enemy
                         write_float(temp->pos_dst.x, buffer + 1);
                         write_float(temp->pos_dst.y, buffer + 5);
@@ -611,8 +614,11 @@ void play_game(struct window *window)
                         write_float(temp->speed.y, buffer + 17);
                         buffer[21] = temp->enemy_type;
                         SDLNet_Write16(temp->curr_texture, buffer + 22);
+                        Uint32 ticks = SDL_GetTicks();
+                        SDLNet_Write32(ticks - temp->first_time_hurt, buffer + 24);
+                        SDLNet_Write32(ticks - temp->last_time_hurt, buffer + 28);
 
-                        add_bytes(window, msg.content.string_vec, buffer, 24);
+                        add_bytes(window, msg.content.string_vec, buffer, 32);
 
                         temp = temp->next;
                     }
@@ -698,7 +704,7 @@ void play_game(struct window *window)
                     temp = window->list[BOSS_LIST]->next;
                     while (temp)
                     {
-                        char buffer[30] = { 0 };
+                        char buffer[38] = { 0 };
                         buffer[0] = 'b'; // Boss
                         write_float(temp->pos_dst.x, buffer + 1);
                         write_float(temp->pos_dst.y, buffer + 5);
@@ -709,8 +715,11 @@ void play_game(struct window *window)
                         write_float(temp->speed.x, buffer + 21);
                         write_float(temp->speed.y, buffer + 25);
                         buffer[29] = temp->enemy_type;
+                        Uint32 ticks = SDL_GetTicks();
+                        SDLNet_Write32(ticks - temp->first_time_hurt, buffer + 30);
+                        SDLNet_Write32(ticks - temp->last_time_hurt, buffer + 34);
 
-                        add_bytes(window, msg.content.string_vec, buffer, 30);
+                        add_bytes(window, msg.content.string_vec, buffer, 38);
 
                         temp = temp->next;
                     }
@@ -721,11 +730,28 @@ void play_game(struct window *window)
                 }
 
                 // LAN only
-                int res = handle_messages(window, "PSBQ:W");
+                int res = handle_messages(window, "PSBQ:WU");
                 if (!res)
                     return;
                 if (res == 3)
                     won = 1;
+
+                if (window->wave_title_for_lan[0])
+                {
+                    Uint32 diff = SDL_GetTicks() - window->wave_title_time;
+                    
+                    if (diff > 0)
+                    {
+                        if (diff < TITLE_ALPHA_MAX)
+                            render_title(window, diff, window->wave_title_for_lan);
+                        else if (diff < TIME_SHOW_TITLE - TITLE_ALPHA_MAX)
+                            render_title(window, TITLE_ALPHA_MAX, window->wave_title_for_lan);
+                        else if (diff < TIME_SHOW_TITLE)
+                            render_title(window, TIME_SHOW_TITLE - diff, window->wave_title_for_lan);
+                        else
+                            window->wave_title_for_lan[0] = '\0';
+                    }
+                }
             }
 
 

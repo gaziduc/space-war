@@ -676,10 +676,6 @@ void send_msg(struct window* window, struct msg* msg)
     case SERVER_ALL_MSG:
         ;
         Uint16 size = (Uint16) msg->content.string_vec->size;
-        if (size > 8000)
-        {
-            exit(2);
-        }
         SDLNet_Write16(size + 1, protocol_msg);
         protocol_msg[2] = ':';
         for (Uint16 i = 0; i < size; i++)
@@ -689,6 +685,15 @@ void send_msg(struct window* window, struct msg* msg)
     case WON_MSG:
         SDLNet_Write16(1, protocol_msg);
         protocol_msg[2] = 'W';
+        break;
+
+    case WAVE_TITLE_MSG:
+        ;
+        Uint16 title_size = (Uint16) msg->content.string_vec->size;
+        SDLNet_Write16(title_size + 1, protocol_msg);
+        protocol_msg[2] = 'U';
+        for (Uint16 i = 0; i < title_size; i++)
+            protocol_msg[i + 3] = msg->content.string_vec->ptr[i];
         break;
     }
 
@@ -821,11 +826,16 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                         float speed_y = read_float(msg_begin + 17);
                         char enemy_type = msg_begin[21];
                         Uint16 curr_texture = SDLNet_Read16(msg_begin + 22);
+                        Uint32 first_time_hurt = SDLNet_Read32(msg_begin + 24);
+                        Uint32 last_time_hurt = SDLNet_Read32(msg_begin + 28);
 
                         set_enemy_attributes(new, &pos, window, enemy_type, speed_x, health, max_health, 1, speed_y, curr_texture);
+                        Uint32 ticks = SDL_GetTicks();
+                        new->first_time_hurt = ticks - first_time_hurt;
+                        new->last_time_hurt = ticks - last_time_hurt;
 
                         type = ENEMY_LIST;
-                        i += 24;
+                        i += 32;
                     }
                     else if (msg_begin[0] == 's')
                     {
@@ -909,17 +919,27 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                         float speed_y = read_float(msg_begin + 25);
                         SDL_FRect speed = { .x = speed_x, .y = speed_y };
                         char enemy_type = msg_begin[29];
+                        Uint32 first_time_hurt = SDLNet_Read32(msg_begin + 30);
+                        Uint32 last_time_hurt = SDLNet_Read32(msg_begin + 34);
 
                         set_boss_attributes(new, &pos, window, enemy_type, 1, &speed, health, max_health);
+                        Uint32 ticks = SDL_GetTicks();
+                        new->first_time_hurt = ticks - first_time_hurt;
+                        new->last_time_hurt = ticks - last_time_hurt;
 
                         type = BOSS_LIST;
-                        i += 30;
+                        i += 38;
                     }
 
                     // Pushing element in front of the correct list
                     new->next = window->list[type]->next;
                     window->list[type]->next = new;
                 }
+                break;
+
+            case 'U':
+                window->wave_title_time = SDL_GetTicks();
+                strcpy(window->wave_title_for_lan, msg + 1);
                 break;
         }
     }

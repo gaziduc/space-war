@@ -287,7 +287,8 @@ enum msg_type
     QUIT_MSG,
     SERVER_ALL_MSG,
     Z_MSG,
-    WON_MSG
+    WON_MSG,
+    WAVE_TITLE_MSG
 };
 
 struct level
@@ -561,6 +562,7 @@ struct window
     int level_difficulty;
     int level_num;
     Uint32 start_mission_ticks;
+    char wave_title_for_lan[128];
 };
 
 void render_loading_screen(struct window *window);
