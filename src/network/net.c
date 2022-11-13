@@ -69,12 +69,64 @@ static void render_create_or_join_texts(struct window *window, Uint32 begin,
     }
 }
 
+static void render_ok_text(struct window* window, Uint32 begin, int selected_item)
+{
+    Uint32 alpha = SDL_GetTicks() - begin;
+
+    if (alpha > TITLE_ALPHA_MAX)
+        alpha = TITLE_ALPHA_MAX;
+    else if (alpha == 0)
+        alpha = 1;
+
+    SDL_Color blue = { .r = BLUE_R, .g = BLUE_G, .b = BLUE_B, .a = alpha };
+    SDL_Color green = { .r = GREEN_R, .g = GREEN_G, .b = GREEN_B, .a = alpha };
+    SDL_Color white = { 255, 255, 255, alpha };
+
+    render_text(window, window->fonts->craft, window->txt[NETWORK_MODE_NOT_AVAILABLE_1],
+        white, 150, 150);
+
+    render_text(window, window->fonts->craft, window->txt[NETWORK_MODE_NOT_AVAILABLE_2],
+        white, 150, 190);
+
+    render_text(window, window->fonts->zero4b_30_small, window->txt[OK_TXT], selected_item == 1 ? green : blue, 150, 870);
+}
+
 
 void create_or_join(struct window *window)
 {
     int escape = 0;
     unsigned selected_item = 1;
     Uint32 begin = SDL_GetTicks();
+#ifdef __EMSCRIPTEN__
+    SDL_Rect areas[1];
+    areas[0].x = 150;
+    areas[0].y = 870;
+    TTF_SizeText(window->fonts->zero4b_30_small, window->txt[OK_TXT], &areas[0].w, &areas[0].h);
+
+    while (!escape)
+    {
+        // Get and handle events
+        update_events(window->in, window, 0);
+        handle_quit_event(window, 0);
+        handle_select_arrow_event(window, &selected_item, 1, areas);
+        escape = handle_escape_event(window);
+        if (!escape && selected_item == 1 && handle_play_event(window))
+            escape = 1;
+
+        // Display black background
+        SDL_SetRenderDrawColor(window->renderer, 8, 8, 8, 255);
+        SDL_RenderClear(window->renderer);
+
+        // Process/Draw all the things
+        render_stars(window);
+        render_ok_text(window, begin, selected_item);
+        render_controller_input_texts(window, begin, 1);
+        SDL_RenderPresent(window->renderer);
+
+        // Wait a frame
+        frame_delay(window->fps);
+    }
+#else
     SDL_Rect areas[3];
 
     for (unsigned i = 0; i < 3; i++)
@@ -128,6 +180,7 @@ void create_or_join(struct window *window)
         // Wait a frame
         frame_delay(window->fps);
     }
+#endif    
 }
 
 

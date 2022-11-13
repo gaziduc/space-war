@@ -173,3 +173,6 @@ Press %s to shoot.
 Press %s to use bomb.
 Don't let any enemy go through the left of the screen, or you loose. Press Y to continue.
 Monitor: %s
+Network mode is not available on browsers for technical reasons.
+Please download the game to play in network mode.
+OK

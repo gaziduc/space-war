@@ -43,3 +43,12 @@ make # or launch the newly created Visual Studio solution / Codeblocks project o
 ```shell
 ./space-war # or double-click space-war.exe on Windows
 ```
+
+
+## Compile for emscripten on Windows
+
+First of all, download make from chocolatey. Then do:
+```shell
+emcmake cmake . -G "Unix Makefiles"
+emmake make
+```
