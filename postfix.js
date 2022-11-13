@@ -1,6 +1,6 @@
 addOnPostRun(function()
 {
-     var canvas = document.getElementById('canvas');
-     if (canvas)
-         canvas.focus();
+    var canvas = document.getElementById('canvas');
+    if (canvas)
+        canvas.focus();
 });
