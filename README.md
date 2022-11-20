@@ -3,7 +3,7 @@ Space War is a shoot'em up game where you pilot a spaceship and your goal is to 
 
 Trailer: [https://www.youtube.com/watch?v=EE7p4LESCMg](https://www.youtube.com/watch?v=EE7p4LESCMg)
 
-Download Windows installer and updater : [https://gaziduc.github.io/space-war/](https://gaziduc.github.io/space-war/)
+Download Windows installer and updater : [https://gamejolt.com/games/get-the-crates/618857](https://gamejolt.com/games/get-the-crates/618857)
 
 ## Prerequisites to play
 ### Hardware
@@ -23,27 +23,17 @@ sdl2_mixer
 sdl2_net
 libcurl
 ```
-## Play only
+## Play
 Go to the web page: https://gamejolt.com/games/space-war/482884
-## Download, build and play:
+## Build from sources:
 ### Clone
 ```shell
 git clone https://github.com/gaziduc/space-war.git
 cd space-war
-```
-### Generate project
-```shell
 cmake . # or use cmake-gui on Windows
-```
-### Build
-```shell
-make # or launch the newly created Visual Studio solution / Codeblocks project on Windows
-```
-### Launch
-```shell
+make # or launch an compile the newly created Visual Studio solution / Codeblocks project on Windows
 ./space-war # or double-click space-war.exe on Windows
 ```
-
 
 ## Compile for emscripten on Windows
 
