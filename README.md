@@ -1,9 +1,7 @@
 # space-war
 Space War is a shoot'em up game where you pilot a spaceship and your goal is to destroy all the enemies ship.
 
-Trailer: [https://www.youtube.com/watch?v=EE7p4LESCMg](https://www.youtube.com/watch?v=EE7p4LESCMg)
-
-Download Windows installer and updater : [https://gamejolt.com/games/get-the-crates/618857](https://gamejolt.com/games/get-the-crates/618857)
+Play/Download the game here : [https://gamejolt.com/games/get-the-crates/618857](https://gamejolt.com/games/get-the-crates/618857)
 
 ## Prerequisites to play
 ### Hardware
@@ -12,21 +10,10 @@ Download Windows installer and updater : [https://gamejolt.com/games/get-the-cra
 - **Storage**: about **65 Mo** of available space
 
 ### Software
-- **Operating System** : Linux 64 bits, Windows 64 bits, macOS 64 bits
-- If you are on Linux/macOS, the following **libraries** must be installed:
-```
-sdl2
-sdl2_image
-sdl2_gfx
-sdl2_ttf
-sdl2_mixer
-sdl2_net
-libcurl
-```
-## Play
-Go to the web page: https://gamejolt.com/games/space-war/482884
+- **Operating System** : Windows 64 bits, Linux 64 bits, macOS 64 bits
+- If you are on Linux/macOS, the following **libraries** must be installed: sdl2, sdl2_image, sdl2_gfx, sdl2_ttf, sdl2_mixer, sdl2_net, libcurl
+
 ## Build from sources:
-### Clone
 ```shell
 git clone https://github.com/gaziduc/space-war.git
 cd space-war
@@ -35,9 +22,10 @@ make # or launch an compile the newly created Visual Studio solution / Codeblock
 ./space-war # or double-click space-war.exe on Windows
 ```
 
-## Compile for emscripten on Windows
+## Build for emscripten
 
-First of all, download make from chocolatey. Then do:
+First of all, if you're on Windows, download make from chocolatey.
+Then :
 ```shell
 emcmake cmake . -G "Unix Makefiles"
 emmake make
