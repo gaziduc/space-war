@@ -1,7 +1,7 @@
 # space-war
 Space War is a shoot'em up game where you pilot a spaceship and your goal is to destroy all the enemies ship.
 
-Play/Download the game here : [https://gamejolt.com/games/get-the-crates/618857](https://gamejolt.com/games/get-the-crates/618857)
+Play/Download the game here : [https://gaziduc.itch.io/space-war](https://gaziduc.itch.io/space-war)
 
 ## Prerequisites to play
 ### Hardware
