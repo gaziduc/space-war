@@ -1,6 +1,8 @@
 #ifndef NET_H
 #define NET_H
 
+#include <SDL2/SDL_net.h>
+
 #define MAX_IP_TO_SHOW 10
 
 void create_or_join(struct window *window);
@@ -11,7 +13,7 @@ void connect_to_server(struct window *window);
 
 void send_msg(struct window *window, struct msg *msg);
 
-void recv_msg(struct window *window, char *msg);
+int recv_msg(struct window *window, TCPsocket sock, char *msg);
 
 int handle_messages(struct window *window, char *msg_prefixes_to_handle);
 

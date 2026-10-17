@@ -7,6 +7,7 @@
 #include "boss.h"
 #include "object.h"
 #include "hud.h"
+#include "effect.h"
 
 void init_list(struct window *window, enum list_type type)
 {
@@ -59,6 +60,12 @@ void list_push_front(SDL_FRect *pos, struct window *window,
             error("Unknown list index", "Could not add an element in list.", window->window, window->renderer);
             break;
     }
+
+    // Sparks and smoke around new explosions
+    if (type == EXPLOSION_LIST)
+        spawn_explosion_particles(new->pos_dst.x + new->pos_dst.w / 2,
+                                  new->pos_dst.y + new->pos_dst.h / 2,
+                                  new->num_explosion == 1 ? 0.6f : 1.0f);
 
     // Pushing element in front of the correct list
     new->next = window->list[type]->next;

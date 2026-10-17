@@ -7,12 +7,18 @@
 #include "game.h"
 #include "setting.h"
 #include <stdlib.h>
+#include <signal.h>
 
 int main(int argc, char *argv[])
 {
     // Cast argc and argv to avoid warnings
     (void) argc;
     (void) argv;
+
+#ifndef _WIN32
+    // Writing to a socket closed by the other player must not kill the game
+    signal(SIGPIPE, SIG_IGN);
+#endif
 
     // Init SDL2, window, renderer and load textures, events, ...
     struct window *window = init_all();

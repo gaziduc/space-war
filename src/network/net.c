@@ -20,6 +20,7 @@
 #include "hud.h"
 #include "boss.h"
 #include "list.h"
+#include "effect.h"
 #include <stdio.h>
 #include <stdlib.h> // for atoi
 #include <string.h>
@@ -35,6 +36,31 @@ char err[256];
 int accepting;
 int has_online_ip;
 const char *online_ip;
+
+/* Protects the sockets: the receiving thread closes them while the main thread sends */
+static SDL_mutex *sock_lock = NULL;
+
+static void lock_sockets(void)
+{
+    if (!sock_lock)
+        sock_lock = SDL_CreateMutex();
+
+    SDL_LockMutex(sock_lock);
+}
+
+static void unlock_sockets(void)
+{
+    SDL_UnlockMutex(sock_lock);
+}
+
+static void start_recv_thread(struct window *window)
+{
+    SDL_Thread *thread = SDL_CreateThread(recv_thread, "recv_thread", window);
+
+    // Never joined: detach to not leak the thread resources
+    if (thread)
+        SDL_DetachThread(thread);
+}
 
 
 static void render_create_or_join_texts(struct window *window, Uint32 begin,
@@ -247,7 +273,8 @@ static void accept_client(struct window *window, char *ip_str)
             switch (selected_item)
             {
                 case 1: // Accept
-                    SDL_CreateThread(recv_thread, "recv_thread", window);
+                    clear_msg_list(window->msg_list); // Forget messages of a previous session
+                    start_recv_thread(window);
 
                     struct msg accept_msg = { .type = ACCEPT_MSG };
                     accept_msg.content.boolean = 1;
@@ -288,6 +315,14 @@ static void accept_client(struct window *window, char *ip_str)
                     struct msg decline_msg = { .type = ACCEPT_MSG };
                     decline_msg.content.boolean = 2;
                     send_msg(window, &decline_msg);
+
+                    lock_sockets();
+                    if (window->client)
+                    {
+                        SDLNet_TCP_Close(window->client);
+                        window->client = NULL;
+                    }
+                    unlock_sockets();
                     break;
 
                 default:
@@ -345,10 +380,16 @@ void create_server(struct window *window)
 
     while (!escape)
     {
-        window->client = SDLNet_TCP_Accept(window->server);
+        // Do not overwrite window->client when nobody is connecting: a receiving
+        // thread may still be using the previous client
+        TCPsocket new_client = SDLNet_TCP_Accept(window->server);
 
-        if (window->client)
+        if (new_client)
         {
+            lock_sockets();
+            window->client = new_client;
+            unlock_sockets();
+
             IPaddress *client_ip = SDLNet_TCP_GetPeerAddress(window->client);
 
             unsigned int a = 0;
@@ -537,6 +578,7 @@ void connect_to_server(struct window *window)
     memset(buf, '\0', sizeof(buf));
     memset(err, '\0', sizeof(err));
     reset_global_vars();
+    clear_msg_list(window->msg_list); // Forget messages of a previous session
     SDL_StartTextInput();
 
     while (!escape)
@@ -569,7 +611,15 @@ void connect_to_server(struct window *window)
             if (handle_play_event(window))
             {
                 memset(err, '\0', sizeof(err));
-                SDL_CreateThread(connecting_thread, "connecting_thread", window);
+
+                // Set here and not in the thread, otherwise a second thread could be started
+                is_connecting = 1;
+                SDL_Thread *thread = SDL_CreateThread(connecting_thread, "connecting_thread", window);
+
+                if (thread)
+                    SDL_DetachThread(thread);
+                else
+                    is_connecting = 0;
             }
         }
 
@@ -696,8 +746,9 @@ void send_msg(struct window* window, struct msg* msg)
         break;
 
     case SHOOT_MSG:
-        SDLNet_Write16(1, protocol_msg); // strlen("L") + sizeof(Uint16) * 2
+        SDLNet_Write16(2, protocol_msg);
         protocol_msg[2] = 'S';
+        protocol_msg[3] = msg->content.boolean; // 2 = double missile
         break;
 
     case BOMB_MSG:
@@ -729,6 +780,9 @@ void send_msg(struct window* window, struct msg* msg)
     case SERVER_ALL_MSG:
         ;
         Uint16 size = (Uint16) msg->content.string_vec->size;
+        // Never write past protocol_msg (stack buffer overflow)
+        if (msg->content.string_vec->size > MAX_MESSAGE_SIZE - 4)
+            size = MAX_MESSAGE_SIZE - 4;
         SDLNet_Write16(size + 1, protocol_msg);
         protocol_msg[2] = ':';
         for (Uint16 i = 0; i < size; i++)
@@ -743,6 +797,8 @@ void send_msg(struct window* window, struct msg* msg)
     case WAVE_TITLE_MSG:
         ;
         Uint16 title_size = (Uint16) msg->content.string_vec->size;
+        if (msg->content.string_vec->size > 120)
+            title_size = 120;
         SDLNet_Write16(title_size + 1, protocol_msg);
         protocol_msg[2] = 'U';
         for (Uint16 i = 0; i < title_size; i++)
@@ -750,54 +806,292 @@ void send_msg(struct window* window, struct msg* msg)
         break;
     }
 
-    SDLNet_TCP_Send(window->client, protocol_msg, sizeof(Uint16) + SDLNet_Read16(protocol_msg));
-    
-    if (protocol_msg[2] == 'Z')
-        SDLNet_TCP_Send(window->server, protocol_msg, sizeof(Uint16) + SDLNet_Read16(protocol_msg));
+    // The socket can be closed (set to NULL) by the receiving thread
+    lock_sockets();
+
+    if (window->client)
+        SDLNet_TCP_Send(window->client, protocol_msg, sizeof(Uint16) + SDLNet_Read16(protocol_msg));
+
+    unlock_sockets();
 }
 
 
-void recv_msg(struct window *window, char *msg)
+static int recv_full(TCPsocket sock, char *buf, int len)
 {
+    int total = 0;
+
+    // TCP is a stream: Recv may return less bytes than asked
+    while (total < len)
+    {
+        int res = SDLNet_TCP_Recv(sock, buf + total, len - total);
+
+        if (res <= 0)
+            return 0;
+
+        total += res;
+    }
+
+    return 1;
+}
+
+
+/* Returns the length of the received message, or 0 if the connection is lost/invalid */
+int recv_msg(struct window *window, TCPsocket sock, char *msg)
+{
+    (void) window;
+
     char buffer[2] = { 0 };
 
-    if (SDLNet_TCP_Recv(window->client, buffer, 2) <= 0)
-    {
-        msg[0] = '\0';
-        return;
-    }
+    if (!recv_full(sock, buffer, 2))
+        return 0;
 
     const Uint16 msg_len = SDLNet_Read16(buffer);
 
-    if (SDLNet_TCP_Recv(window->client, msg, msg_len) <= 0)
+    // Refuse messages that would not fit in the buffer (keep 1 byte for the terminator)
+    if (msg_len == 0 || msg_len >= MAX_MESSAGE_SIZE)
+        return 0;
+
+    if (!recv_full(sock, msg, msg_len))
+        return 0;
+
+    return msg_len;
+}
+
+
+/*
+* Handles the full game state sent by the server.
+* Every field coming from the network is validated: a malformed or truncated
+* message must never crash the client (out of bounds indexes, null textures...).
+*/
+static void handle_server_all_msg(struct window *window, const char *msg, size_t len)
+{
+    for (enum list_type i = 0; i < NUM_LISTS; i++)
+        clear_list(window->list[i]);
+
+    window->player[1].health = SDLNet_Read16(msg + 1);
+    window->player[0].health = SDLNet_Read16(msg + 3);
+    window->score = SDLNet_Read32(msg + 5);
+
+    size_t i = 9;
+    while (i < len)
     {
-        msg[0] = '\0';
-        return;
+        char *msg_begin = (char *) msg + i;
+        size_t remaining = len - i;
+        size_t entity_size = 0;
+
+        switch (msg_begin[0])
+        {
+            case 'e': entity_size = 32; break;
+            case 's': entity_size = 9; break;
+            case 't': entity_size = 18; break;
+            case 'o': entity_size = 10; break;
+            case 'x': entity_size = 26; break;
+            case 'h': entity_size = 21; break;
+            case 'b': entity_size = 38; break;
+            default: break;
+        }
+
+        // Unknown entity (we cannot know its size) or truncated entity: stop here
+        if (entity_size == 0 || entity_size > remaining)
+            break;
+
+        i += entity_size;
+
+        struct list *new = NULL;
+        enum list_type type = ENEMY_LIST;
+
+        if (msg_begin[0] == 'e')
+        {
+            char enemy_type = msg_begin[21];
+
+            if (enemy_type < 'A' || enemy_type > 'E')
+                continue;
+
+            float pos_x = read_float(msg_begin + 1);
+            float pos_y = read_float(msg_begin + 5);
+            SDL_FRect pos = {.x = pos_x, .y = pos_y };
+            float max_health = SDLNet_Read16(msg_begin + 9);
+            float health = SDLNet_Read16(msg_begin + 11);
+            float speed_x = read_float(msg_begin + 13);
+            float speed_y = read_float(msg_begin + 17);
+            Uint16 curr_texture = SDLNet_Read16(msg_begin + 22) % NUM_ROTATING_FRAMES;
+            Uint32 first_time_hurt = SDLNet_Read32(msg_begin + 24);
+            Uint32 last_time_hurt = SDLNet_Read32(msg_begin + 28);
+
+            if (max_health < 1) // The health bar divides by max_health
+                max_health = 1;
+
+            new = xmalloc(sizeof(struct list), window->window, window->renderer);
+            set_enemy_attributes(new, &pos, window, enemy_type, speed_x, health, max_health, 1, speed_y, curr_texture);
+            Uint32 ticks = SDL_GetTicks();
+            new->first_time_hurt = ticks - first_time_hurt;
+            new->last_time_hurt = ticks - last_time_hurt;
+
+            type = ENEMY_LIST;
+        }
+        else if (msg_begin[0] == 's')
+        {
+            float pos_x = read_float(msg_begin + 1);
+            float pos_y = read_float(msg_begin + 5);
+            SDL_FRect pos = { .x = pos_x, .y = pos_y };
+
+            new = xmalloc(sizeof(struct list), window->window, window->renderer);
+            set_shot_pos(new, &pos, window, 1);
+
+            type = MY_SHOTS_LIST;
+        }
+        else if (msg_begin[0] == 't')
+        {
+            float pos_x = read_float(msg_begin + 1);
+            float pos_y = read_float(msg_begin + 5);
+            SDL_FRect pos = { .x = pos_x, .y = pos_y };
+            float speed_x = read_float(msg_begin + 9);
+            float speed_y = read_float(msg_begin + 13);
+            SDL_FRect speed = { .x = speed_x, .y = speed_y };
+            char shot_type = msg_begin[17];
+
+            new = xmalloc(sizeof(struct list), window->window, window->renderer);
+            set_enemy_shot_attributes(new, &pos, NULL, shot_type, window, &speed, 1);
+
+            type = ENEMY_SHOT_LIST;
+        }
+        else if (msg_begin[0] == 'o') // Object
+        {
+            unsigned char object_type = (unsigned char) msg_begin[9];
+
+            if (object_type >= NUM_OBJECTS)
+                continue;
+
+            float pos_x = read_float(msg_begin + 1);
+            float pos_y = read_float(msg_begin + 5);
+            SDL_FRect pos = { .x = pos_x, .y = pos_y };
+
+            new = xmalloc(sizeof(struct list), window->window, window->renderer);
+            set_object_attributes(new, (enum object_type) object_type, window->img->objects[object_type], &pos);
+
+            type = OBJECT_LIST;
+        }
+        else if (msg_begin[0] == 'x')
+        {
+            int explosion_type = msg_begin[25];
+
+            float pos_x = read_float(msg_begin + 1);
+            float pos_y = read_float(msg_begin + 5);
+            SDL_FRect pos = { .x = pos_x, .y = pos_y };
+
+            float pos_src_x = read_float(msg_begin + 9);
+            float pos_src_y = read_float(msg_begin + 13);
+            float pos_src_w = read_float(msg_begin + 17);
+            float pos_src_h = read_float(msg_begin + 21);
+            SDL_FRect pos_src = { .x = pos_src_x, .y = pos_src_y, .w = pos_src_w, .h = pos_src_h };
+
+            // Only 2 explosion textures exist, and an empty frame would never end
+            if (explosion_type < 0 || explosion_type > 1 || pos_src_w < 1 || pos_src_h < 1)
+                continue;
+
+            new = xmalloc(sizeof(struct list), window->window, window->renderer);
+            set_explosion_pos(new, window, &pos, NULL, explosion_type, &pos_src);
+
+            type = EXPLOSION_LIST;
+
+            // The explosion has just started: add some sparks too
+            if (pos_src_x < 1 && pos_src_y < 1)
+                spawn_explosion_particles(pos.x + pos_src_w / 2, pos.y + pos_src_h / 2, explosion_type == 1 ? 0.6f : 1.0f);
+        }
+        else if (msg_begin[0] == 'h')
+        {
+            float pos_x = read_float(msg_begin + 1);
+            float pos_y = read_float(msg_begin + 5);
+            float pos_w = read_float(msg_begin + 9);
+            float pos_h = read_float(msg_begin + 13);
+            SDL_FRect pos = { .x = pos_x, .y = pos_y, .w = pos_w, .h = pos_h };
+
+            Uint32 time_diff = SDLNet_Read32(msg_begin + 17);
+
+            new = xmalloc(sizeof(struct list), window->window, window->renderer);
+            set_hud_text(new, &pos, window, 1, SDL_GetTicks() - time_diff);
+
+            type = HUD_LIST;
+        }
+        else if (msg_begin[0] == 'b')
+        {
+            char enemy_type = msg_begin[29];
+
+            if (enemy_type < '0' || enemy_type > '9')
+                continue;
+
+            float pos_x = read_float(msg_begin + 1);
+            float pos_y = read_float(msg_begin + 5);
+            float pos_w = read_float(msg_begin + 9);
+            float pos_h = read_float(msg_begin + 13);
+            SDL_FRect pos = { .x = pos_x, .y = pos_y, .w = pos_w, .h = pos_h };
+            float max_health = SDLNet_Read16(msg_begin + 17);
+            float health = SDLNet_Read16(msg_begin + 19);
+            float speed_x = read_float(msg_begin + 21);
+            float speed_y = read_float(msg_begin + 25);
+            SDL_FRect speed = { .x = speed_x, .y = speed_y };
+            Uint32 first_time_hurt = SDLNet_Read32(msg_begin + 30);
+            Uint32 last_time_hurt = SDLNet_Read32(msg_begin + 34);
+
+            if (max_health < 1)
+                max_health = 1;
+
+            new = xmalloc(sizeof(struct list), window->window, window->renderer);
+            set_boss_attributes(new, &pos, window, enemy_type, 1, &speed, health, max_health);
+            Uint32 ticks = SDL_GetTicks();
+            new->first_time_hurt = ticks - first_time_hurt;
+            new->last_time_hurt = ticks - last_time_hurt;
+
+            type = BOSS_LIST;
+        }
+
+        if (!new)
+            continue;
+
+        // Pushing element in front of the correct list
+        new->next = window->list[type]->next;
+        window->list[type]->next = new;
     }
 }
 
 
-static int handle_msg(struct window *window, const char *msg, char *msg_prefixes_to_handle)
+static int handle_msg(struct window *window, const char *msg, size_t len, char *msg_prefixes_to_handle)
 {
+    if (len == 0 || msg[0] == '\0')
+        return 1;
+
     if (strchr(msg_prefixes_to_handle, msg[0]))
     {
         switch (msg[0])
         {
             case 'A':
+                if (len < 2)
+                    break;
+
                 window->accepted = msg[1];
                 break;
 
             case 'L':
-                ;
+                if (len < 11)
+                    break;
+
                 window->level_num = SDLNet_Read16(msg + 1);
                 window->level_difficulty = SDLNet_Read16(msg + 3);
                 window->weapon = SDLNet_Read16(msg + 5);
+
+                // The weapon is used as an array index
+                if (window->weapon > 2)
+                    window->weapon = 0;
+
                 window->start_mission_ticks = SDLNet_Read32(msg + 7);
                 window->client_time = window->last_sync_time + SDL_GetTicks() - window->ticks;
 
                 return 2;
 
             case 'R': // Restart when in success/failure screen
+                if (len < 5)
+                    break;
+
                 window->restart = 1;
                 Uint32 retry_mission_ticks = SDLNet_Read32(msg + 1);
 
@@ -811,13 +1105,15 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 break;
 
             case 'P':
+                if (len < 5)
+                    break;
+
                 window->player[1].pos.x = SDLNet_Read16(msg + 1);
                 window->player[1].pos.y = SDLNet_Read16(msg + 3);
                 break;
 
             case 'S':
-                ;
-                if (msg[1] == 2)
+                if (len >= 2 && msg[1] == 2)
                     window->player[1].missile_around = 1;
 
                 shoot(window, &window->player[1], 0);
@@ -843,6 +1139,9 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 return 0;
 
             case 'T':
+                if (len < 5)
+                    break;
+
                 ;
                 Uint32 server_time = SDLNet_Read32(msg + 1);
                 window->ticks = SDL_GetTicks();
@@ -854,145 +1153,21 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
                 return 3;
 
             case ':': // SERVER_ALL_MSG
-                for (enum list_type i = 0; i < NUM_LISTS; i++)
-                    clear_list(window->list[i]);
+                if (len < 9)
+                    break;
 
-                window->player[1].health = SDLNet_Read16(msg + 1);
-                window->player[0].health = SDLNet_Read16(msg + 3);
-                window->score = SDLNet_Read32(msg + 5);
-
-                int i = 9;
-                while (msg[i])
-                {
-                    struct list* new = xmalloc(sizeof(struct list), window->window, window->renderer);
-                    char* msg_begin = msg + i;
-                    enum list_type type;
-
-                    if (msg_begin[0] == 'e')
-                    {
-                        float pos_x = read_float(msg_begin + 1);
-                        float pos_y = read_float(msg_begin + 5);
-                        SDL_FRect pos = {.x = pos_x, .y = pos_y };
-                        float max_health = SDLNet_Read16(msg_begin + 9);
-                        float health = SDLNet_Read16(msg_begin + 11);
-                        float speed_x = read_float(msg_begin + 13);
-                        float speed_y = read_float(msg_begin + 17);
-                        char enemy_type = msg_begin[21];
-                        Uint16 curr_texture = SDLNet_Read16(msg_begin + 22);
-                        Uint32 first_time_hurt = SDLNet_Read32(msg_begin + 24);
-                        Uint32 last_time_hurt = SDLNet_Read32(msg_begin + 28);
-
-                        set_enemy_attributes(new, &pos, window, enemy_type, speed_x, health, max_health, 1, speed_y, curr_texture);
-                        Uint32 ticks = SDL_GetTicks();
-                        new->first_time_hurt = ticks - first_time_hurt;
-                        new->last_time_hurt = ticks - last_time_hurt;
-
-                        type = ENEMY_LIST;
-                        i += 32;
-                    }
-                    else if (msg_begin[0] == 's')
-                    {
-                        float pos_x = read_float(msg_begin + 1);
-                        float pos_y = read_float(msg_begin + 5);
-                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
-                        set_shot_pos(new, &pos, window, 1);
-
-                        type = MY_SHOTS_LIST;
-                        i += 9;
-                    }
-                    else if (msg_begin[0] == 't')
-                    {
-                        float pos_x = read_float(msg_begin + 1);
-                        float pos_y = read_float(msg_begin + 5);
-                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
-                        float speed_x = read_float(msg_begin + 9);
-                        float speed_y = read_float(msg_begin + 13);
-                        SDL_FRect speed = { .x = speed_x, .y = speed_y };
-                        char shot_type = msg_begin[17];
-                        set_enemy_shot_attributes(new, &pos, NULL, shot_type, window, &speed, 1);
-
-                        type = ENEMY_SHOT_LIST;
-                        i += 18;
-                    }
-                    else if (msg_begin[0] == 'o') // Object
-                    {
-                        float pos_x = read_float(msg_begin + 1);
-                        float pos_y = read_float(msg_begin + 5);
-                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
-                        enum object_type object_type = msg_begin[9];
-
-                        set_object_attributes(new, object_type, window->img->objects[object_type], &pos);
-
-                        type = OBJECT_LIST;
-                        i += 10;
-                    }
-                    else if (msg_begin[0] == 'x')
-                    {
-                        float pos_x = read_float(msg_begin + 1);
-                        float pos_y = read_float(msg_begin + 5);
-                        SDL_FRect pos = { .x = pos_x, .y = pos_y };
-
-                        float pos_src_x = read_float(msg_begin + 9);
-                        float pos_src_y = read_float(msg_begin + 13);
-                        float pos_src_w = read_float(msg_begin + 17);
-                        float pos_src_h = read_float(msg_begin + 21);
-                        SDL_FRect pos_src = { .x = pos_src_x, .y = pos_src_y, .w = pos_src_w, .h = pos_src_h };
-                        int explosion_type = msg_begin[25];
-
-                        set_explosion_pos(new, window, &pos, NULL, explosion_type, &pos_src);
-
-                        type = EXPLOSION_LIST;
-                        i += 26;
-                    }
-                    else if (msg_begin[0] == 'h')
-                    {
-                        float pos_x = read_float(msg_begin + 1);
-                        float pos_y = read_float(msg_begin + 5);
-                        float pos_w = read_float(msg_begin + 9);
-                        float pos_h = read_float(msg_begin + 13);
-                        SDL_FRect pos = { .x = pos_x, .y = pos_y, .w = pos_w, .h = pos_h };
-
-                        Uint32 time_diff = SDLNet_Read32(msg_begin + 17);
-                     
-                        set_hud_text(new, &pos, window, 1, SDL_GetTicks() - time_diff);
-
-                        type = HUD_LIST;
-                        i += 21;
-                    }
-                    else if (msg_begin[0] == 'b')
-                    {
-                        float pos_x = read_float(msg_begin + 1);
-                        float pos_y = read_float(msg_begin + 5);
-                        float pos_w = read_float(msg_begin + 9);
-                        float pos_h = read_float(msg_begin + 13);
-                        SDL_FRect pos = { .x = pos_x, .y = pos_y, .w = pos_w, .h = pos_h };
-                        float max_health = SDLNet_Read16(msg_begin + 17);
-                        float health = SDLNet_Read16(msg_begin + 19);
-                        float speed_x = read_float(msg_begin + 21);
-                        float speed_y = read_float(msg_begin + 25);
-                        SDL_FRect speed = { .x = speed_x, .y = speed_y };
-                        char enemy_type = msg_begin[29];
-                        Uint32 first_time_hurt = SDLNet_Read32(msg_begin + 30);
-                        Uint32 last_time_hurt = SDLNet_Read32(msg_begin + 34);
-
-                        set_boss_attributes(new, &pos, window, enemy_type, 1, &speed, health, max_health);
-                        Uint32 ticks = SDL_GetTicks();
-                        new->first_time_hurt = ticks - first_time_hurt;
-                        new->last_time_hurt = ticks - last_time_hurt;
-
-                        type = BOSS_LIST;
-                        i += 38;
-                    }
-
-                    // Pushing element in front of the correct list
-                    new->next = window->list[type]->next;
-                    window->list[type]->next = new;
-                }
+                handle_server_all_msg(window, msg, len);
                 break;
 
             case 'U':
+                ;
+                size_t title_len = len - 1;
+                if (title_len > sizeof(window->wave_title_for_lan) - 1)
+                    title_len = sizeof(window->wave_title_for_lan) - 1;
+
+                memcpy(window->wave_title_for_lan, msg + 1, title_len);
+                window->wave_title_for_lan[title_len] = '\0';
                 window->wave_title_time = SDL_GetTicks();
-                strcpy(window->wave_title_for_lan, msg + 1);
                 break;
         }
     }
@@ -1003,30 +1178,31 @@ static int handle_msg(struct window *window, const char *msg, char *msg_prefixes
 
 int handle_messages(struct window *window, char *msg_prefixes_to_handle)
 {
-    struct msg_list *curr_msg = window->msg_list->next;
+    // Take all the pending messages at once: the receiving thread keeps
+    // adding new ones to the shared list while we are handling these
+    struct msg_list *chain = take_msg_list(window->msg_list);
+    struct msg_list *curr_msg = chain;
 
     while (curr_msg)
     {
-        int res = handle_msg(window, curr_msg->msg, msg_prefixes_to_handle);
+        int res = handle_msg(window, curr_msg->msg, curr_msg->len, msg_prefixes_to_handle);
 
         if (!res || res > 1)
         {
-            clear_msg_list(window->msg_list);
+            free_msg_chain(chain);
             return res;
         }
 
         curr_msg = curr_msg->next;
     }
 
-    clear_msg_list(window->msg_list);
+    free_msg_chain(chain);
 
     return 1;
 }
 
 int connecting_thread(void *data)
 {
-    is_connecting = 1;
-
     struct window *window = data;
     IPaddress ip;
 
@@ -1034,21 +1210,25 @@ int connecting_thread(void *data)
     {
         if (SDLNet_ResolveHost(&ip, buf, 4321) == 0)
         {
-            window->client = SDLNet_TCP_Open(&ip);
+            TCPsocket sock = SDLNet_TCP_Open(&ip);
 
-            if (window->client)
+            if (sock)
             {
+                lock_sockets();
+                window->client = sock;
+                unlock_sockets();
+
                 is_connected = 1;
-                SDL_CreateThread(recv_thread, "recv_thread", window);
+                start_recv_thread(window);
             }
             else
-                strcpy(err, SDLNet_GetError());
+                snprintf(err, sizeof(err), "%s", SDLNet_GetError());
         }
         else
-            strcpy(err, SDLNet_GetError());
+            snprintf(err, sizeof(err), "%s", SDLNet_GetError());
     }
     else
-        strcpy(err, window->txt[INVALID_IP]);
+        snprintf(err, sizeof(err), "%s", window->txt[INVALID_IP]);
 
     is_connecting = 0;
     return 0;
@@ -1061,28 +1241,46 @@ int recv_thread(void *data)
     struct window *window = data;
     char msg[MAX_MESSAGE_SIZE] = { 0 };
 
+    // This thread works on its own socket: window->client can be changed or
+    // set to NULL by the main thread at any time
+    lock_sockets();
+    TCPsocket sock = window->client;
+    unlock_sockets();
+
+    if (!sock)
+        return 0;
+
+    int quit_requested = 0;
+
     while (1)
     {
-        recv_msg(window, msg);
-           
-        if (msg[0])
+        memset(msg, 0, sizeof(msg));
+        int len = recv_msg(window, sock, msg);
+
+        if (len <= 0)
+            break; // Connection lost
+
+        if (msg[0] == 'Z')
         {
-            if (msg[0] == 'Z')
-            {
-                SDLNet_TCP_Close(window->client);
-                window->client = NULL;
-                break;
-            }
-            else
-            {
-                add_to_msg_list(window, window->msg_list, msg);
-                memset(msg, 0, MAX_MESSAGE_SIZE);
-            }
-                
-        }    
-        else
+            quit_requested = 1;
             break;
+        }
+
+        add_to_msg_list(window, window->msg_list, msg, len);
     }
+
+    // The other player disappeared without saying goodbye: quit the level
+    if (!quit_requested)
+    {
+        char quit_msg[1] = { 'Q' };
+        add_to_msg_list(window, window->msg_list, quit_msg, 1);
+    }
+
+    lock_sockets();
+    SDLNet_TCP_Close(sock);
+    if (window->client == sock)
+        window->client = NULL;
+    unlock_sockets();
 
     return 0;
 }

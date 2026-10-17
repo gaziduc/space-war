@@ -316,6 +316,8 @@ struct window *init_all(void)
     // LAN meesages
     window->msg_list = xmalloc(sizeof(struct msg_list), window->window, window->renderer);
     window->msg_list->next = NULL;
+    window->msg_list->len = 0;
+    init_msg_list_lock();
 
     // Trophies
     window->trophy.id[0] = -1;

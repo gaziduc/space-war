@@ -426,6 +426,20 @@ static void load_correct_music(struct window *window, int mission_num, int is_ar
 }
 
 
+/*
+* Adds an entity to the network message, only if it fits.
+* A message can not be bigger than MAX_MESSAGE_SIZE (fixed size buffers on both sides):
+* entities that do not fit are simply skipped, they will be sent in the next update.
+*/
+static void add_entity(struct window *window, struct string_vec *str, const char *entity, long size)
+{
+    if (str->size + size > MAX_MESSAGE_SIZE - 4)
+        return;
+
+    add_bytes(window, str, entity, size);
+}
+
+
 void play_game(struct window *window)
 {
     int is_arcade = 0;
@@ -455,6 +469,7 @@ void play_game(struct window *window)
     while (!escape)
     {
         reset_game_attributes(window, retry);
+        clear_particles();
 
         if (retry)
         {
@@ -569,6 +584,13 @@ void play_game(struct window *window)
             }
 
             render_explosions(window);
+
+            // Visual effects: engine flames and particles
+            for (unsigned i = 0; i < window->num_players; i++)
+                if (window->player[i].health > 0)
+                    spawn_engine_particles(&window->player[i].pos);
+            update_and_render_particles(window);
+
             render_enemies_health(window);
             render_touched_effect(window);
             render_hud_texts(window);
@@ -618,7 +640,7 @@ void play_game(struct window *window)
                         SDLNet_Write32(ticks - temp->first_time_hurt, buffer + 24);
                         SDLNet_Write32(ticks - temp->last_time_hurt, buffer + 28);
 
-                        add_bytes(window, msg.content.string_vec, buffer, 32);
+                        add_entity(window, msg.content.string_vec, buffer, 32);
 
                         temp = temp->next;
                     }
@@ -631,7 +653,7 @@ void play_game(struct window *window)
                         write_float(temp->pos_dst.x, buffer + 1);
                         write_float(temp->pos_dst.y, buffer + 5);
 
-                        add_bytes(window, msg.content.string_vec, buffer, 9);
+                        add_entity(window, msg.content.string_vec, buffer, 9);
 
                         temp = temp->next;
                     }
@@ -648,7 +670,7 @@ void play_game(struct window *window)
                         write_float(temp->speed.y, buffer + 13);
                         buffer[17] = temp->enemy_type;
 
-                        add_bytes(window, msg.content.string_vec, buffer, 18);
+                        add_entity(window, msg.content.string_vec, buffer, 18);
 
                         temp = temp->next;
                     }
@@ -662,7 +684,7 @@ void play_game(struct window *window)
                         write_float(temp->pos_dst.y, buffer + 5);
                         buffer[9] = temp->type;
 
-                        add_bytes(window, msg.content.string_vec, buffer, 10);
+                        add_entity(window, msg.content.string_vec, buffer, 10);
 
                         temp = temp->next;
                     }
@@ -680,7 +702,7 @@ void play_game(struct window *window)
                         write_float(temp->pos_src.h, buffer + 21);
                         buffer[25] = temp->num_explosion;
 
-                        add_bytes(window, msg.content.string_vec, buffer, 26);
+                        add_entity(window, msg.content.string_vec, buffer, 26);
 
                         temp = temp->next;
                     }
@@ -696,7 +718,7 @@ void play_game(struct window *window)
                         write_float(temp->pos_dst.h, buffer + 13);
                         SDLNet_Write32(SDL_GetTicks() - temp->last_time_hurt, buffer + 17);
 
-                        add_bytes(window, msg.content.string_vec, buffer, 21);
+                        add_entity(window, msg.content.string_vec, buffer, 21);
 
                         temp = temp->next;
                     }
@@ -719,7 +741,7 @@ void play_game(struct window *window)
                         SDLNet_Write32(ticks - temp->first_time_hurt, buffer + 30);
                         SDLNet_Write32(ticks - temp->last_time_hurt, buffer + 34);
 
-                        add_bytes(window, msg.content.string_vec, buffer, 38);
+                        add_entity(window, msg.content.string_vec, buffer, 38);
 
                         temp = temp->next;
                     }

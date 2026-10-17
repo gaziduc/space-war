@@ -147,6 +147,8 @@ void bomb(struct window *window, int provoked_by_me)
 
     // Set quake effect
     set_shake_effect(window);
+    spawn_shockwave(window->player[0].pos.x + window->player[0].pos.w / 2,
+                    window->player[0].pos.y + window->player[0].pos.h / 2);
 
     if (window->is_lan && provoked_by_me)
     {

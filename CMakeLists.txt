@@ -41,7 +41,7 @@ endif ()
 
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
-    set(USE_FLAGS "-O3 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS='[\"png\"]' -s USE_SDL_MIXER=2 -s SDL2_MIXER_FORMATS='[\"ogg\"]' -s USE_SDL_TTF=2 -s USE_SDL_GFX=2 -s USE_SDL_NET=2 -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY --preload-file data -s WASM=1 --shell-file template.html --post-js postfix.js")
+    set(USE_FLAGS "-O3 -s USE_SDL=2 -s USE_SDL_IMAGE=2 -s SDL2_IMAGE_FORMATS=png -s USE_SDL_MIXER=2 -s SDL2_MIXER_FORMATS=ogg -s USE_SDL_TTF=2 -s USE_SDL_GFX=2 -s USE_SDL_NET=2 -s ALLOW_MEMORY_GROWTH=1 -s ASYNCIFY --preload-file data -s WASM=1 --shell-file template.html --post-js postfix.js")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USE_FLAGS}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${USE_FLAGS}")
